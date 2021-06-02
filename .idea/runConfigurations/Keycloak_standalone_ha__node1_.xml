@@ -26,7 +26,7 @@
       </ENTRIES>
     </extension>
     <RunnerSettings RunnerId="Debug">
-      <option name="DEBUG_PORT" value="55963" />
+      <option name="DEBUG_PORT" value="62402" />
     </RunnerSettings>
     <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Cover">
       <option name="USE_ENV_VARIABLES" value="true" />
@@ -46,10 +46,10 @@
     <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Debug">
       <option name="USE_ENV_VARIABLES" value="true" />
       <STARTUP>
-        <option name="USE_DEFAULT" value="true" />
-        <option name="SCRIPT" value="" />
+        <option name="USE_DEFAULT" value="false" />
+        <option name="SCRIPT" value="$PROJECT_DIR$/keycloak-server/target/wildfly/bin/standalone.sh" />
         <option name="VM_PARAMETERS" value="" />
-        <option name="PROGRAM_PARAMETERS" value="" />
+        <option name="PROGRAM_PARAMETERS" value="-c standalone-ha.xml -Djboss.node.name=node1 " />
       </STARTUP>
       <SHUTDOWN>
         <option name="USE_DEFAULT" value="true" />
@@ -62,7 +62,7 @@
       <option name="USE_ENV_VARIABLES" value="true" />
       <STARTUP>
         <option name="USE_DEFAULT" value="false" />
-        <option name="SCRIPT" value="$PROJECT_DIR$/keycloak-custom/target/wildfly/bin/standalone.sh" />
+        <option name="SCRIPT" value="$PROJECT_DIR$/keycloak-server/target/wildfly/bin/standalone.sh" />
         <option name="VM_PARAMETERS" value="" />
         <option name="PROGRAM_PARAMETERS" value="-c standalone-ha.xml -Djboss.node.name=node1 " />
       </STARTUP>
@@ -73,6 +73,8 @@
         <option name="PROGRAM_PARAMETERS" value="" />
       </SHUTDOWN>
     </ConfigurationWrapper>
-    <method v="2" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
   </configuration>
 </component>

@@ -11,7 +11,7 @@ This project is aimed to create a custom Keycloak server. The following features
 
 This project is based on Maven and contains the following Maven modules:
 
-- keycloak-custom
+- keycloak-server
 - keycloak-config  
 - docker-compose  
 - extensions
@@ -30,10 +30,10 @@ In order to use this project, you need to install the following components:
 - Docker 
 - jq
 
-Module keycloak-custom
+Module keycloak-server
 ----------------------
 
-This module installs the official Keycloak distribution into the folder referenced by the property `${keycloak.dir}`. The default value is [keycloak-custom/target/wildfly](./keycloak-custom/target/wildfly) (as defined by `${project.build.directory}/wildfly`).
+This module installs the official Keycloak distribution into the folder referenced by the property `${keycloak.dir}`. The default value is [keycloak-server/target/wildfly](./keycloak-server/target/wildfly) (as defined by `${project.build.directory}/wildfly`).
 
 The following Maven command does the installation and setup of Keycloak:
 
@@ -45,7 +45,7 @@ After a successful execution, Keycloak can be started by the IntelliJ Run Config
 
 ### Wildfly configuration
 
-For some features Keycloak relies on the underlying Wildfly server. Their configuration has to be done within Wildfly. The Wildfly CLI scripting is used for this. The main CLI scripts are [standalone-configuration.cli](keycloak-custom/src/main/resources/wildfly/cli/standalone-configuration.cli) and [standalone-ha-configuration.cli](keycloak-custom/src/main/resources/wildfly/cli/standalone-ha-configuration.cli) The following features are configured:
+For some features Keycloak relies on the underlying Wildfly server. Their configuration has to be done within Wildfly. The Wildfly CLI scripting is used for this. The main CLI scripts are [standalone-configuration.cli](keycloak-server/src/main/resources/wildfly/cli/standalone-configuration.cli) and [standalone-ha-configuration.cli](keycloak-custom/src/main/resources/wildfly/cli/standalone-ha-configuration.cli) The following features are configured:
 
 - access log
 - logging
@@ -56,7 +56,7 @@ For some features Keycloak relies on the underlying Wildfly server. Their config
 - keystore for server TLS connections
 - distributed caching (only for high availability mode)
 
-These CLI scripts are launched during the build of the `keycloak-custom` module. The Launch is defined by the `exec-maven-plugin` in the [pom.xml](./keycloak-custom/pom.xml), as the executions `patch-standalone` and `patch-standalone-ha`.
+These CLI scripts are launched during the build of the `keycloak-server` module. The Launch is defined by the `exec-maven-plugin` in the [pom.xml](./keycloak-custom/pom.xml), as the executions `patch-standalone` and `patch-standalone-ha`.
 
 #### Logging
 
@@ -84,7 +84,7 @@ By this way, if only the database name is different for various deployments, the
 
 #### Postgres JDBC driver
 
-The JDBC drivers within Wildfly are realized by modules. As an example the Postgres JDBC driver is added by the Module [module.xml](keycloak-custom/src/main/resources/wildfly/modules/system/layers/keycloak/org/postgresql/main/module.xml)
+The JDBC drivers within Wildfly are realized by modules. As an example the Postgres JDBC driver is added by the Module [module.xml](keycloak-server/src/main/resources/wildfly/modules/system/layers/keycloak/org/postgresql/main/module.xml)
 
 #### TLS truststore
 
@@ -95,13 +95,13 @@ The keycloak-truststore.cli uses the following environment variables for configu
 - KEYCLOAK_SSL_CUSTOM_TRUSTSTORE_PATH
 - KEYCLOAK_SSL_CUSTOM_TRUSTSTORE_PASSWORD
 
-For demonstration and development purposes a custom truststore ([truststore-for-development-purpose-only.jks](keycloak-custom/src/main/resources/wildfly/standalone/configuration/truststore-for-development-purpose-only.jks)) is provided.
+For demonstration and development purposes a custom truststore ([truststore-for-development-purpose-only.jks](keycloak-server/src/main/resources/wildfly/standalone/configuration/truststore-for-development-purpose-only.jks)) is provided.
 
 #### TLS keystore
 
 For incoming HTTPS connections the Wildfly server must be configured. It is done in the ssl.cli script.
 
-For demonstration and development purposes a custom keystore ([keystore-for-development-purpose-only.jks](keycloak-custom/src/main/resources/wildfly/standalone/configuration/keystore-for-development-purpose-only.jks)) is provided.
+For demonstration and development purposes a custom keystore ([keystore-for-development-purpose-only.jks](keycloak-server/src/main/resources/wildfly/standalone/configuration/keystore-for-development-purpose-only.jks)) is provided.
 
 See also [Keycloak Server Installation - Setting up HTTPS/SSL](https://www.keycloak.org/docs/latest/server_installation/index.html#_setting_up_ssl).
 
@@ -137,7 +137,7 @@ To support the usage for different environments (DEV, TEST, PROD), the configura
 Module docker-compose
 ---------------------
 
-This module contains the docker-compose file for starting the custom Keycloak docker image built by the `keycloak-custom` module.
+This module contains the docker-compose file for starting the custom Keycloak docker image built by the `keycloak-server` module.
 
 Module extensions
 -----------------

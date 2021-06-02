@@ -10,7 +10,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>keycloak-custom</module>
+        <module>keycloak-server</module>
         <module>keycloak-config</module>
         <module>extensions</module>
         <module>docker-compose</module>
