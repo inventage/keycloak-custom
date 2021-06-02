@@ -1,0 +1,14 @@
+# Setup the keycloak datasource by using environment variables.
+
+##
+/subsystem=datasources/data-source=KeycloakDS:write-attribute(name=user-name,value=${env.DB_USER})
+/subsystem=datasources/data-source=KeycloakDS:write-attribute(name=password,value=${env.DB_PASSWORD})
+/subsystem=datasources/data-source=KeycloakDS:write-attribute(name=driver-name,value=${env.DB_VENDOR})
+
+## enable reconnection
+/subsystem=datasources/data-source=KeycloakDS:write-attribute(name=background-validation,value=true)
+/subsystem=datasources/data-source=KeycloakDS:write-attribute(name=validate-on-match,value=false)
+/subsystem=datasources/data-source=KeycloakDS:write-attribute(name=background-validation-millis,value=10000)
+
+##
+/subsystem=datasources/data-source=KeycloakDS:write-attribute(name=connection-url,value="${env.DB_CONNECTION_URL}")

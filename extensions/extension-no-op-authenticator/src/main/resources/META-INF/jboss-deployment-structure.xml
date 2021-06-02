@@ -1,0 +1,20 @@
+<jboss-deployment-structure>
+    <deployment name="keycloak-spi.jar">
+        <dependencies>
+            <module name="javax.jms.api"/>
+            <module name="javax.enterprise.api"/>
+            <module name="javax.inject.api"/>
+            <module name="org.hibernate"/>
+            <module name="org.keycloak.keycloak-services"/>
+            <module name="org.keycloak.keycloak-ldap-federation"/>
+            <module name="org.jboss.resteasy.resteasy-jaxrs"/>
+            <module name="org.jboss.resteasy.resteasy-atom-provider"/>
+            <module name="org.jboss.resteasy.resteasy-cdi"/>
+            <module name="org.jboss.resteasy.resteasy-jaxrs"/>
+            <module name="org.jboss.resteasy.resteasy-jaxb-provider"/>
+            <module name="org.jboss.resteasy.resteasy-jackson-provider"/>
+            <module name="org.jboss.resteasy.resteasy-jsapi"/>
+            <module name="org.jboss.resteasy.resteasy-multipart-provider"/>
+        </dependencies>
+    </deployment>
+</jboss-deployment-structure>

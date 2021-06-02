@@ -1,0 +1,18 @@
+#
+# Executed during build time (via Maven)
+#
+
+embed-server --server-config=standalone-ha.xml --std-out=echo
+
+# patch
+
+run-batch --file=target/wildfly/cli/access-log.cli
+run-batch --file=target/wildfly/cli/logging.cli
+run-batch --file=target/wildfly/cli/proxy.cli
+run-batch --file=target/wildfly/cli/keycloak-datasource.cli
+run-batch --file=target/wildfly/cli/keycloak-postgresql.cli
+run-batch --file=target/wildfly/cli/keycloak-truststore.cli
+run-batch --file=target/wildfly/cli/ssl.cli
+run-batch --file=target/wildfly/cli/cache-owners.cli
+
+stop-embedded-server

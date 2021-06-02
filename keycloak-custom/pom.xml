@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>parent</artifactId>
+        <groupId>com.inventage.keycloak.custom</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>keycloak-custom</artifactId>
+
+    <dependencies>
+        <!-- the Keycloak distribution -->
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-server-dist</artifactId>
+            <type>zip</type>
+            <scope>provided</scope>
+        </dependency>
+        <!-- extension -->
+        <dependency>
+            <groupId>com.inventage.keycloak.custom</groupId>
+            <artifactId>extension-no-op-authenticator</artifactId>
+        </dependency>
+        <!-- Postgres JDBC driver -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- for copying all required files -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <!-- for extracting keycloak zip archive -->
+                    <execution>
+                        <id>unpack-keycloak</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeGroupIds>org.keycloak</includeGroupIds>
+                            <includeArtifactIds>keycloak-server-dist</includeArtifactIds>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <!-- for copying postgresql driver -->
+                    <execution>
+                        <id>copy-postgresql-driver</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeGroupIds>org.postgresql</includeGroupIds>
+                            <includeArtifactIds>postgresql</includeArtifactIds>
+                            <outputDirectory>${keycloak.dir}/modules/system/layers/keycloak/org/postgresql/main</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <!-- for copying the extension to the providers folder -->
+                    <execution>
+                        <id>copy-extension-no-op-authenticator</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeGroupIds>com.inventage.keycloak.custom</includeGroupIds>
+                            <includeArtifactIds>extension-no-op-authenticator</includeArtifactIds>
+                            <outputDirectory>${keycloak.dir}/providers</outputDirectory>
+                            <prependGroupId>true</prependGroupId>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- for renaming the installation directory to $keycloak.dir -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>rename-keycloak-folder</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <move file="${project.build.directory}/keycloak-${keycloak.version}"
+                                      toFile="${keycloak.dir}"/>
+                                <chmod file="${keycloak.dir}/bin/*.sh" perm="ugo+rx"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- for executing CLI scripts -->
+            <plugin>
+                <artifactId>exec-maven-plugin</artifactId>
+                <groupId>org.codehaus.mojo</groupId>
+                <executions>
+                    <!-- for executing the wildfly CLI scripts-->
+                    <execution>
+                        <id>patch-standalone</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${keycloak.dir}/bin/jboss-cli.sh</executable>
+                            <arguments>
+                                <argument>--file=${keycloak.dir}/cli/standalone-configuration.cli</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <!-- for executing the wildfly CLI HA scripts-->
+                    <execution>
+                        <id>patch-standalone-ha</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${keycloak.dir}/bin/jboss-cli.sh</executable>
+                            <arguments>
+                                <argument>--file=${keycloak.dir}/cli/standalone-ha-configuration.cli</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- cleanup version standalone.xml files from cli execution -->
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>auto-clean</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <configuration>
+                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                            <filesets>
+                                <fileset>
+                                    <directory>${keycloak.dir}/standalone/configuration/standalone_xml_history</directory>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- for building the fat jar as the resulting artefact -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>all.tar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <tarLongFileMode>gnu</tarLongFileMode>
+                            <descriptors>
+                                <descriptor>assembly-all.xml</descriptor>
+                            </descriptors>
+                            <!-- contextDirectory of dockerfile-maven-plugin  -->
+                            <outputDirectory>${project.build.directory}/docker</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- substitute variables -->
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <!-- Dockerfile keycloak-->
+                    <execution>
+                        <id>copy-docker-files-keycloak</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <!-- contextDirectory of dockerfile-maven-plugin  -->
+                            <outputDirectory>${project.build.directory}/docker</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/src/main/resources/docker</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <!-- Wildfly CLIs, modules, etc. -->
+                    <execution>
+                        <id>copy-wildfly-files</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <!-- contextDirectory of dockerfile-maven-plugin  -->
+                            <outputDirectory>${keycloak.dir}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/src/main/resources/wildfly</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                            <nonFilteredFileExtensions>
+                                <nonFilteredFileExtension>jks</nonFilteredFileExtension>
+                                <nonFilteredFileExtension>jar</nonFilteredFileExtension>
+                            </nonFilteredFileExtensions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- for building Docker Images -->
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>dockerfile-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

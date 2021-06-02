@@ -1,0 +1,26 @@
+# see also: https://github.com/jboss-dockerfiles/keycloak/blob/master/server/tools/cli/loglevel.cli
+
+## remove log-handler FILE, so that it can be added again afterwards as 'size-rotating-file-handler'
+/subsystem=logging/root-logger=ROOT:remove-handler(name="FILE")
+/subsystem=logging/periodic-rotating-file-handler=FILE:remove
+
+## set log levels
+/subsystem=logging/root-logger=ROOT:change-root-log-level(level=${env.ROOT_LOGLEVEL:INFO})
+/subsystem=logging/logger=org.keycloak/:add(category=org.keycloak,level=${env.KEYCLOAK_LOGLEVEL:INFO})
+/subsystem=logging/logger=com.inventage/:add(category=com.inventage,level=${env.INVENTAGE_KEYCLOAK_LOGLEVEL:DEBUG})
+
+## define log pattern 'WITH_CONTEXT' to contain MDC
+/subsystem=logging/pattern-formatter=WITH_CONTEXT:add(pattern="%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p (%t) %X{USER} %X{X-TRACKINGID} %X{X-REQUESTID} [%c] %s%e%n")
+
+## change log pattern to WITH_CONTEXT
+/subsystem=logging/console-handler=CONSOLE:change-log-level(level=ALL)
+/subsystem=logging/console-handler=CONSOLE:write-attribute(name=named-formatter, value=WITH_CONTEXT)
+
+## create size rotating log handler // https://access.redhat.com/documentation/en-us/red_hat_jboss_enterprise_application_platform/6.4/html/administration_and_configuration_guide/sect-logging_configuration_in_the_cli#Configure_a_Size_Log_Handler_in_the_CLI
+/subsystem=logging/size-rotating-file-handler=FILE:add(file={"path"=>"server.log","relative-to"=>"jboss.server.log.dir"})
+/subsystem=logging/size-rotating-file-handler=FILE:write-attribute(name="rotate-size", value="100m")
+/subsystem=logging/size-rotating-file-handler=FILE:write-attribute(name="max-backup-index", value="20")
+/subsystem=logging/size-rotating-file-handler=FILE:write-attribute(name="named-formatter", value=WITH_CONTEXT)
+/subsystem=logging/size-rotating-file-handler=FILE:write-attribute(name="autoflush", value=true)
+/subsystem=logging/root-logger=ROOT:add-handler(name=FILE)
+

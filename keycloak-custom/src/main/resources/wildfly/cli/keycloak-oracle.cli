@@ -1,0 +1,8 @@
+# Register the Oracle JDBC driver.
+
+/subsystem=datasources/jdbc-driver=oraclesql:add(driver-name="com.oracle", driver-module-name="oracle.jdbc", driver-xa-datasource-class-name="oracle.jdbc.xa.client.OracleXADataSource")
+
+/subsystem=datasources/data-source=KeycloakDS:write-attribute(name=check-valid-connection-sql,value=select 1 from dual)
+
+## patch for running with Oracle 18
+## /subsystem=keycloak-server/spi=connectionsJpa/provider=default/:map-put(name=properties,key=driverDialect,value="org.hibernate.dialect.Oracle12cDialect")

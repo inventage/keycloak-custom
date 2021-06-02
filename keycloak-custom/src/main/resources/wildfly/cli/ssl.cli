@@ -1,0 +1,5 @@
+/core-service=management/security-realm=ApplicationRealm/server-identity=ssl:remove
+/core-service=management/security-realm=ApplicationRealm/server-identity=ssl:add(keystore-path="${env.WILDFLY_SERVER_SSL_KEYSTORE_PATH:../standalone/configuration/keystore-for-development-purpose-only.jks}", keystore-password="${env.WILDFLY_SERVER_SSL_KEYSTORE_PASSWORD:changeit}", alias="${env.WILDFLY_SERVER_SSL_KEYSTORE_KEY_ALIAS:for-development-purpose-only}", key-password="${env.WILDFLY_SERVER_SSL_KEYSTORE_KEY_PASSWORD:changeit}")
+
+/core-service=management/security-realm=KeycloakRealm:add
+/core-service=management/security-realm=KeycloakRealm/server-identity=ssl:add(keystore-path="${env.WILDFLY_SERVER_SSL_KEYSTORE_PATH:../standalone/configuration/keystore-for-development-purpose-only.jks}", keystore-password="${env.WILDFLY_SERVER_SSL_KEYSTORE_PASSWORD:changeit}", alias="${env.WILDFLY_SERVER_SSL_KEYSTORE_KEY_ALIAS:for-development-purpose-only}", key-password="${env.WILDFLY_SERVER_SSL_KEYSTORE_KEY_PASSWORD:changeit}")

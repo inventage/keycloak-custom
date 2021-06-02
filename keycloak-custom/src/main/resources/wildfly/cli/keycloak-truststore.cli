@@ -1,0 +1,8 @@
+/subsystem=keycloak-server/spi=truststore/:add
+/subsystem=keycloak-server/spi=truststore/provider=file/:add(enabled=true)
+# WILDCARD | ANY | STRICT
+/subsystem=keycloak-server/spi=truststore/provider=file/:map-put(name=properties,key=hostname-verification-policy,value=${env.KEYCLOAK_SSL_CUSTOM_TRUSTSTORE_HOSTNAME_VERIFICATION_POLICY:WILDCARD})
+# if disabled=true, then the default Java JSSE configuration is used (https://docs.oracle.com/javase/8/docs/technotes/guides/security/jsse/JSSERefGuide.html)
+/subsystem=keycloak-server/spi=truststore/provider=file/:map-put(name=properties,key=disabled,value=${env.KEYCLOAK_SSL_CUSTOM_TRUSTSTORE_DISABLED:true})
+/subsystem=keycloak-server/spi=truststore/provider=file/:map-put(name=properties,key=file,value=${env.KEYCLOAK_SSL_CUSTOM_TRUSTSTORE_PATH:../standalone/configuration/truststore-for-development-purpose-only.jks})
+/subsystem=keycloak-server/spi=truststore/provider=file/:map-put(name=properties,key=password,value=${env.KEYCLOAK_SSL_CUSTOM_TRUSTSTORE_PASSWORD:changeit})

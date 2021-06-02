@@ -1,0 +1,9 @@
+#
+# Enable the access-log of undertow.
+# The file is called access_log.log and it is rolled per day. The log pattern is customized that every entry also contains the incoming HTTP header 'X-REQUESTID' if available or otherwise a "-".
+# see also: https://kb.novaordis.com/index.php/Undertow_WildFly_Subsystem_Configuration_-_access-log#directory
+#
+
+/subsystem=undertow/server=default-server/host=default-host/setting=access-log:add
+/subsystem=undertow/server=default-server/host=default-host/setting=access-log:write-attribute(name=use-server-log, value=false)
+/subsystem=undertow/server=default-server/host=default-host/setting=access-log:write-attribute(name=pattern, value="%h %l %u %t %{i,X-REQUESTID} '%r' %s %b %D")

@@ -1,0 +1,22 @@
+# Ignore all IntelliJ stuff and include the important things
+# @see https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
+/.idea/*
+!/.idea/codeStyles/
+!/.idea/jsLinters/
+!/.idea/runConfigurations/
+!/.idea/dataSources.xml
+!/.idea/codeStyleSettings.xml
+!/.idea/checkstyle-idea.xml
+!/.idea/encodings.xml
+!/.idea/sqldialects.xml
+!/.idea/prettier.xml
+*.iml
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+release.properties
+/docker-compose/src/main/resources/keycloak.specific.env
+/docker-compose/src/main/resources/secrets.env
