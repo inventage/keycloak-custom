@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:13-alpine
+    ports:
+      - "15432:5432"
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - ./volume/pgdata/:/var/lib/postgresql/data/pgdata
+    networks:
+      - postgres
+
+networks:
+  postgres:

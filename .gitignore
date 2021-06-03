@@ -20,3 +20,6 @@ pom.xml.versionsBackup
 release.properties
 /docker-compose/src/main/resources/keycloak.specific.env
 /docker-compose/src/main/resources/secrets.env
+
+# Postgres data
+/keycloak-server/src/test/resources/docker-compose/postgres/volume/pgdata/
