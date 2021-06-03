@@ -28,20 +28,31 @@ In order to use this project, you need to install the following components:
 
 - Java 11
 - Docker 
-- jq
+- [jq](https://stedolan.github.io/jq/)
+- [IntelliJ plugin EnvFile](https://plugins.jetbrains.com/plugin/7861-envfile)
 
 Module keycloak-server
 ----------------------
 
 This module installs the official Keycloak distribution into the folder referenced by the property `${keycloak.dir}`. The default value is [keycloak-server/target/wildfly](./keycloak-server/target/wildfly) (as defined by `${project.build.directory}/wildfly`).
 
-The following Maven command does the installation and setup of Keycloak:
+The following Maven command does the installation:
+
+```shell
+./mvnw clean initialize
+```
+
+After a successful execution, Keycloak can be started by the IntelliJ Run Configuration named `Keycloak standalone-ha (node1)`. The [Keycloak Web Administration Console](http://localhost:8080/auth/) can then be loaded. A username and password can be set during the first access. We use admin/admin for all further explanations.
+
+Beside the installation of Keycloak, this module is also used for the configuration of the Wildfly server. The configuration is automatically done by running the following Maven command:
 
 ```shell
 ./mvnw clean package
 ```
 
-After a successful execution, Keycloak can be started by the IntelliJ Run Configuration named `Keycloak standalone-ha (node1)`.
+The applied configuration changes the used database from H2 to Postgres. Because of that, a running Postgres server is necessary to launch Keycloak after the configuration.
+
+The next section explains the details of the Wildfly configuration.
 
 ### Wildfly configuration
 
