@@ -15,6 +15,7 @@
 
     <modules>
         <module>extension-no-op-authenticator</module>
+        <module>extension-no-op-protocol-mapper</module>
     </modules>
 
     <properties>

@@ -25,6 +25,10 @@
             <groupId>com.inventage.keycloak.custom</groupId>
             <artifactId>extension-no-op-authenticator</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.inventage.keycloak.custom</groupId>
+            <artifactId>extension-no-op-protocol-mapper</artifactId>
+        </dependency>
         <!-- Postgres JDBC driver -->
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -75,6 +79,20 @@
                         <configuration>
                             <includeGroupIds>com.inventage.keycloak.custom</includeGroupIds>
                             <includeArtifactIds>extension-no-op-authenticator</includeArtifactIds>
+                            <outputDirectory>${keycloak.dir}/providers</outputDirectory>
+                            <prependGroupId>true</prependGroupId>
+                        </configuration>
+                    </execution>
+                    <!-- for copying the extension to the providers folder -->
+                    <execution>
+                        <id>copy-extension-no-op-protocol-mapper</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeGroupIds>com.inventage.keycloak.custom</includeGroupIds>
+                            <includeArtifactIds>extension-no-op-protocol-mapper</includeArtifactIds>
                             <outputDirectory>${keycloak.dir}/providers</outputDirectory>
                             <prependGroupId>true</prependGroupId>
                         </configuration>

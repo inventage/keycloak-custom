@@ -72,6 +72,11 @@
                 <artifactId>extension-no-op-authenticator</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.inventage.keycloak.custom</groupId>
+                <artifactId>extension-no-op-protocol-mapper</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
