@@ -73,8 +73,6 @@
         <option name="PROGRAM_PARAMETERS" value="" />
       </SHUTDOWN>
     </ConfigurationWrapper>
-    <method v="2">
-      <option name="Make" enabled="true" />
-    </method>
+    <method v="2" />
   </configuration>
 </component>
