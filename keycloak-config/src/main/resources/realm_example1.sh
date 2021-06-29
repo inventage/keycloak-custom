@@ -46,6 +46,8 @@ FORMS_SUBFLOW_NAME="Forms"
 createSubflow $REALM_NAME ${TOP_LEVEL_FLOW_NAME} $TOP_LEVEL_FLOW_NAME $FORMS_SUBFLOW_NAME ALTERNATIVE
 # no-operation-authenticator from extensions
 createExecution ${REALM_NAME} ${FORMS_SUBFLOW_NAME} no-operation-authenticator REQUIRED
+# no-operation-form-authenticator from extensions
+createExecution ${REALM_NAME} ${FORMS_SUBFLOW_NAME} no-operation-form-authenticator REQUIRED
 # email/password form
 createExecution ${REALM_NAME} ${FORMS_SUBFLOW_NAME} auth-username-password-form REQUIRED
 

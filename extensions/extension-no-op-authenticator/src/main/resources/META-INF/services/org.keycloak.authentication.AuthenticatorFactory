@@ -1,1 +1,2 @@
 com.inventage.keycloak.noopauthenticator.infrastructure.authenticator.NoOperationAuthenticatorFactory
+com.inventage.keycloak.noopformauthenticator.infrastructure.authenticator.NoOperationFormAuthenticatorFactory
