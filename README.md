@@ -153,9 +153,11 @@ This module contains the docker-compose file for starting the custom Keycloak do
 Module extensions
 -----------------
 
-### Extenstion NoOperationAuthenticator
+### Extension NoOperationAuthenticator
 
 This extension is an example of a custom Keycloak Authenticator implementation.
+
+### Extension NoOperationProtocolMapper
 
 Tooling
 -------
