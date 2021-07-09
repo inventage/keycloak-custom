@@ -20,15 +20,6 @@
             <type>zip</type>
             <scope>provided</scope>
         </dependency>
-        <!-- extension -->
-        <dependency>
-            <groupId>com.inventage.keycloak.custom</groupId>
-            <artifactId>extension-no-op-authenticator</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.inventage.keycloak.custom</groupId>
-            <artifactId>extension-no-op-protocol-mapper</artifactId>
-        </dependency>
         <!-- Postgres JDBC driver -->
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -67,34 +58,6 @@
                             <includeGroupIds>org.postgresql</includeGroupIds>
                             <includeArtifactIds>postgresql</includeArtifactIds>
                             <outputDirectory>${keycloak.dir}/modules/system/layers/keycloak/org/postgresql/main</outputDirectory>
-                        </configuration>
-                    </execution>
-                    <!-- for copying the extension to the providers folder -->
-                    <execution>
-                        <id>copy-extension-no-op-authenticator</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <includeGroupIds>com.inventage.keycloak.custom</includeGroupIds>
-                            <includeArtifactIds>extension-no-op-authenticator</includeArtifactIds>
-                            <outputDirectory>${keycloak.dir}/providers</outputDirectory>
-                            <prependGroupId>true</prependGroupId>
-                        </configuration>
-                    </execution>
-                    <!-- for copying the extension to the providers folder -->
-                    <execution>
-                        <id>copy-extension-no-op-protocol-mapper</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <includeGroupIds>com.inventage.keycloak.custom</includeGroupIds>
-                            <includeArtifactIds>extension-no-op-protocol-mapper</includeArtifactIds>
-                            <outputDirectory>${keycloak.dir}/providers</outputDirectory>
-                            <prependGroupId>true</prependGroupId>
                         </configuration>
                     </execution>
                 </executions>
@@ -204,7 +167,7 @@
                     <!-- Dockerfile keycloak-->
                     <execution>
                         <id>copy-docker-files-keycloak</id>
-                        <phase>process-resources</phase>
+                        <phase>generate-resources</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
@@ -222,7 +185,7 @@
                     <!-- Wildfly CLIs, modules, etc. -->
                     <execution>
                         <id>copy-wildfly-files</id>
-                        <phase>process-sources</phase>
+                        <phase>generate-resources</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>

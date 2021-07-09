@@ -1,7 +1,7 @@
 Keycloak-Custom
 ===============
 
-This project is aimed to create a custom Keycloak server. The following features are supported:
+This project creates a custom Keycloak server. The following features are supported:
 
 - installation via the Keycloak distribution at [Maven Central](https://mvnrepository.com/artifact/org.keycloak/keycloak-server-dist)
 - Wildfly setup via CLI scripts at build time
@@ -153,11 +153,15 @@ This module contains the docker-compose file for starting the custom Keycloak do
 Module extensions
 -----------------
 
+The `extensions` module is configured, so that every contained extension module can easily deploy its artifact to the keycloak-server module.
+
 ### Extension NoOperationAuthenticator
 
 This extension is an example of a custom Keycloak Authenticator implementation.
 
 ### Extension NoOperationProtocolMapper
+
+This extension is an example of a custom Keycloak Protocol Mapper implementation.
 
 Tooling
 -------
