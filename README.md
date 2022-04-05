@@ -17,6 +17,8 @@ This project is based on Maven and contains the following top-level Maven module
 - docker-compose : provides a sample for launching the custom docker image
 - extensions : provides samples for Keycloak SPI implementations
 
+![Maven modules](.docs/keycloak-custom_modules.png)
+
 There are similar projects available on the internet:
 
 - [Keycloak Project Example](https://github.com/thomasdarimont/keycloak-project-example)
