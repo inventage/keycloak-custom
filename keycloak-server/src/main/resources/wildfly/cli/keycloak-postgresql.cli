@@ -1,7 +1,0 @@
-# Register the PostgreSQL JDBC driver.
-
-/subsystem=datasources/jdbc-driver=postgres:add(driver-name="postgres", driver-module-name="org.postgresql", driver-xa-datasource-class-name="org.postgresql.xa.PGXADataSource")
-
-/subsystem=datasources/data-source=KeycloakDS:write-attribute(name=check-valid-connection-sql,value=select 1)
-
-/subsystem=keycloak-server/spi=connectionsJpa/provider=default:write-attribute(name=properties.schema,value=${env.DB_SCHEMA:public})

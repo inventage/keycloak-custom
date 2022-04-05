@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>parent</artifactId>
+        <groupId>com.inventage.keycloak.custom</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>container</artifactId>
+
+    <properties>
+        <docker.image.name>${project.groupId}.${project.artifactId}</docker.image.name>
+        <docker.context>${project.build.outputDirectory}</docker.context>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.inventage.keycloak.custom</groupId>
+            <artifactId>config</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.inventage.keycloak.custom</groupId>
+            <artifactId>extension-no-op-authenticator</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- for copying all required files -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <!-- for extracting keycloak zip archive -->
+                    <execution>
+                        <id>unpack-keycloak-config</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeGroupIds>com.inventage.keycloak.custom</includeGroupIds>
+                            <includeArtifactIds>config</includeArtifactIds>
+                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <!-- for copying extension-no-op-authenticator -->
+                    <execution>
+                        <id>copy-extension-no-op-authenticator</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeGroupIds>com.inventage.keycloak.custom</includeGroupIds>
+                            <includeArtifactIds>extension-no-op-authenticator</includeArtifactIds>
+                            <outputDirectory>${project.build.outputDirectory}/keycloak/providers</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- substitute variables -->
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <!-- Dockerfile keycloak-->
+                    <execution>
+                        <id>copy-docker-files-keycloak</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${docker.context}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/src/main/resources</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- for build Docker images -->
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <configuration>
+                    <tagName>${project.version}</tagName>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

@@ -10,9 +10,10 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>keycloak-server</module>
-        <module>keycloak-config</module>
+        <module>server</module>
+        <module>config</module>
         <module>extensions</module>
+        <module>container</module>
         <module>docker-compose</module>
     </modules>
 
@@ -20,23 +21,22 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <keycloak.version>14.0.0</keycloak.version>
-        <keycloak.dir>./target/wildfly</keycloak.dir>
-        <keycloak.deployment.dir>../../keycloak-server/${keycloak.dir}/standalone/deployments</keycloak.deployment.dir> <!-- used in extension modules -->
-        <postgres.driver.version>42.2.6</postgres.driver.version> <!-- also used in keycloak-config/src/main/resources/modules/system/layers/keycloak/org/postgresql/main/module.xml -->
-        <jboss.base.image>jboss/base-jdk:8</jboss.base.image>
+        <keycloak.version>17.0.1</keycloak.version> <!-- update also keycloak-config-cli-${keycloak.version}.jar in keycloak-config -->
+        <jsondeepmerge.version>1.0.0-202110111110-36-7616eb8</jsondeepmerge.version>
+        <keycloak.dir>./target/keycloak</keycloak.dir>
+        <keycloak.target.dir>../server/${keycloak.dir}/</keycloak.target.dir> <!-- used in config & extension modules -->
+        <keycloak.providers.dir>../../server/${keycloak.dir}/providers</keycloak.providers.dir> <!-- used in extension modules -->
         <docker.pull.registry></docker.pull.registry> <!-- default is hub.docker.com, must end with "/" if specified -->
         <docker.push.registry></docker.push.registry> <!-- must be defined for goal deploy, must end with "/" if specified -->
-        <image.name>${project.groupId}</image.name>
-        <image.global.name>${docker.push.registry}${image.name}</image.global.name>
+        <docker.image.name>OVERWRITTEN</docker.image.name>
     </properties>
 
     <dependencyManagement>
         <dependencies>
-            <!-- keycloak distribution -->
+            <!-- https://mvnrepository.com/artifact/org.keycloak/keycloak-quarkus-dist -->
             <dependency>
                 <groupId>org.keycloak</groupId>
-                <artifactId>keycloak-server-dist</artifactId>
+                <artifactId>keycloak-quarkus-dist</artifactId>
                 <version>${keycloak.version}</version>
                 <type>zip</type>
             </dependency>
@@ -48,12 +48,11 @@
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
-            <!-- postgres JDBC driver -->
-            <dependency>
-                <groupId>org.postgresql</groupId>
-                <artifactId>postgresql</artifactId>
-                <version>${postgres.driver.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>org.keycloak</groupId>-->
+<!--                <artifactId>keycloak-quarkus-server</artifactId>-->
+<!--                <version>${keycloak.version}</version>-->
+<!--            </dependency>-->
             <!-- junit -->
             <dependency>
                 <groupId>junit</groupId>
@@ -66,11 +65,6 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>3.6</version>
-            </dependency>
-            <dependency>
-                <groupId>com.inventage.keycloak.custom</groupId>
-                <artifactId>keycloak-server</artifactId>
-                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -108,18 +102,26 @@
                     <artifactId>exec-maven-plugin</artifactId>
                     <version>1.6.0</version>
                 </plugin>
-                <!-- for building Docker Images -->
+                <!-- for building Docker images -->
                 <plugin>
-                    <groupId>com.spotify</groupId>
-                    <artifactId>dockerfile-maven-plugin</artifactId>
-                    <version>1.4.10</version>
+                    <groupId>io.fabric8</groupId>
+                    <artifactId>docker-maven-plugin</artifactId>
+                    <version>0.38.1</version>
                     <configuration>
-                        <contextDirectory>${project.build.directory}/docker</contextDirectory>
-                        <repository>${image.name}</repository>
-                        <pullNewerImage>false</pullNewerImage>
-                        <useMavenSettingsForAuth>true</useMavenSettingsForAuth>
-                        <skipDockerInfo>true</skipDockerInfo>
-                        <writeTestMetadata>false</writeTestMetadata>
+                        <images>
+                            <image>
+                                <name>${docker.push.registry}${docker.image.name}</name>
+                                <build>
+                                    <!--suppress UnresolvedMavenProperty -->
+                                    <contextDir>${docker.context}</contextDir>
+                                    <tags>
+                                        <tag>latest</tag>
+                                        <tag>${project.version}</tag>
+                                    </tags>
+                                    <filter>false</filter>
+                                </build>
+                            </image>
+                        </images>
                     </configuration>
                     <executions>
                         <!-- build image -->
@@ -130,53 +132,21 @@
                                 <goal>build</goal>
                             </goals>
                         </execution>
-                        <!-- tag image with version -->
+                        <!-- tag image -->
                         <execution>
-                            <id>tag-image-versioned</id>
+                            <id>tag-image</id>
                             <phase>install</phase>
                             <goals>
                                 <goal>tag</goal>
                             </goals>
-                            <configuration>
-                                <repository>${image.global.name}</repository>
-                                <tag>${project.version}</tag>
-                            </configuration>
                         </execution>
-                        <!-- tag image with latest-->
+                        <!-- push image -->
                         <execution>
-                            <id>tag-image-latest</id>
-                            <phase>install</phase>
-                            <goals>
-                                <goal>tag</goal>
-                            </goals>
-                            <configuration>
-                                <repository>${image.global.name}</repository>
-                                <tag>latest</tag>
-                            </configuration>
-                        </execution>
-                        <!-- push image latest -->
-                        <execution>
-                            <id>push-image-latest</id>
+                            <id>push-image</id>
                             <phase>deploy</phase>
                             <goals>
                                 <goal>push</goal>
                             </goals>
-                            <configuration>
-                                <repository>${image.global.name}</repository>
-                                <tag>latest</tag>
-                            </configuration>
-                        </execution>
-                        <!-- push image versioned -->
-                        <execution>
-                            <id>push-image-versioned</id>
-                            <phase>deploy</phase>
-                            <goals>
-                                <goal>push</goal>
-                            </goals>
-                            <configuration>
-                                <repository>${image.global.name}</repository>
-                                <tag>${project.version}</tag>
-                            </configuration>
                         </execution>
                     </executions>
                 </plugin>

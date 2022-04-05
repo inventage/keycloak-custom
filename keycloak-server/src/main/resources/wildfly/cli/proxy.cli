@@ -1,4 +1,0 @@
-# Configure wildfly/undertow as located behind a proxy.
-
-/subsystem=undertow/server=default-server/http-listener=default: write-attribute(name=proxy-address-forwarding, value=true)
-/subsystem=undertow/server=default-server/https-listener=https: write-attribute(name=proxy-address-forwarding, value=true)

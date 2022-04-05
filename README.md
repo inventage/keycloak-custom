@@ -1,22 +1,23 @@
 Keycloak-Custom
 ===============
 
-This project creates a custom Keycloak server. The following features are supported:
+This project creates a custom [Keycloak] server based on [Keycloak.X]. The following features are supported:
 
-- installation via the Keycloak distribution at [Maven Central](https://mvnrepository.com/artifact/org.keycloak/keycloak-server-dist)
-- Wildfly setup via CLI scripts at build time
-- package as Docker image
-- Keycloak configuration via Keycloak Admin CLI
+- installation via the [Keycloak distribution at Maven Central](https://mvnrepository.com/artifact/org.keycloak/keycloak-quarkus-dist)
+- configuration via [Admin CLI] of Keycloak
+- configuration via [keycloak-config-cli] of Adorsys
 - development of custom extensions
+- package as Docker image
 
-This project is based on Maven and contains the following Maven modules:
+This project is based on Maven and contains the following top-level Maven modules:
 
-- keycloak-server
-- keycloak-config  
-- docker-compose  
-- extensions
+- server : provides a Keycloak installation for local testing
+- config  : provides the build stage configuration and the setup of Keycloak
+- container : provides the custom docker image
+- docker-compose : provides a sample for launching the custom docker image
+- extensions : provides samples for Keycloak SPI implementations
 
-There are similar proposals available on the internet:
+There are similar projects available on the internet:
 
 - [Keycloak Project Example](https://github.com/thomasdarimont/keycloak-project-example)
 - [Keycloak Docker Quickstart](https://github.com/OpenPj/keycloak-docker-quickstart)
@@ -29,12 +30,11 @@ In order to use this project, you need to install the following components:
 - Java 11
 - Docker 
 - [jq](https://stedolan.github.io/jq/)
-- [IntelliJ plugin EnvFile](https://plugins.jetbrains.com/plugin/7861-envfile)
 
-Module keycloak-server
-----------------------
+Module server
+-------------
 
-This module installs the official Keycloak distribution into the folder referenced by the property `${keycloak.dir}`. The default value is [keycloak-server/target/wildfly](./keycloak-server/target/wildfly) (as defined by `${project.build.directory}/wildfly`).
+This module installs the official Keycloak distribution via a Maven dependency into the folder referenced by the property [${keycloak.dir}]. The default value is `server/target/keycloak`.
 
 The following Maven command does the installation:
 
@@ -42,113 +42,118 @@ The following Maven command does the installation:
 ./mvnw clean initialize
 ```
 
-After a successful execution, Keycloak can be started by the IntelliJ Run Configuration named `Keycloak standalone-ha (node1)`. The [Keycloak Web Administration Console](http://localhost:8080/auth/) can then be loaded. A username and password can be set during the first access. We use admin/admin for all further explanations.
+After a successful execution the newly created Keycloak installation could be started with the factory settings by executing the `kc.sh start-dev` script from the `server/target/keycloak/bin` directory. Because we want to apply a custom configuration to this installation, we wait with starting up Keycloak until we have introduced the `config` module.
 
-Beside the installation of Keycloak, this module is also used for the configuration of the Wildfly server. The configuration is automatically done by running the following Maven command:
+For passing a defined set of environment variables to the above script, we use the wrapper script [run-keycloak.sh] from this module. The current directory must be `server/target/keycloak` when executing the [run-keycloak.sh] script.
 
-```shell
-./mvnw clean package
+Module config
+-------------
+
+This module copies its configuration files during the Maven `generate-resources` phase to the Keycloak installation within the `server` module.
+
+### Configuration
+
+The [configuration of Keycloak] is done into two steps: build stage and runtime stage. A few properties can only be set in the build stage. If they must be changed, the `kc.sh` script must be executed with the `build` command. In development mode (see below) the `build` command is automatically executed during every start.
+
+#### Build stage
+
+In this project all properties of the build stage are configured in the [keycloak.conf] at `config/src/main/resources/keycloak/conf/`.
+
+We set 3 properties:
+
+```properties
+# db is the name of the database vendor: dev-file, dev-mem, mariadb, mssql, mysql, oracle, postgres
+db=postgres
+
+# features is a comma-separated list of features to be enabled
+features=declarative-user-profile
+
+# metrics-enabled is for exposing metrics (/metrics) and health check (/health) endpoints.
+metrics-enabled=true
 ```
 
-The applied configuration changes the used database from H2 to Postgres. Because of that, a running Postgres server is necessary to launch Keycloak after the configuration.
+In the `generate-resources` phase of a Maven build this [keycloak.conf] file is copied to [${keycloak.dir}].
 
-The next section explains the details of the Wildfly configuration.
+Please see [Keycloak/Guides/Server/All configuration/Build options](https://www.keycloak.org/server/all-config?f=build) for the list of all available build stage properties.
 
-### Wildfly configuration
+#### Runtime stage
 
-For some features Keycloak relies on the underlying Wildfly server. Their configuration has to be done within Wildfly. The Wildfly CLI scripting is used for this. The main CLI scripts are [standalone-configuration.cli](keycloak-server/src/main/resources/wildfly/cli/standalone-configuration.cli) and [standalone-ha-configuration.cli](keycloak-custom/src/main/resources/wildfly/cli/standalone-ha-configuration.cli) The following features are configured:
+All properties of the runtime stage are set as environment variables.
 
-- access log
-- logging
-- proxy support in front of Keycloak
-- datasource
-- Postgres JDBC driver
-- truststore for client TLS connections
-- keystore for server TLS connections
-- distributed caching (only for high availability mode)
+In this project we are using three `.env` files (in `./docker-compose/src/main/resources`) for maintaining the environment variables:
 
-These CLI scripts are launched during the build of the `keycloak-server` module. The Launch is defined by the `exec-maven-plugin` in the [pom.xml](./keycloak-custom/pom.xml), as the executions `patch-standalone` and `patch-standalone-ha`.
+##### keycloak.common.env
 
-#### Logging
+##### keycloak.specific.env
 
-The logging.cli also adds two loggers for the categories `org.keycloak` and `com.inventage` (= java packages). Their log level can be configured by the following environment variables:
+##### secrets.env
 
-- KEYCLOAK_LOGLEVEL : default log level is INFO
-- INVENTAGE_KEYCLOAK_LOGLEVEL : default log level is DEBUG
+Sensitive properties can be stored in the `secrets.env` file. This file is not under version control and must be available when running `docker-compose up`.
 
-#### Datasource
+````properties
+# KEYCLOAK_ADMIN is the username of the initial admin user
+KEYCLOAK_ADMIN=admin
 
-The keycloak-datasource.cli uses the following environment variables for configuring the `KeycloakDS` datasource:
-
-- DB_VENDOR : JDBC driver name as defined in datasources:datasources/drivers/driver@name
-- DB_CONNECTION_URL : JDBC connection URL, specific for the used JDBC driver
-- DB_USER : username for the JDBC connection
-- DB_PASSWORD: password for the JDBC connection
-
-When defining the value of these variables, new variables can be used. The `DB_CONNECTION_URL` variable could be defined as:
-
-```
-DB_CONNECTION_URL=jdbc:postgresql://${env.DB_ADDR:postgres}:${env.DB_PORT:5432}/${env.DB_DATABASE:keycloak}${env.JDBC_PARAMS:}
-```
-
-By this way, if only the database name is different for various deployments, the default value `keycloak` can be overridden by the `DB_DATABASE` variable.
-
-#### Postgres JDBC driver
-
-The JDBC drivers within Wildfly are realized by modules. As an example the Postgres JDBC driver is added by the Module [module.xml](keycloak-server/src/main/resources/wildfly/modules/system/layers/keycloak/org/postgresql/main/module.xml)
-
-#### TLS truststore
-
-The keycloak-truststore.cli uses the following environment variables for configuring the truststore:
-
-- KEYCLOAK_SSL_CUSTOM_TRUSTSTORE_HOSTNAME_VERIFICATION_POLICY : default WILDCARD
-- KEYCLOAK_SSL_CUSTOM_TRUSTSTORE_DISABLED : default true, so that Java JSSE configuration is used
-- KEYCLOAK_SSL_CUSTOM_TRUSTSTORE_PATH
-- KEYCLOAK_SSL_CUSTOM_TRUSTSTORE_PASSWORD
-
-For demonstration and development purposes a custom truststore ([truststore-for-development-purpose-only.jks](keycloak-server/src/main/resources/wildfly/standalone/configuration/truststore-for-development-purpose-only.jks)) is provided.
-
-#### TLS keystore
-
-For incoming HTTPS connections the Wildfly server must be configured. It is done in the ssl.cli script.
-
-For demonstration and development purposes a custom keystore ([keystore-for-development-purpose-only.jks](keycloak-server/src/main/resources/wildfly/standalone/configuration/keystore-for-development-purpose-only.jks)) is provided.
-
-See also [Keycloak Server Installation - Setting up HTTPS/SSL](https://www.keycloak.org/docs/latest/server_installation/index.html#_setting_up_ssl).
-
-### Docker image
-
-The following Maven command builds also the docker image:
-
-```shell
-./mvnw clean install
-```
+# KEYCLOAK_ADMIN_PASSWORD is the password of the initial admin user
+KEYCLOAK_ADMIN_PASSWORD=admin
+````
 
 ### Launching Keycloak
 
-- IntelliJ Run Configuration `Keycloak standalone-ha (node1)`
+Keycloak provides the `bin/kc.sh` script for launching it. Keycloak can be launched in two modes: development (`start-dev`) or production (`start`).
 
-Module keycloak-config
-----------------------
+In this project we
 
-This module configures Keycloak via the admin CLI. Please refer to the [keycloak.ch tutorial 1](https://keycloak.ch/keycloak-tutorials/tutorial-1-installing-and-running-keycloak/) for a detailed explanation of the CLI based configuration.
+For launching Keycloak from within this project we use the wrapper script [run-keycloak.sh] from the `server` module. This script is not used for launching Keycloak outside of this project. The main purpose of this script is to provide the set of environment variables to be used. The `--debug` flag is set, so that a debugger can be attached.
 
-The execution is done by the following shell scripts in the shown order:
+The [run-keycloak.sh] script takes one or more arguments. The first argument is the command be executed `start-dev` or `start`. Every further argument must be a filesystem path to a properties file. Every contained property will be set as an environment variable. Later files override earlier files.
 
-```
-keycloak-configuration.sh 
-    -> keycloak-configuration-helpers.sh
-    -> realms.sh
-        -> realm_master.sh
-        -> realm_example1.sh
+```shell
+$ cd ./server/target/keycloak
+$ ../../src/test/resources/run-keycloak.sh start-dev <properties.env>
 ```
 
-To support the usage for different environments (DEV, TEST, PROD), the configuration is heavily based on environment variables.
+#### Development mode
+
+For an easy usage this project provides also the IntelliJ run configuration `run-keycloak.sh start-dev` is for starting Keycloak in `development` mode. 
+
+```shell
+$ cd ./server/target/keycloak
+$ ../../src/test/resources/run-keycloak.sh start-dev \
+  ../../../docker-compose/src/main/resources/keycloak.common.env \
+  ../../../docker-compose/src/main/resources/keycloak.specific.env \
+  ../../../docker-compose/src/main/resources/secrets.env
+```
+
+#### Production mode
+
+For a simple use this project provides also the IntelliJ run configuration `run-keycloak.sh start` is for starting Keycloak in `production` mode.
+
+```shell
+$ cd ./server/target/keycloak
+$ ../../src/test/resources/run-keycloak.sh start \
+  ../../../docker-compose/src/main/resources/keycloak.common.env \
+  ../../../docker-compose/src/main/resources/keycloak.specific.env \
+  ../../../docker-compose/src/main/resources/secrets.env
+```
+
+```shell
+ERROR: You can not 'start' the server in development mode. Please re-build the server first, using 'kc.sh build' for the default production mode.
+```
+
+### Setup
+
+
+
+Module container
+----------------
+
+In the `install` phase of a Maven build a custom docker image is built. The `container` module 
 
 Module docker-compose
 ---------------------
 
-This module contains the docker-compose file for starting the custom Keycloak docker image built by the `keycloak-server` module.
+This module contains the docker-compose file for starting the custom Keycloak docker image built by the `container` module.
 
 Module extensions
 -----------------
@@ -167,3 +172,14 @@ Tooling
 -------
 
 The [Takari Maven Wrapper](https://github.com/takari/maven-wrapper) is used for the Maven setup for this project.
+
+
+
+[Keycloak]: https://keycloak.org
+[Keycloak.X]: https://www.keycloak.org/migration/migrating-to-quarkus
+[Admin CLI]: https://www.keycloak.org/docs/latest/server_admin/index.html#admin-cli
+[configuration of Keycloak]: https://www.keycloak.org/server/configuration
+[keycloak-config-cli]: https://github.com/adorsys/keycloak-config-cli
+[keycloak.conf]: ./config/src/main/resources/keycloak/conf/keycloak.conf
+[${keycloak.dir}]: ./server/target/keycloak
+[run-keycloak.sh]: ./server/src/test/resources/run-keycloak.sh

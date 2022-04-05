@@ -18,15 +18,13 @@
         <module>extension-no-op-protocol-mapper</module>
     </modules>
 
-    <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-    </properties>
-
     <dependencies>
+        <!-- the server module must be built for copying the jars into -->
         <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>keycloak-server</artifactId>
+            <groupId>com.inventage.keycloak.custom</groupId>
+            <artifactId>server</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
         </dependency>
     </dependencies>
 
@@ -46,7 +44,7 @@
                             </goals>
                             <configuration>
                                 <target>
-                                    <copy file="${build.directory}/${build.finalName}.${project.packaging}" todir="${keycloak.deployment.dir}"></copy>
+                                    <copy file="${project.build.directory}/${build.finalName}.${project.packaging}" todir="${keycloak.providers.dir}"></copy>
                                 </target>
                             </configuration>
                         </execution>
