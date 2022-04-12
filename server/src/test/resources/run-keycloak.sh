@@ -13,6 +13,7 @@ set -euo pipefail
 
 echo "$@"
 
+# first argument is the command for the kc.sh script
 COMMAND=$1
 shift
 
@@ -29,4 +30,6 @@ do
     fi
 done
 
+# set the working directory as in the docker image
+cd ./server/target/keycloak/
 bash ./bin/kc.sh --debug $COMMAND
