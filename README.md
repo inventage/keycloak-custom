@@ -168,7 +168,7 @@ ERROR: You can not 'start' the server in development mode. Please re-build the s
 Module container
 ----------------
 
-In the `install` phase of a Maven build a custom docker image is built. The `container` module 
+In the `install` phase of a Maven build a custom container image is built. The `container` module uses a [Dockerfile](./container/src/main/resources/Dockerfile) for specifying the newly created image.
 
 Module docker-compose
 ---------------------
@@ -178,7 +178,7 @@ This module contains the docker-compose file for starting the custom Keycloak do
 Module extensions
 -----------------
 
-The `extensions` module is configured, so that every contained extension module can easily deploy its artifact to the keycloak-server module.
+The `extensions` module is configured, so that every contained extension module can easily deploy its artifact to the `server` module.
 
 ### Extension NoOperationAuthenticator
 
@@ -191,7 +191,7 @@ This extension is an example of a custom Keycloak Protocol Mapper implementation
 Module themes
 -------------
 
-
+The `themes` module contains the custom themes, which should be available in the custom Keycloak.
 
 Tooling
 -------
