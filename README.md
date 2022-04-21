@@ -100,6 +100,18 @@ These 3 files are also used when Keycloak is started with the launch procedures 
 
 ##### secrets.env
 
+Die Datei `secrets.env` dient der Einträge von Properties mit sensitiven Werten. Sie ist meistens spezifisch für eine Umgebung und liegt auch nur dort physisch vor. Der Grund, dass diese Datei trotzdem im Projekt (ohne Versionsverwaltung) beinhaltet ist, ist dass sie in der docker-compose.yml Datei referenziert ist und dadurch ohne Veränderung verwendet werden kann.
+
+So können die 2 Properties für den initialen Admin Benutzer im `master` Realm von Keycloak hier definiert werden:
+
+```
+# KEYCLOAK_ADMIN is the username of the initial admin user
+KEYCLOAK_ADMIN=admin
+
+# KEYCLOAK_ADMIN_PASSWORD is the password of the initial admin user
+KEYCLOAK_ADMIN_PASSWORD=admin
+```
+
 Sensitive properties can be stored in the `secrets.env` file. This file is not under version control and must be available when running `docker-compose up`.
 
 ````properties
