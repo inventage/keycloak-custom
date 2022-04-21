@@ -133,7 +133,7 @@ $ ../../src/test/resources/run-keycloak.sh start-dev <properties.env>
 
 ##### Development mode
 
-For an easy usage this project provides also the IntelliJ run configuration `run-keycloak.sh start-dev` is for starting Keycloak in `development` mode. 
+For an easy usage this project provides also the IntelliJ run configuration `run-keycloak.sh start-dev` for starting Keycloak in `development` mode. 
 
 ```shell
 $ cd ./server/target/keycloak
@@ -145,7 +145,7 @@ $ ../../src/test/resources/run-keycloak.sh start-dev \
 
 ##### Production mode
 
-For a simple use this project provides also the IntelliJ run configuration `run-keycloak.sh start` is for starting Keycloak in `production` mode.
+For a simple use this project provides also the IntelliJ run configuration `run-keycloak.sh start` for starting Keycloak in `production` mode.
 
 ```shell
 $ cd ./server/target/keycloak
