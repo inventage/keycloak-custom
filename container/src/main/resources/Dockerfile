@@ -6,7 +6,7 @@ COPY ./keycloak/conf/keycloak.conf /opt/keycloak/conf/
 COPY ./keycloak/providers/*.jar /opt/keycloak/providers/
 RUN /opt/keycloak/bin/kc.sh build
 
-FROM quay.io/keycloak/keycloak:latest
+FROM quay.io/keycloak/keycloak:${keycloak.version}
 COPY --from=builder /opt/keycloak/lib/quarkus/ /opt/keycloak/lib/quarkus/
 COPY ./keycloak/ /opt/keycloak/
 COPY ./keycloak/providers/*.jar /opt/keycloak/providers/
