@@ -1,0 +1,61 @@
+#kc-header-wrapper {
+    color: white;
+    position: relative;
+}
+
+.kc-logo-text {
+    display: none;
+}
+
+#kc-header-wrapper::after {
+    content: ' ';
+    position: absolute;
+    left: 0;
+    width: 50%;
+    max-width: 145px;
+    margin-left: 0;
+    height: 29px;
+    background: url(../img/logo_inventage.png) center center no-repeat;
+    background-size: contain;
+}
+
+a#kc-current-locale-link {
+    display: flex;
+    padding: 0;
+}
+
+#kc-locale ul {
+    padding: 0;
+}
+
+#kc-locale ul li a:hover {
+    /*background-color: red;*/
+}
+
+a#kc-current-locale-link::after {
+    content: " ";
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    /* https://git.blivesta.com/flexicon/#modal-chevron-bottom */
+    background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDMyIDMyIj48cGF0aCBkPSJNMTYuMDAzIDE4LjYyNmw3LjA4MS03LjA4MUwyNSAxMy40NmwtOC45OTcgOC45OTgtOS4wMDMtOSAxLjkxNy0xLjkxNnoiLz48L3N2Zz4=');
+    background-size: contain;
+}
+
+#kc-locale {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: auto;
+}
+
+@media (min-width: 768px) {
+    #kc-header-wrapper::after {
+        left: 50%;
+        margin-left: -50%;
+        top: 62px;
+        height: 58px;
+        width: 100%;
+        max-width: none;
+    }
+}

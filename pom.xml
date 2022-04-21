@@ -13,6 +13,7 @@
         <module>server</module>
         <module>config</module>
         <module>extensions</module>
+        <module>themes</module>
         <module>container</module>
         <module>docker-compose</module>
     </modules>
@@ -26,6 +27,7 @@
         <keycloak.dir>./target/keycloak</keycloak.dir>
         <keycloak.target.dir>../server/${keycloak.dir}/</keycloak.target.dir> <!-- used in config & extension modules -->
         <keycloak.providers.dir>../../server/${keycloak.dir}/providers</keycloak.providers.dir> <!-- used in extension modules -->
+        <keycloak.themes.dir>../server/${keycloak.dir}/themes</keycloak.themes.dir> <!-- used in themes module -->
         <docker.pull.registry></docker.pull.registry> <!-- default is hub.docker.com, must end with "/" if specified -->
         <docker.push.registry></docker.push.registry> <!-- must be defined for goal deploy, must end with "/" if specified -->
         <docker.image.name>OVERWRITTEN</docker.image.name>

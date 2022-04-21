@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css?family=Lato:700,900|Open+Sans:400,700&display=swap');
+
+body .pf-c-page {
+    --pf-global--FontFamily--sans-serif: 'Open Sans', sans-serif;
+    --pf-global--FontFamily--heading--sans-serif: 'Open Sans', sans-serif;
+    --pf-c-page--BackgroundColor: var(--portal-navigation-color-header-background, #eee);
+}
+
+body .pf-c-button {
+    --pf-c-button--m-link--Color: #004996;
+}
+
+body .pf-c-content {
+    --pf-c-content--a--Color:  #004996;
+}
+
+body .pf-c-page__main-section {
+    --pf-c-page__main-section--BackgroundColor: #fff;
+}
+
+body .pf-c-button.pf-m-primary {
+    --pf-c-button--m-primary--Color: #fff;
+    --pf-c-button--m-primary--BackgroundColor: #004996;
+}
+
+.pf-c-page__header-brand-toggle .pf-c-button {
+    --pf-c-button--m-plain--Color: var(--hamburger-layer-color, #000);
+    --pf-c-button--m-plain--focus--Color: var(--hamburger-layer-color, #000);
+    --pf-c-button--m-plain--hover--Color: var(--hamburger-layer-color, #000);
+}
+
+body .pf-c-page__header-tools .pf-m-primary {
+    --pf-c-button--m-primary--Color: #004996;
+    --pf-c-button--m-primary--BackgroundColor:  #fff;
+    --pf-c-button--m-primary--hover--BackgroundColor: #fff;
+}
+
+body .pf-c-page__header {
+    --pf-global--Color--100: #000;
+}
+
+body .pf-c-nav__link {
+    --pf-c-nav__list-link--m-current--after--BackgroundColor: #004996;
+    --pf-c-nav__list-link--m-current--Color: #004996;
+    --pf-c-nav__simple-list-link--Color: #004996;
+}
+
+.pf-c-page__header-brand-link .pf-c-brand {
+    display: block;
+}

@@ -7,6 +7,8 @@
     <file url="file://$PROJECT_DIR$/container/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/docker-compose/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/docker-compose/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/extension-email-authenticator/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/extensions/extension-email-authenticator/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/extensions/extension-no-op-authenticator/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/extensions/extension-no-op-authenticator/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/extensions/extension-no-op-protocol-mapper/src/main/java" charset="UTF-8" />
@@ -15,7 +17,10 @@
     <file url="file://$PROJECT_DIR$/extensions/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/keycloak-server/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/server/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/server/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/themes/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/themes/src/main/resources" charset="UTF-8" />
   </component>
 </project>

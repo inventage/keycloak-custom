@@ -13,6 +13,10 @@
     <artifactId>extensions</artifactId>
     <packaging>pom</packaging>
 
+    <properties>
+        <file.to.deploy>${project.build.directory}/${build.finalName}.${project.packaging}</file.to.deploy>
+    </properties>
+
     <modules>
         <module>extension-no-op-authenticator</module>
         <module>extension-no-op-protocol-mapper</module>
@@ -44,7 +48,7 @@
                             </goals>
                             <configuration>
                                 <target>
-                                    <copy file="${project.build.directory}/${build.finalName}.${project.packaging}" todir="${keycloak.providers.dir}"></copy>
+                                    <copy file="${file.to.deploy}" todir="${keycloak.providers.dir}"></copy>
                                 </target>
                             </configuration>
                         </execution>

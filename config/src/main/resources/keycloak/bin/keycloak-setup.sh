@@ -41,8 +41,8 @@ runKeycloakConfigCli() {
       --keycloak.user=${KEYCLOAK_ADMIN} \
       --keycloak.password=${KEYCLOAK_ADMIN_PASSWORD} \
       --keycloak.availability-check.enabled=true \
-      --keycloak.availability-check.timeout=3s \
-      --import.var-substitution=true \
+      --keycloak.availability-check.timeout=300s \
+      --import.var-substitution.enabled=true \
       --import.managed.client=no-delete \
       --import.managed.client-scope=no-delete \
       --import.managed.client-scope-mapping=no-delete \

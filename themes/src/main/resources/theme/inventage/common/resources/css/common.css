@@ -1,0 +1,42 @@
+/*
+    @see https://developers.google.com/web/updates/2018/01/devtools#overrides
+*/
+
+@import url('https://fonts.googleapis.com/css?family=Lato:700,900|Open+Sans:400,700&display=swap');
+
+body {
+    font-family: 'Open Sans', sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: 'Lato', sans-serif;
+}
+
+h1 {
+    font-weight: 700;
+}
+
+.login-pf body {
+    background: white;
+}
+
+.form-control {
+    border-radius: 1px;
+    box-shadow: none;
+    border-color: #cdcdcd;
+}
+
+.form-control:hover {
+    border-color: #76a8d6;
+}
+
+.btn-primary {
+    background-image: none;
+    background-color: #004996;
+    box-shadow: none;
+}

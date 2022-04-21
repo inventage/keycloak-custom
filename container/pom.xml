@@ -18,6 +18,7 @@
     </properties>
 
     <dependencies>
+        <!-- dependencies to be included in the container image -->
         <dependency>
             <groupId>com.inventage.keycloak.custom</groupId>
             <artifactId>config</artifactId>
@@ -65,7 +66,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- substitute variables -->
+            <!-- for variable substitution -->
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>

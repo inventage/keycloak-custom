@@ -29,4 +29,6 @@ do
     fi
 done
 
+# set the working directory as in the docker image
+cd ./server/target/keycloak/
 bash ./bin/$COMMAND

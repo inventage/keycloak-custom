@@ -4,10 +4,13 @@ Keycloak-Custom
 This project creates a custom [Keycloak] server based on [Keycloak.X]. The following features are supported:
 
 - installation via the [Keycloak distribution at Maven Central](https://mvnrepository.com/artifact/org.keycloak/keycloak-quarkus-dist)
-- configuration via [Admin CLI] of Keycloak
-- configuration via [keycloak-config-cli] of Adorsys
-- development of custom extensions
+- configuration for build and runtime stage
+- setup via [Admin CLI] of Keycloak
+- setup via [keycloak-config-cli] of Adorsys
+- development of custom SPIs
+- development of custom themes
 - package as Docker image
+- launch from script and docker-compose (soon Kubernetes)
 
 This project is based on Maven and contains the following top-level Maven modules:
 
@@ -16,6 +19,7 @@ This project is based on Maven and contains the following top-level Maven module
 - container : provides the custom docker image
 - docker-compose : provides a sample for launching the custom docker image
 - extensions : provides samples for Keycloak SPI implementations
+- themes : provides samples for custom themes
 
 ![Maven modules](.docs/keycloak-custom_modules.png)
 
@@ -84,6 +88,12 @@ All properties of the runtime stage are set as environment variables.
 
 In this project we are using three `.env` files (in `./docker-compose/src/main/resources`) for maintaining the environment variables:
 
+- keycloak.common.env
+- keycloak.specific.env
+- secrets.env
+
+These 3 files are also used when Keycloak is started with the launch procedures described in the next section.
+
 ##### keycloak.common.env
 
 ##### keycloak.specific.env
@@ -104,9 +114,15 @@ KEYCLOAK_ADMIN_PASSWORD=admin
 
 Keycloak provides the `bin/kc.sh` script for launching it. Keycloak can be launched in two modes: development (`start-dev`) or production (`start`).
 
-In this project we
+In this project we support the following types of launching Keycloak:
 
-For launching Keycloak from within this project we use the wrapper script [run-keycloak.sh] from the `server` module. This script is not used for launching Keycloak outside of this project. The main purpose of this script is to provide the set of environment variables to be used. The `--debug` flag is set, so that a debugger can be attached.
+- via script
+- via docker-compose
+- via Kubernetes (soon)
+
+#### via script
+
+For launching Keycloak from within this project we use the wrapper script [run-keycloak.sh] from the `server` module. This script is not used for launching Keycloak outside this project. The main purpose of this script is to provide the set of environment variables to be used. The `--debug` flag is set, so that a debugger can be attached.
 
 The [run-keycloak.sh] script takes one or more arguments. The first argument is the command be executed `start-dev` or `start`. Every further argument must be a filesystem path to a properties file. Every contained property will be set as an environment variable. Later files override earlier files.
 
@@ -115,7 +131,7 @@ $ cd ./server/target/keycloak
 $ ../../src/test/resources/run-keycloak.sh start-dev <properties.env>
 ```
 
-#### Development mode
+##### Development mode
 
 For an easy usage this project provides also the IntelliJ run configuration `run-keycloak.sh start-dev` is for starting Keycloak in `development` mode. 
 
@@ -127,7 +143,7 @@ $ ../../src/test/resources/run-keycloak.sh start-dev \
   ../../../docker-compose/src/main/resources/secrets.env
 ```
 
-#### Production mode
+##### Production mode
 
 For a simple use this project provides also the IntelliJ run configuration `run-keycloak.sh start` is for starting Keycloak in `production` mode.
 
@@ -142,6 +158,8 @@ $ ../../src/test/resources/run-keycloak.sh start \
 ```shell
 ERROR: You can not 'start' the server in development mode. Please re-build the server first, using 'kc.sh build' for the default production mode.
 ```
+
+#### via docker-compose
 
 ### Setup
 
@@ -169,6 +187,11 @@ This extension is an example of a custom Keycloak Authenticator implementation.
 ### Extension NoOperationProtocolMapper
 
 This extension is an example of a custom Keycloak Protocol Mapper implementation.
+
+Module themes
+-------------
+
+
 
 Tooling
 -------
