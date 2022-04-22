@@ -9,7 +9,7 @@ This project creates a custom [Keycloak] server based on [Keycloak.X]. The follo
 - setup via [keycloak-config-cli] of Adorsys
 - development of custom SPIs
 - development of custom themes
-- package as Docker image
+- package as container image
 - launch from script and docker-compose (soon Kubernetes)
 
 This project is based on Maven and contains the following top-level Maven modules:
@@ -81,7 +81,7 @@ metrics-enabled=true
 health-enabled=true
 ```
 
-In the `generate-resources` phase of a Maven build this [keycloak.conf] file is copied to [${keycloak.dir}].
+In the `generate-resources` phase of a Maven build this [keycloak.conf] file is copied to `${keycloak.dir}` (= `./server/target/keycloak`).
 
 Please see [Keycloak/Guides/Server/All configuration/Build options](https://www.keycloak.org/server/all-config?f=build) for the list of all available build stage properties.
 
@@ -258,7 +258,6 @@ The [Takari Maven Wrapper](https://github.com/takari/maven-wrapper) is used for 
 [configuration of Keycloak]: https://www.keycloak.org/server/configuration
 [keycloak-config-cli]: https://github.com/adorsys/keycloak-config-cli
 [keycloak.conf]: ./config/src/main/resources/keycloak/conf/keycloak.conf
-[${keycloak.dir}]: ./server/target/keycloak
 [run-keycloak.sh]: ./server/src/test/resources/run-keycloak.sh
 [docker-compose.yml]: ./docker-compose/src/main/resources/docker-compose.yml
 [keycloak.common.env]: ./docker-compose/src/main/resources/keycloak.common.env
