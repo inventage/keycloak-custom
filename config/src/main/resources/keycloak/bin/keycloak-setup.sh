@@ -35,7 +35,7 @@ runKeycloakConfigCli() {
   BASEDIR=$(dirname "$0")
 
   # run keycloak-config-cli
-  java -jar $BASEDIR/client/keycloak-config-cli-${keycloak.version}.jar \
+  java -jar $BASEDIR/client/keycloak-config-cli-${keycloak-config-cli.version}.jar \
       --keycloak.url=http://localhost:8080/ \
       --keycloak.ssl-verify=true \
       --keycloak.user=${KEYCLOAK_ADMIN} \

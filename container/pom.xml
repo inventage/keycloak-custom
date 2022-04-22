@@ -29,6 +29,11 @@
             <artifactId>extension-no-op-authenticator</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.inventage.keycloak.custom</groupId>
+            <artifactId>themes</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -37,6 +42,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
+                <!-- https://maven.apache.org/plugins/maven-dependency-plugin/ -->
                 <executions>
                     <!-- for extracting keycloak zip archive -->
                     <execution>
@@ -53,14 +59,13 @@
                     </execution>
                     <!-- for copying extension-no-op-authenticator -->
                     <execution>
-                        <id>copy-extension-no-op-authenticator</id>
+                        <id>copy-providers</id>
                         <phase>package</phase>
                         <goals>
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-                            <includeGroupIds>com.inventage.keycloak.custom</includeGroupIds>
-                            <includeArtifactIds>extension-no-op-authenticator</includeArtifactIds>
+                            <includeArtifactIds>extension-no-op-authenticator,themes</includeArtifactIds>
                             <outputDirectory>${project.build.outputDirectory}/keycloak/providers</outputDirectory>
                         </configuration>
                     </execution>

@@ -35,6 +35,24 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- for creating the common.env and the secrets.env file needed in docker-compose.yml -->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <touch file="src/main/resources/keycloak.specific.env"/>
+                                <touch file="src/main/resources/secrets.env"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

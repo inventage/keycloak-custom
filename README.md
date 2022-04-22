@@ -50,7 +50,7 @@ The following Maven command does the installation:
 
 After a successful execution the newly created Keycloak installation could be started with the factory settings by executing the `kc.sh start-dev` script from the `server/target/keycloak/bin` directory. Because we want to apply a custom configuration to this installation, we wait with starting up Keycloak until we have introduced the `config` module.
 
-For passing a defined set of environment variables to the above script, we use the wrapper script [run-keycloak.sh] from this module. The current directory must be `server/target/keycloak` when executing the [run-keycloak.sh] script.
+For passing a defined set of environment variables to the above script, we use the wrapper script [run-keycloak.sh] from this module.
 
 Module config
 -------------
@@ -59,13 +59,13 @@ This module copies its configuration files during the Maven `generate-resources`
 
 ### Configuration
 
-The [configuration of Keycloak] is done into two steps: build stage and runtime stage. A few properties can only be set in the build stage. If they must be changed, the `kc.sh` script must be executed with the `build` command. In development mode (see below) the `build` command is automatically executed during every start.
+Since the migration to a Quarkus runtime the [configuration of Keycloak] is done by two steps: build stage and runtime stage. A few properties can only be set in the build stage. If they must be changed, the `kc.sh` script must be executed with the `build` command. In development mode (see below) the `build` command is automatically executed during every start.
 
 #### Build stage
 
 In this project all properties of the build stage are configured in the [keycloak.conf] at `config/src/main/resources/keycloak/conf/`.
 
-We set 3 properties:
+We set 4 build stage properties:
 
 ```properties
 # db is the name of the database vendor: dev-file, dev-mem, mariadb, mssql, mysql, oracle, postgres
@@ -74,8 +74,11 @@ db=postgres
 # features is a comma-separated list of features to be enabled
 features=declarative-user-profile
 
-# metrics-enabled is for exposing metrics (/metrics) and health check (/health) endpoints.
+# metrics-enabled is for exposing metrics (/metrics) endpoints
 metrics-enabled=true
+
+# health-enabled is for exposing health check (/health) endpoints
+health-enabled=true
 ```
 
 In the `generate-resources` phase of a Maven build this [keycloak.conf] file is copied to [${keycloak.dir}].
@@ -88,39 +91,42 @@ All properties of the runtime stage are set as environment variables.
 
 In this project we are using three `.env` files (in `./docker-compose/src/main/resources`) for maintaining the environment variables:
 
-- keycloak.common.env
-- keycloak.specific.env
-- secrets.env
+- [keycloak.common.env]
+- [keycloak.specific.env]
+- [secrets.env]
 
 These 3 files are also used when Keycloak is started with the launch procedures described in the next section.
 
 ##### keycloak.common.env
 
+Default values are defined here.
+
 ##### keycloak.specific.env
+
+Environment specific properties should be set in the [keycloak.specific.env] file. This file is not under version control and should be made available in every specific environment. It is also a good place for setting local values (e.g. for debugging) of some properties. 
+
+The following two definitions are used for accessing the `keycloak-custom` schema of a Postgres instance from Keycloak running within a container and to set the global log level to `info` and the log level for all `com.inventage` Loggers to `debug`:
+
+```properties
+# connecting Keycloak from running inside a container to a Postgres server running on the docker host (MacOS)
+KC_DB_URL=jdbc:postgresql://host.docker.internal:5432/keycloak-custom
+
+KC_LOG_LEVEL=info,com.inventage:debug
+```
 
 ##### secrets.env
 
-Die Datei `secrets.env` dient der Einträge von Properties mit sensitiven Werten. Sie ist meistens spezifisch für eine Umgebung und liegt auch nur dort physisch vor. Der Grund, dass diese Datei trotzdem im Projekt (ohne Versionsverwaltung) beinhaltet ist, ist dass sie in der docker-compose.yml Datei referenziert ist und dadurch ohne Veränderung verwendet werden kann.
+Sensitive properties can be stored in the `secrets.env` file. This file is not under version control and must be available when running `docker-compose up` with the provided [docker-compose.yml](./docker-compose/src/main/resources/docker-compose.yml) file.
 
-So können die 2 Properties für den initialen Admin Benutzer im `master` Realm von Keycloak hier definiert werden:
+The two properties for creating the initial admin user for the `master` realm a good candidates for this file:
 
-```
+```properties
 # KEYCLOAK_ADMIN is the username of the initial admin user
 KEYCLOAK_ADMIN=admin
 
 # KEYCLOAK_ADMIN_PASSWORD is the password of the initial admin user
 KEYCLOAK_ADMIN_PASSWORD=admin
 ```
-
-Sensitive properties can be stored in the `secrets.env` file. This file is not under version control and must be available when running `docker-compose up`.
-
-````properties
-# KEYCLOAK_ADMIN is the username of the initial admin user
-KEYCLOAK_ADMIN=admin
-
-# KEYCLOAK_ADMIN_PASSWORD is the password of the initial admin user
-KEYCLOAK_ADMIN_PASSWORD=admin
-````
 
 ### Launching Keycloak
 
@@ -132,46 +138,67 @@ In this project we support the following types of launching Keycloak:
 - via docker-compose
 - via Kubernetes (soon)
 
+Because we have configured the database in the above section with `db=postgres` we need an up & running instance of Postgres before launching Keycloak. The easiest way for that is by configuring the `KC_DB_URL` property (e.g. in [keycloak.specific.env]):
+
+```properties
+KC_DB_URL=jdbc:postgresql://host.docker.internal:15432/postgres
+```
+
+and then running the provided [docker-compose.yml](docker-compose/src/test/resources/postgres/docker-compose.yml) in `docker-compose/src/test/resources/postgres/`. 
+
+If you haven't executed a full build of this project, now is a good moment to execute `mvn clean install`.
+
 #### via script
 
-For launching Keycloak from within this project we use the wrapper script [run-keycloak.sh] from the `server` module. This script is not used for launching Keycloak outside this project. The main purpose of this script is to provide the set of environment variables to be used. The `--debug` flag is set, so that a debugger can be attached.
+For launching Keycloak from within this project we use the wrapper script [run-keycloak.sh] from the `server` module. This script is not used for launching Keycloak outside this project. The main purpose of this script is to set the necessary environment variables. The `--debug` flag is set, so that a debugger can be attached.
 
 The [run-keycloak.sh] script takes one or more arguments. The first argument is the command be executed `start-dev` or `start`. Every further argument must be a filesystem path to a properties file. Every contained property will be set as an environment variable. Later files override earlier files.
 
 ```shell
-$ cd ./server/target/keycloak
-$ ../../src/test/resources/run-keycloak.sh start-dev <properties.env>
+$ ./server/src/test/resources/run-keycloak.sh start-dev <properties.env>
 ```
 
 ##### Development mode
 
-For an easy usage this project provides also the IntelliJ run configuration `run-keycloak.sh start-dev` for starting Keycloak in `development` mode. 
+To start Keycloak in development mode execute the following command in a shell from the project root directory:
 
 ```shell
-$ cd ./server/target/keycloak
-$ ../../src/test/resources/run-keycloak.sh start-dev \
-  ../../../docker-compose/src/main/resources/keycloak.common.env \
-  ../../../docker-compose/src/main/resources/keycloak.specific.env \
-  ../../../docker-compose/src/main/resources/secrets.env
+$ ./server/src/test/resources/run-keycloak.sh start-dev \
+  docker-compose/src/main/resources/keycloak.common.env \
+  docker-compose/src/main/resources/keycloak.specific.env \
+  docker-compose/src/main/resources/secrets.env
 ```
+
+For an easy usage this project provides also the IntelliJ run configuration `run-keycloak.sh start-dev` for starting Keycloak in `development` mode.
 
 ##### Production mode
 
-For a simple use this project provides also the IntelliJ run configuration `run-keycloak.sh start` for starting Keycloak in `production` mode.
+To start Keycloak in production mode execute the following command in a shell from the project root directory:
 
 ```shell
-$ cd ./server/target/keycloak
-$ ../../src/test/resources/run-keycloak.sh start \
-  ../../../docker-compose/src/main/resources/keycloak.common.env \
-  ../../../docker-compose/src/main/resources/keycloak.specific.env \
-  ../../../docker-compose/src/main/resources/secrets.env
+$ ./server/src/test/resources/run-keycloak.sh start \
+  docker-compose/src/main/resources/keycloak.common.env \
+  docker-compose/src/main/resources/keycloak.specific.env \
+  docker-compose/src/main/resources/secrets.env
 ```
+
+If you try to launch Keycloak in production mode, but you have not executed the `kc.sh build`, then you will get the following error message:
 
 ```shell
 ERROR: You can not 'start' the server in development mode. Please re-build the server first, using 'kc.sh build' for the default production mode.
 ```
 
+For a simple use this project provides also IntelliJ run configurations `kc.sh build` and `run-keycloak.sh start` for starting Keycloak in `production` mode.
+
 #### via docker-compose
+
+The custom Keycloak instance from this project can also be started easily by docker-compose. The only prerequisite is that you have build this project before with `mvn clean install`, so that the container image has been created.
+
+```shell
+keycloak-custom/docker-compose/target/keycloak
+```
+
+For more details pleased see below in the module `docker-compose` section.
 
 ### Setup
 
@@ -180,7 +207,7 @@ ERROR: You can not 'start' the server in development mode. Please re-build the s
 Module container
 ----------------
 
-In the `install` phase of a Maven build a custom container image is built. The `container` module uses a [Dockerfile](./container/src/main/resources/Dockerfile) for specifying the newly created image.
+In the `install` phase of the Maven build a custom container image is built. The `container` module uses a [Dockerfile](./container/src/main/resources/Dockerfile) for specifying the newly created image.
 
 Module docker-compose
 ---------------------
@@ -190,7 +217,20 @@ This module contains the docker-compose file for starting the custom Keycloak do
 Module extensions
 -----------------
 
-The `extensions` module is configured, so that every contained extension module can easily deploy its artifact to the `server` module.
+The `extensions` module is configured, so that every contained extension module can easily deploy its artifact to the `server` module. The following snipped must be included to the pom.xml of the new extension:
+
+```xml
+    <build>
+        <plugins>
+            <!-- deploy extension -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <!-- config is defined in parent pom -->
+            </plugin>
+        </plugins>
+    </build>
+```
 
 ### Extension NoOperationAuthenticator
 
@@ -220,3 +260,7 @@ The [Takari Maven Wrapper](https://github.com/takari/maven-wrapper) is used for 
 [keycloak.conf]: ./config/src/main/resources/keycloak/conf/keycloak.conf
 [${keycloak.dir}]: ./server/target/keycloak
 [run-keycloak.sh]: ./server/src/test/resources/run-keycloak.sh
+[docker-compose.yml]: ./docker-compose/src/main/resources/docker-compose.yml
+[keycloak.common.env]: ./docker-compose/src/main/resources/keycloak.common.env
+[keycloak.specific.env]: ./docker-compose/src/main/resources/keycloak.specific.env
+[secrets.env]: ./docker-compose/src/main/resources/secrets.env
