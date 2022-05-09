@@ -10,7 +10,7 @@ This project creates a custom [Keycloak] server based on [Keycloak.X]. The follo
 - development of custom SPIs
 - development of custom themes
 - package as container image
-- launch from script and docker-compose (soon Kubernetes)
+- launch from within the IDE, from script and docker-compose (soon Kubernetes)
 
 This project is based on Maven and contains the following top-level Maven modules:
 
@@ -89,6 +89,8 @@ Please see [Keycloak/Guides/Server/All configuration/Build options](https://www.
 
 All properties of the runtime stage are set as environment variables.
 
+##### Environment variable files
+
 In this project we are using three `.env` files (in `./docker-compose/src/main/resources`) for maintaining the environment variables:
 
 - [keycloak.common.env]
@@ -97,11 +99,11 @@ In this project we are using three `.env` files (in `./docker-compose/src/main/r
 
 These 3 files are also used when Keycloak is started with the launch procedures described in the next section.
 
-##### keycloak.common.env
+###### keycloak.common.env
 
 Default values are defined here.
 
-##### keycloak.specific.env
+###### keycloak.specific.env
 
 Environment specific properties should be set in the [keycloak.specific.env] file. This file is not under version control and should be made available in every specific environment. It is also a good place for setting local values (e.g. for debugging) of some properties. 
 
@@ -114,7 +116,7 @@ KC_DB_URL=jdbc:postgresql://host.docker.internal:5432/keycloak-custom
 KC_LOG_LEVEL=info,com.inventage:debug
 ```
 
-##### secrets.env
+###### secrets.env
 
 Sensitive properties can be stored in the `secrets.env` file. This file is not under version control and must be available when running `docker-compose up` with the provided [docker-compose.yml](./docker-compose/src/main/resources/docker-compose.yml) file.
 
@@ -128,12 +130,19 @@ KEYCLOAK_ADMIN=admin
 KEYCLOAK_ADMIN_PASSWORD=admin
 ```
 
+##### Production mode
+
+For starting Keycloak in production mode, a few properties must be set. Please see also the official documentation [Configuring Keycloak for production](https://www.keycloak.org/server/configuration-production).
+
+##### HTTPS
+
 ### Launching Keycloak
 
 Keycloak provides the `bin/kc.sh` script for launching it. Keycloak can be launched in two modes: development (`start-dev`) or production (`start`).
 
 In this project we support the following types of launching Keycloak:
 
+- via IntelliJ run configuration
 - via script
 - via docker-compose
 - via Kubernetes (soon)
@@ -147,6 +156,10 @@ KC_DB_URL=jdbc:postgresql://host.docker.internal:15432/postgres
 and then running the provided [docker-compose.yml](docker-compose/src/test/resources/postgres/docker-compose.yml) in `docker-compose/src/test/resources/postgres/`. 
 
 If you haven't executed a full build of this project, now is a good moment to execute `mvn clean install`.
+
+#### via IntelliJ run configuration
+
+Launching Keycloak directly from the IDE allows the greatest support for development purposes. Because Keycloak is launched as a Java process, it can be easily started in debug mode. Before running the `keycloak` run configuration, please run the `kc.sh build` run configuration.
 
 #### via script
 
@@ -202,7 +215,7 @@ For more details pleased see below in the module `docker-compose` section.
 
 ### Setup
 
-
+We will create and configure a new realm `example1`.
 
 Module container
 ----------------

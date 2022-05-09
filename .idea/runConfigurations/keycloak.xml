@@ -1,0 +1,30 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="keycloak" type="Application" factoryName="Application">
+    <option name="ALTERNATIVE_JRE_PATH" value="11" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <classpathModifications>
+      <entry path="$PROJECT_DIR$/server/target/keycloak/lib/quarkus-run.jar" />
+    </classpathModifications>
+    <option name="MAIN_CLASS_NAME" value="io.quarkus.bootstrap.runner.QuarkusEntryPoint" />
+    <module name="server" />
+    <option name="PROGRAM_PARAMETERS" value="start-dev" />
+    <option name="VM_PARAMETERS" value="-Dkc.home.dir=$ProjectFileDir$/server/target/keycloak/ -Djboss.server.config.dir=$ProjectFileDir$/server/target/keycloak/conf/" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/server/target/keycloak" />
+    <extension name="net.ashald.envfile">
+      <option name="IS_ENABLED" value="true" />
+      <option name="IS_SUBST" value="false" />
+      <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+      <option name="IS_IGNORE_MISSING_FILES" value="false" />
+      <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+      <ENTRIES>
+        <ENTRY IS_ENABLED="true" PARSER="runconfig" />
+        <ENTRY IS_ENABLED="true" PARSER="env" PATH="docker-compose/src/main/resources/keycloak.common.env" />
+        <ENTRY IS_ENABLED="true" PARSER="env" PATH="docker-compose/src/main/resources/keycloak.specific.env" />
+        <ENTRY IS_ENABLED="true" PARSER="env" PATH="docker-compose/src/main/resources/secrets.env" />
+      </ENTRIES>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

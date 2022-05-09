@@ -23,9 +23,8 @@
         </dependency>
         <!-- for debugging within the IDE -->
         <dependency>
-            <groupId>org.keycloak</groupId>
-            <artifactId>keycloak-quarkus-server</artifactId>
-            <version>${keycloak.version}</version>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-bootstrap-runner</artifactId>
         </dependency>
     </dependencies>
 

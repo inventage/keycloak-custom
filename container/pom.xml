@@ -12,11 +12,6 @@
 
     <artifactId>container</artifactId>
 
-    <properties>
-        <docker.image.name>${project.groupId}.${project.artifactId}</docker.image.name>
-        <docker.context>${project.build.outputDirectory}</docker.context>
-    </properties>
-
     <dependencies>
         <!-- dependencies to be included in the container image -->
         <dependency>
