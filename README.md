@@ -9,7 +9,7 @@ This project creates a custom [Keycloak] server based on [Keycloak.X]. The follo
 - setup via [keycloak-config-cli] of Adorsys
 - development of custom SPIs
 - development of custom themes
-- package as container image
+- package as container image based on the [Keycloak container image](https://www.keycloak.org/server/containers)
 - launch from within the IDE, from script and docker-compose (soon Kubernetes)
 
 This project is based on Maven and contains the following top-level Maven modules:
@@ -50,7 +50,7 @@ The following Maven command does the installation:
 
 After a successful execution the newly created Keycloak installation could be started with the factory settings by executing the `kc.sh start-dev` script from the `server/target/keycloak/bin` directory. Because we want to apply a custom configuration to this installation, we wait with starting up Keycloak until we have introduced the `config` module.
 
-For passing a defined set of environment variables to the above script, we use the wrapper script [run-keycloak.sh] from this module.
+For passing a defined set of environment variables to the above script, we will use the wrapper script [run-keycloak.sh] from this module.
 
 Module config
 -------------
@@ -159,7 +159,7 @@ If you haven't executed a full build of this project, now is a good moment to ex
 
 #### via IntelliJ run configuration
 
-Launching Keycloak directly from the IDE allows the greatest support for development purposes. Because Keycloak is launched as a Java process, it can be easily started in debug mode. Before running the `keycloak` run configuration, please run the `kc.sh build` run configuration.
+Launching Keycloak directly from the IDE allows the greatest support for development purposes. Because Keycloak is launched as a Java process, it can be easily started in debug mode. Before running the `keycloak` run configuration, please run the `kc.sh build` run configuration before.
 
 #### via script
 
