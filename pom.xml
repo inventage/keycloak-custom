@@ -22,17 +22,19 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <keycloak.version>18.0.0</keycloak.version> <!-- update also keycloak-config-cli.version -->
-        <keycloak-config-cli.version>18.0.0</keycloak-config-cli.version>
-        <jsondeepmerge.version>1.0.0-202110111110-36-7616eb8</jsondeepmerge.version>
         <keycloak.dir>./target/keycloak</keycloak.dir>
         <keycloak.target.dir>../server/${keycloak.dir}/</keycloak.target.dir> <!-- used in config & extension modules -->
         <keycloak.providers.dir>../../server/${keycloak.dir}/providers</keycloak.providers.dir> <!-- used in extension modules -->
         <keycloak.themes.dir>../server/${keycloak.dir}/themes</keycloak.themes.dir> <!-- used in themes module -->
-        <docker.pull.registry></docker.pull.registry> <!-- default is hub.docker.com, must end with "/" if specified -->
-        <docker.push.registry></docker.push.registry> <!-- must be defined for goal deploy, must end with "/" if specified -->
-        <docker.context>${project.build.outputDirectory}</docker.context>
+        <docker.registry>docker-registry.inventage.com:10094</docker.registry>
         <docker.image.name>${project.groupId}.${project.artifactId}</docker.image.name>
+        <docker.contextDir>${project.build.outputDirectory}</docker.contextDir>
+        <docker.verbose>true</docker.verbose>
+        <docker.imagePropertyConfiguration>override</docker.imagePropertyConfiguration>
+        <!-- versions -->
+        <keycloak.version>19.0.1</keycloak.version> <!-- update also keycloak-config-cli.version -->
+        <keycloak-config-cli.version>19.0.1</keycloak-config-cli.version> <!-- from https://github.com/adorsys/keycloak-config-cli/releases -->
+        <jsondeepmerge.version>1.0.0-202110111110-36-7616eb8</jsondeepmerge.version>
     </properties>
 
     <dependencyManagement>
@@ -78,6 +80,26 @@
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>3.0.0-M3</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>2.4</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>3.3</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>2.7</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-antrun-plugin</artifactId>
                     <version>1.8</version>
                 </plugin>
@@ -85,6 +107,25 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
                     <version>3.1.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.4</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.1</version>
+                    <configuration>
+                        <source>${maven.compiler.source}</source>
+                        <target>${maven.compiler.target}</target>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.13</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -106,18 +147,16 @@
                     <artifactId>exec-maven-plugin</artifactId>
                     <version>1.6.0</version>
                 </plugin>
-                <!-- for building Docker images -->
+                <!-- for building Docker images: https://github.com/fabric8io/docker-maven-plugin -->
                 <plugin>
                     <groupId>io.fabric8</groupId>
                     <artifactId>docker-maven-plugin</artifactId>
-                    <version>0.38.1</version>
+                    <version>0.40.1</version>
                     <configuration>
                         <images>
                             <image>
-                                <name>${docker.push.registry}${docker.image.name}</name>
+                                <name>${docker.registry}/${docker.image.name}</name>
                                 <build>
-                                    <!--suppress UnresolvedMavenProperty -->
-                                    <contextDir>${docker.context}</contextDir>
                                     <tags>
                                         <tag>latest</tag>
                                         <tag>${project.version}</tag>
@@ -156,6 +195,91 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <!-- enforce plugin versions -->
+            <plugin>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>enforce-versions</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <bannedPlugins>
+                                    <level>WARN</level>
+                                    <excludes>
+                                        <exclude>org.apache.maven.plugins:maven-verifier-plugin</exclude>
+                                    </excludes>
+                                    <message>Please consider using the maven-invoker-plugin
+                                        (https://maven.apache.org/plugins/maven-invoker-plugin/)!
+                                    </message>
+                                </bannedPlugins>
+                                <banDuplicatePomDependencyVersions/>
+                                <requirePluginVersions>
+                                    <message>Best Practice is to always define plugin versions!</message>
+                                    <banLatest>true</banLatest>
+                                    <banRelease>true</banRelease>
+                                    <banSnapshots>true</banSnapshots>
+                                    <phases>clean,deploy,site</phases>
+                                    <unCheckedPluginList>
+                                        org.apache.maven.plugins:maven-enforcer-plugin,org.apache.maven.plugins:maven-idea-plugin
+                                    </unCheckedPluginList>
+                                </requirePluginVersions>
+                                <requireMavenVersion>
+                                    <version>3.6.0</version>
+                                </requireMavenVersion>
+                                <requireJavaVersion>
+                                    <version>${maven.compiler.source}</version>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>multi-arch</id>
+            <activation>
+                <property>
+                    <name>multiArchBuild</name>
+                </property>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>io.fabric8</groupId>
+                            <artifactId>docker-maven-plugin</artifactId>
+                            <configuration>
+                                <images>
+                                    <image>
+                                        <build>
+                                            <!-- @see https://dmp.fabric8.io/#build-buildx -->
+                                            <buildx>
+                                                <!--
+                                                    @see https://github.com/moby/buildkit/blob/master/docs/buildkitd.toml.md
+                                                    @see https://github.com/docker/buildx/blob/master/docs/guides/custom-registry-config.md
+                                                -->
+                                                <!--suppress UnresolvedMavenProperty -->
+                                                <configFile>${maven.multiModuleProjectDirectory}/build-tools/buildkit/buildkitd.toml</configFile>
+                                                <platforms>
+                                                    <platform>linux/arm64</platform>
+                                                    <platform>linux/amd64</platform>
+                                                </platforms>
+                                            </buildx>
+                                        </build>
+                                    </image>
+                                </images>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+    </profiles>
 </project>

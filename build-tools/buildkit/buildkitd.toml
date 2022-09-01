@@ -1,0 +1,4 @@
+debug = true
+
+[registry."docker.io"]
+  mirrors = ["dockerhub-mirror.inventage.com"]

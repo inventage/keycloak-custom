@@ -9,7 +9,7 @@ This project creates a custom [Keycloak] server based on [Keycloak.X]. The follo
 - setup via [keycloak-config-cli] of Adorsys
 - development of custom SPIs
 - development of custom themes
-- package as container image based on the [Keycloak container image](https://www.keycloak.org/server/containers)
+- package as multi-arch container image based on the [Keycloak container image](https://www.keycloak.org/server/containers)
 - launch from within the IDE, from script and docker-compose (soon Kubernetes)
 
 This project is based on Maven and contains the following top-level Maven modules:
@@ -120,7 +120,7 @@ KC_LOG_LEVEL=info,com.inventage:debug
 
 Sensitive properties can be stored in the `secrets.env` file. This file is not under version control and must be available when running `docker-compose up` with the provided [docker-compose.yml](./docker-compose/src/main/resources/docker-compose.yml) file.
 
-The two properties for creating the initial admin user for the `master` realm a good candidates for this file:
+The two properties for creating the initial admin user for the `master` realm are good candidates for this file:
 
 ```properties
 # KEYCLOAK_ADMIN is the username of the initial admin user

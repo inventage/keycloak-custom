@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>container</artifactId>
+    <packaging>pom</packaging>
 
     <dependencies>
         <!-- dependencies to be included in the container image -->
@@ -78,7 +79,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${docker.context}</outputDirectory>
+                            <outputDirectory>${docker.contextDir}</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>${project.basedir}/src/main/resources</directory>
@@ -93,9 +94,6 @@
             <plugin>
                 <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
-                <configuration>
-                    <tagName>${project.version}</tagName>
-                </configuration>
             </plugin>
         </plugins>
     </build>
