@@ -12,4 +12,4 @@ COPY ./keycloak/ /opt/keycloak/
 COPY ./keycloak/providers/*.jar /opt/keycloak/providers/
 WORKDIR /opt/keycloak
 
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start"]
+ENTRYPOINT ["/opt/keycloak/bin/kc-with-setup.sh", "start"]

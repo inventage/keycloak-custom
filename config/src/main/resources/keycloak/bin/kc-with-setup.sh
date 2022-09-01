@@ -119,3 +119,9 @@ if [[ (! $CONFIG_ARGS = *"--optimized"*) ]] && [[ ! "$CONFIG_ARGS" == " build"* 
 fi
 
 eval exec "'$JAVA'" $JAVA_RUN_OPTS
+export KEYCLOAK_PID=$!
+
+source $DIRNAME/keycloak-setup.sh
+
+# to keep the container running until keycloak shuts down
+wait $KEYCLOAK_PID
