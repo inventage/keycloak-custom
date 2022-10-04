@@ -5,7 +5,7 @@ networks:
 
 services:
   keycloak:
-    image: ${docker.push.registry}${project.groupId}.container:${project.version}
+    image: ${docker.registry}${project.groupId}.container:${project.version}
     container_name: ${project.groupId}.container
     ports:
       - "8080:8080"

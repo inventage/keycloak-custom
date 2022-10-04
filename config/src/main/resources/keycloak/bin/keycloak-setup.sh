@@ -20,8 +20,6 @@ mergeJsons() {
     echo "--- Merging import files"
     echo ""
 
-    BASEDIR=$(dirname "$0")
-
     # run folder merge
     PATH_TO_CONFIG_JSON=$BASEDIR/../setup
     java -jar $BASEDIR/client/filemerge-${jsondeepmerge.version}-runner.jar $PATH_TO_CONFIG_JSON/default $PATH_TO_CONFIG_JSON/override $PATH_TO_CONFIG_JSON
@@ -31,8 +29,6 @@ runKeycloakConfigCli() {
   echo ""
   echo "--- Running Keycloak Config CLI"
   echo ""
-
-  BASEDIR=$(dirname "$0")
 
   # run keycloak-config-cli
   java -jar $BASEDIR/client/keycloak-config-cli-${keycloak-config-cli.version}.jar \
@@ -50,17 +46,7 @@ runKeycloakConfigCli() {
 }
 
 runKeycloakCli() {
-  BASEDIR=$(dirname "$0")
-  source ${BASEDIR}/keycloak-cli-helpers.sh
-
-  if [ "$KCADM" == "" ]; then
-      KCADM=${BASEDIR}/kcadm.sh
-      echo "Using $KCADM as the admin CLI."
-  fi
-
-  ${KCADM} config credentials --server http://localhost:8080 --user ${KEYCLOAK_ADMIN} --password ${KEYCLOAK_ADMIN_PASSWORD} --realm master
-
-  source ${BASEDIR}/realms.sh
+  source ${BASEDIR}/keycloak-setup-cli.sh
 }
 
 echo " "
@@ -73,7 +59,6 @@ echo " "
 echo "----------------- KEYCLOAK CLI ------------------"
 echo " "
 runKeycloakCli
-
 
 echo " "
 echo "--------------- KEYCLOAK SETUP FINISHED ----------------"

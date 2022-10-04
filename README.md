@@ -12,14 +12,16 @@ This project creates a custom [Keycloak] server based on [Keycloak.X]. The follo
 - package as multi-arch container image based on the [Keycloak container image](https://www.keycloak.org/server/containers)
 - launch from within the IDE, from script and docker-compose (soon Kubernetes)
 
-This project is based on Maven and contains the following top-level Maven modules:
+This project is build by Maven and contains the following top-level Maven modules:
 
-- server : provides a Keycloak installation for local testing
 - config  : provides the build stage configuration and the setup of Keycloak
 - container : provides the custom docker image
 - docker-compose : provides a sample for launching the custom docker image
 - extensions : provides samples for Keycloak SPI implementations
+- server : provides a Keycloak installation for local development & testing
 - themes : provides samples for custom themes
+
+The following diagram shows from where the Maven modules take their used artifacts:
 
 ![Maven modules](.docs/keycloak-custom_modules.png)
 
@@ -159,7 +161,7 @@ If you haven't executed a full build of this project, now is a good moment to ex
 
 #### via IntelliJ run configuration
 
-Launching Keycloak directly from the IDE allows the greatest support for development purposes. Because Keycloak is launched as a Java process, it can be easily started in debug mode. Before running the `keycloak` run configuration, please run the `kc.sh build` run configuration before.
+Launching Keycloak directly from the IDE allows the greatest support for development purposes. Because Keycloak is launched as a Java process, it can be easily started with the debugger attached. Before running the `keycloak` run configuration, please run the `kc.sh build` run configuration before.
 
 #### via script
 
