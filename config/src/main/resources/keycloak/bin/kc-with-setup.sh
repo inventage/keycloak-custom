@@ -118,7 +118,7 @@ if [[ (! $CONFIG_ARGS = *"--optimized"*) ]] && [[ ! "$CONFIG_ARGS" == " build"* 
     fi
 fi
 
-eval exec "'$JAVA'" $JAVA_RUN_OPTS
+eval exec "'$JAVA'" $JAVA_RUN_OPTS &
 export KEYCLOAK_PID=$!
 
 source $DIRNAME/keycloak-setup.sh

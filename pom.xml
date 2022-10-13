@@ -26,15 +26,15 @@
         <keycloak.target.dir>../server/${keycloak.dir}/</keycloak.target.dir> <!-- used in config & extension modules -->
         <keycloak.providers.dir>../../server/${keycloak.dir}/providers</keycloak.providers.dir> <!-- used in extension modules -->
         <keycloak.themes.dir>../server/${keycloak.dir}/themes</keycloak.themes.dir> <!-- used in themes module -->
-        <docker.registry>docker-registry.inventage.com:10094</docker.registry>
+        <docker.registry>docker-registry.inventage.com:10094/</docker.registry>
         <docker.image.name>${project.groupId}.${project.artifactId}</docker.image.name>
         <docker.contextDir>${project.build.outputDirectory}</docker.contextDir>
         <docker.verbose>true</docker.verbose>
         <docker.imagePropertyConfiguration>override</docker.imagePropertyConfiguration>
         <!-- versions -->
-        <keycloak.version>19.0.1</keycloak.version> <!-- update also keycloak-config-cli.version -->
+        <keycloak.version>19.0.3</keycloak.version> <!-- update also keycloak-config-cli.version -->
         <keycloak-config-cli.version>19.0.1</keycloak-config-cli.version> <!-- from https://github.com/adorsys/keycloak-config-cli/releases -->
-        <jsondeepmerge.version>1.0.0-202110111110-36-7616eb8</jsondeepmerge.version>
+        <auto-service.version>1.0.1</auto-service.version>
     </properties>
 
     <dependencyManagement>
@@ -71,6 +71,12 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>3.6</version>
+            </dependency>
+            <!-- for registering SPIs by annotation -->
+            <dependency>
+                <groupId>com.google.auto.service</groupId>
+                <artifactId>auto-service-annotations</artifactId>
+                <version>${auto-service.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -155,7 +161,7 @@
                     <configuration>
                         <images>
                             <image>
-                                <name>${docker.registry}/${docker.image.name}</name>
+                                <name>${docker.registry}${docker.image.name}</name>
                                 <build>
                                     <tags>
                                         <tag>latest</tag>

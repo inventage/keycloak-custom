@@ -21,7 +21,7 @@ public class NoOperationAuthenticator implements Authenticator {
     @Override
     public void action(AuthenticationFlowContext authenticationFlowContext) {
         LOG.debugf("action");
-        //NOP
+        authenticationFlowContext.success();
     }
 
     @Override

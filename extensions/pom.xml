@@ -35,6 +35,20 @@
     <build>
         <pluginManagement>
             <plugins>
+                <!-- for registering SPIs by annotation -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>com.google.auto.service</groupId>
+                                <artifactId>auto-service</artifactId>
+                                <version>${auto-service.version}</version>
+                            </path>
+                        </annotationProcessorPaths>
+                    </configuration>
+                </plugin>
                 <!-- deployment configuration for all extension modules -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

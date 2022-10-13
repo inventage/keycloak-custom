@@ -16,15 +16,6 @@ echo " "
 
 BASEDIR=$(dirname "$0")
 
-mergeJsons() {
-    echo "--- Merging import files"
-    echo ""
-
-    # run folder merge
-    PATH_TO_CONFIG_JSON=$BASEDIR/../setup
-    java -jar $BASEDIR/client/filemerge-${jsondeepmerge.version}-runner.jar $PATH_TO_CONFIG_JSON/default $PATH_TO_CONFIG_JSON/override $PATH_TO_CONFIG_JSON
-}
-
 runKeycloakConfigCli() {
   echo ""
   echo "--- Running Keycloak Config CLI"
@@ -42,17 +33,28 @@ runKeycloakConfigCli() {
       --import.managed.client=no-delete \
       --import.managed.client-scope=no-delete \
       --import.managed.client-scope-mapping=no-delete \
-      --import.files.locations=$PATH_TO_CONFIG_JSON/*.json
+      --import.files.locations=$BASEDIR/../setup/*.json
 }
 
 runKeycloakCli() {
-  source ${BASEDIR}/keycloak-setup-cli.sh
+  if [ "$KCADM" == "" ]; then
+      KCADM=${BASEDIR}/kcadm.sh
+      echo "Using $KCADM as the admin CLI."
+  fi
+
+  # login to admin console
+  ${KCADM} config credentials --server http://localhost:8080 --user ${KEYCLOAK_ADMIN} --password ${KEYCLOAK_ADMIN_PASSWORD} --realm master
+
+  # helper functions using kc admin cli
+  source ${BASEDIR}/keycloak-cli-helpers.sh
+
+  # project specific configurations
+  source ${BASEDIR}/keycloak-cli-custom.sh
 }
 
 echo " "
 echo "----------------- KEYCLOAK CONFIG CLI ------------------"
 echo " "
-mergeJsons
 runKeycloakConfigCli
 
 echo " "

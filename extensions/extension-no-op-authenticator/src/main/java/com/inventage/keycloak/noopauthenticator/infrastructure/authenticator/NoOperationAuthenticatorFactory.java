@@ -1,5 +1,6 @@
 package com.inventage.keycloak.noopauthenticator.infrastructure.authenticator;
 
+import com.google.auto.service.AutoService;
 import org.keycloak.Config;
 import org.keycloak.authentication.Authenticator;
 import org.keycloak.authentication.AuthenticatorFactory;
@@ -11,6 +12,7 @@ import org.keycloak.provider.ProviderConfigProperty;
 import java.util.Collections;
 import java.util.List;
 
+@AutoService(org.keycloak.authentication.AuthenticatorFactory.class)
 public class NoOperationAuthenticatorFactory implements AuthenticatorFactory {
 
     private static final String PROVIDER_ID = "no-operation-authenticator";
@@ -18,7 +20,8 @@ public class NoOperationAuthenticatorFactory implements AuthenticatorFactory {
     private static final AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES = {
             AuthenticationExecutionModel.Requirement.REQUIRED,
             AuthenticationExecutionModel.Requirement.ALTERNATIVE,
-            AuthenticationExecutionModel.Requirement.CONDITIONAL
+            AuthenticationExecutionModel.Requirement.CONDITIONAL,
+            AuthenticationExecutionModel.Requirement.DISABLED
     };
     @Override
     public String getDisplayType() {

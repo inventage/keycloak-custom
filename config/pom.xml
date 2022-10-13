@@ -27,6 +27,28 @@
                 <!-- substitute variables -->
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>
+                    <!-- keycloak -->
+                    <execution>
+                        <id>substitute-keycloak-files</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.outputDirectory}/keycloak</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/src/main/resources/keycloak/</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                            <nonFilteredFileExtensions>
+                                <nonFilteredFileExtension>pem</nonFilteredFileExtension>
+                                <nonFilteredFileExtension>jks</nonFilteredFileExtension>
+                                <nonFilteredFileExtension>jar</nonFilteredFileExtension>
+                            </nonFilteredFileExtensions>
+                        </configuration>
+                    </execution>
                     <!-- keycloak conf -->
                     <execution>
                         <id>copy-keycloak-conf-files</id>
