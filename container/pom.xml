@@ -69,6 +69,7 @@
             </plugin>
             <!-- for variable substitution -->
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>
                     <!-- Dockerfile keycloak-->
