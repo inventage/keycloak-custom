@@ -62,7 +62,7 @@
                             </goals>
                             <configuration>
                                 <target>
-                                    <copy file="${file.to.deploy}" todir="${keycloak.providers.dir}"></copy>
+                                    <copy file="${file.to.deploy}" todir="${keycloak.providers.dir}"/>
                                 </target>
                             </configuration>
                         </execution>
