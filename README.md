@@ -72,7 +72,7 @@ We set 4 build stage properties:
 db=postgres
 
 # features is a comma-separated list of features to be enabled
-features=declarative-user-profile,admin2
+features=declarative-user-profile
 
 # metrics-enabled is for exposing metrics (/metrics) endpoints
 metrics-enabled=true
