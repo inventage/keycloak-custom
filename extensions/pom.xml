@@ -14,7 +14,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <file.to.deploy>${project.build.directory}/${build.finalName}.${project.packaging}</file.to.deploy>
+        <file.to.deploy>${project.build.directory}/${project.build.finalName}.${project.packaging}</file.to.deploy>
     </properties>
 
     <modules>
@@ -55,7 +55,7 @@
                     <artifactId>maven-antrun-plugin</artifactId>
                     <executions>
                         <execution>
-                            <id>deploy-${artifactId}</id>
+                            <id>deploy-${project.artifactId}</id>
                             <phase>package</phase>
                             <goals>
                                 <goal>run</goal>
