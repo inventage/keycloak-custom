@@ -22,34 +22,34 @@ runKeycloakConfigCli() {
   echo ""
 
   # run keycloak-config-cli
-  java -jar $BASEDIR/client/keycloak-config-cli-${keycloak-config-cli.version}.jar \
+  java -jar "${BASEDIR}"/client/keycloak-config-cli-"${keycloak-config-cli.version}".jar \
       --keycloak.url=http://localhost:8080/ \
       --keycloak.ssl-verify=true \
-      --keycloak.user=${KEYCLOAK_ADMIN} \
-      --keycloak.password=${KEYCLOAK_ADMIN_PASSWORD} \
+      --keycloak.user="${KEYCLOAK_ADMIN}" \
+      --keycloak.password="${KEYCLOAK_ADMIN_PASSWORD}" \
       --keycloak.availability-check.enabled=true \
       --keycloak.availability-check.timeout=300s \
       --import.var-substitution.enabled=true \
       --import.managed.client=no-delete \
       --import.managed.client-scope=no-delete \
       --import.managed.client-scope-mapping=no-delete \
-      --import.files.locations=$BASEDIR/../setup/*.json
+      --import.files.locations="${BASEDIR}"/../setup/*.json
 }
 
 runKeycloakCli() {
   if [ "$KCADM" == "" ]; then
-      KCADM=${BASEDIR}/kcadm.sh
+      KCADM="${BASEDIR}"/kcadm.sh
       echo "Using $KCADM as the admin CLI."
   fi
 
   # login to admin console
-  ${KCADM} config credentials --server http://localhost:8080 --user ${KEYCLOAK_ADMIN} --password ${KEYCLOAK_ADMIN_PASSWORD} --realm master
+  ${KCADM} config credentials --server http://localhost:8080 --user "${KEYCLOAK_ADMIN}" --password "${KEYCLOAK_ADMIN_PASSWORD}" --realm master
 
   # helper functions using kc admin cli
-  source ${BASEDIR}/keycloak-cli-helpers.sh
+  source "${BASEDIR}"/keycloak-cli-helpers.sh
 
   # project specific configurations
-  source ${BASEDIR}/keycloak-cli-custom.sh
+  source "${BASEDIR}"/keycloak-cli-custom.sh
 }
 
 echo " "
