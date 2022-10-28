@@ -272,7 +272,7 @@
                                                     @see https://github.com/docker/buildx/blob/master/docs/guides/custom-registry-config.md
                                                 -->
                                                 <!--suppress UnresolvedMavenProperty -->
-                                                <configFile>${maven.multiModuleProjectDirectory}/build-tools/buildkit/buildkitd.toml</configFile>
+                                                <configFile>${maven.multiModuleProjectDirectory}/.build-tools/buildkit/buildkitd.toml</configFile>
                                                 <platforms>
                                                     <platform>linux/arm64</platform>
                                                     <platform>linux/amd64</platform>
