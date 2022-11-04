@@ -22,4 +22,4 @@ release.properties
 /docker-compose/src/main/resources/secrets.env
 
 # Postgres data
-/docker-compose/src/test/resources/postgres/volume/
+/docker-compose/postgres/volume/
