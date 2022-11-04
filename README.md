@@ -50,7 +50,7 @@ The following Maven command does the installation:
 ./mvnw clean initialize
 ```
 
-After a successful execution the newly created Keycloak installation could be started with the factory settings by executing the `kc.sh start-dev` script from the `server/target/keycloak/bin` directory. Because we want to apply a custom configuration to this installation, we wait with starting up Keycloak until we have introduced the `config` module.
+After a successful execution the newly created Keycloak installation could be started with the factory settings by executing the `kc.sh start-dev` script from the `./server/target/keycloak/bin` directory. Because we want to apply a custom configuration to this installation, we wait with starting up Keycloak until we have introduced the `config` module.
 
 For passing a defined set of environment variables to the above script, we will use the wrapper script [run-keycloak.sh] from this module.
 
@@ -65,7 +65,7 @@ Since the migration to a Quarkus runtime the [configuration of Keycloak] is done
 
 #### Build stage
 
-In this project all properties of the build stage are configured in the [keycloak.conf] at `config/src/main/resources/keycloak/conf/`.
+In this project all properties of the build stage are configured in the [keycloak.conf] at `./config/src/main/resources/keycloak/conf/`.
 
 We set 4 build stage properties:
 
@@ -85,7 +85,7 @@ health-enabled=true
 
 In the `generate-resources` phase of a Maven build this [keycloak.conf] file is copied to `${keycloak.dir}` (= `./server/target/keycloak`).
 
-Please see [Keycloak/Guides/Server/All configuration/Build options](https://www.keycloak.org/server/all-config?f=build) for the list of all available build stage properties.
+Please see [Keycloak / Guides / Server / All configuration / Build options](https://www.keycloak.org/server/all-config?f=build) for the list of all available build stage properties.
 
 #### Runtime stage
 
@@ -152,12 +152,12 @@ In this project we support the following types of launching Keycloak:
 Because we have configured the database in the above section with `db=postgres` we need an up & running instance of Postgres before launching Keycloak. The easiest way for that is by configuring the `KC_DB_URL` property (e.g. in [keycloak.specific.env]):
 
 ```properties
-KC_DB_URL=jdbc:postgresql://host.docker.internal:15432/postgres
+KC_DB_URL=jdbc:postgresql://localhost:15432/postgres
 ```
 
 and then running the provided [docker-compose.yml](docker-compose/src/test/resources/postgres/docker-compose.yml) in `docker-compose/src/test/resources/postgres/`. 
 
-If you haven't executed a full build of this project, now is a good moment to execute `mvn clean install`.
+If you haven't executed a full build of this project, now is a good moment to execute `./mvnw clean install`.
 
 #### via IntelliJ run configuration
 
@@ -207,7 +207,7 @@ For a simple use this project provides also IntelliJ run configurations `kc.sh b
 
 #### via docker-compose
 
-The custom Keycloak instance from this project can also be started easily by docker-compose. The only prerequisite is that you have build this project before with `mvn clean install`, so that the container image has been created.
+The custom Keycloak instance from this project can also be started easily by docker-compose. The only prerequisite is that you have build this project before with `./mvnw clean install`, so that the container image has been created.
 
 ```shell
 keycloak-custom/docker-compose/target/keycloak
@@ -263,7 +263,7 @@ The `themes` module contains the custom themes, which should be available in the
 Tooling
 -------
 
-The [Takari Maven Wrapper](https://github.com/takari/maven-wrapper) is used for the Maven setup for this project.
+The [Apache Maven Wrapper](https://maven.apache.org/wrapper/) is used for the Maven setup for this project.
 
 
 
