@@ -13,4 +13,4 @@ RUN chmod -R 755 /opt/keycloak/bin/*.sh
 
 USER 1000
 WORKDIR /opt/keycloak
-ENTRYPOINT ["/opt/keycloak/bin/kc-with-setup.sh", "start-dev"]
+ENTRYPOINT ["/opt/keycloak/bin/kc-with-setup.sh", "start"]
