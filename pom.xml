@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.projectreshare.hub</groupId>
-    <artifactId>reshare-hub-authn</artifactId>
+    <groupId>com.inventage.keycloak.custom</groupId>
+    <artifactId>parent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -26,8 +26,8 @@
         <keycloak.target.dir>../server/${keycloak.dir}/</keycloak.target.dir> <!-- used in config & extension modules -->
         <keycloak.providers.dir>../../server/${keycloak.dir}/providers</keycloak.providers.dir> <!-- used in extension modules -->
         <keycloak.themes.dir>../server/${keycloak.dir}/themes</keycloak.themes.dir> <!-- used in themes module -->
-        <docker.registry>docker.libsdev.k-int.com</docker.registry>
-        <docker.image.name>${project.groupId}.${project.artifactId}</docker.image.name>
+        <docker.registry>docker.libsdev.k-int.com/</docker.registry>
+        <docker.image.name>reshare/hub-authn</docker.image.name>
         <docker.contextDir>${project.build.outputDirectory}</docker.contextDir>
         <docker.verbose>true</docker.verbose>
         <docker.imagePropertyConfiguration>override</docker.imagePropertyConfiguration>
