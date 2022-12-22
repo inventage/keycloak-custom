@@ -15,3 +15,7 @@ Please see the tutorial [building a custom Keycloak container image](https://key
 
 [Keycloak]: https://keycloak.org
 [Keycloak.X]: https://www.keycloak.org/migration/migrating-to-quarkus
+
+
+Reshare specifics
+./mvnw clean install
