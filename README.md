@@ -17,5 +17,15 @@ Please see the tutorial [building a custom Keycloak container image](https://key
 [Keycloak.X]: https://www.keycloak.org/migration/migrating-to-quarkus
 
 
-Reshare specifics
+Reshare-hub specific keycloak with plugins for LMS authn and other config
+
+Build with
 ./mvnw clean install
+
+Push to nexus with
+docker push NAME[:TAG]
+
+
+IF you add a new custom authentication provider and want that provider bundled into the docker image, don't forget to edit
+container/pom.xml and add your artefact ID to includeArtifactIds AND add your new authenticator to the list of dependencies in the
+container project.

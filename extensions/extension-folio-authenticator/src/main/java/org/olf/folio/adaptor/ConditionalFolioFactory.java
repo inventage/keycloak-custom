@@ -12,46 +12,60 @@ import org.keycloak.provider.ProviderConfigProperty;
 
 import java.util.Collections;
 import java.util.List;
+import org.jboss.logging.Logger;
 
 public class ConditionalFolioFactory implements ConditionalAuthenticatorFactory {
 
     public static final String ID = "conditional_folio_login";
     static final String PREFIX = "folio_login";
-
+    private static final Logger LOG = Logger.getLogger(ConditionalFolioFactory.class);
 
     private static final FolioAuthenticator SINGLETON = new FolioAuthenticator();
+    private static final AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES = {
+            AuthenticationExecutionModel.Requirement.REQUIRED,
+            AuthenticationExecutionModel.Requirement.ALTERNATIVE,
+            AuthenticationExecutionModel.Requirement.CONDITIONAL,
+            AuthenticationExecutionModel.Requirement.DISABLED
+    };
 
     @Override
     public Authenticator create(KeycloakSession session) {
+        LOG.debugf("create");
         return SINGLETON;
     }
 
     @Override
     public ConditionalAuthenticator getSingleton() {
-        return null;
+        LOG.debugf("getSingleton");
+        return SINGLETON;
     }
 
     @Override
     public String getDisplayType() {
-        return "Condition - folio login";
+        LOG.debugf("getDisplayType");
+        return "FOLIO Authenticator";
     }
 
     @Override
     public String getReferenceCategory() {
+        LOG.debugf("getReferenceCategory");
         return null;
     }
 
     @Override
     public boolean isConfigurable() {
+        LOG.debugf("isConfigurable");
         return true;
     }
 
     @Override
     public AuthenticationExecutionModel.Requirement[] getRequirementChoices() {
-        return new AuthenticationExecutionModel.Requirement[] { AuthenticationExecutionModel.Requirement.REQUIRED };
+        LOG.debugf("getRequirementChoices");
+        return REQUIREMENT_CHOICES;
     }
     @Override
     public boolean isUserSetupAllowed() {
+        LOG.debugf("isUserSetupAllowed");
         return false;
     }
 
@@ -74,21 +88,22 @@ public class ConditionalFolioFactory implements ConditionalAuthenticatorFactory 
 
     @Override
     public void init(Config.Scope scope) {
-
+        LOG.debugf("init");
     }
 
     @Override
     public void postInit(KeycloakSessionFactory keycloakSessionFactory) {
-
+        LOG.debugf("postInit");
     }
 
     @Override
     public void close() {
-
+        LOG.debugf("close");
     }
 
     @Override
     public String getId() {
+        LOG.debugf("getId");
         return ID;
     }
 
