@@ -9,16 +9,17 @@ import org.keycloak.models.AuthenticationExecutionModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.provider.ProviderConfigProperty;
+import org.keycloak.provider.ProviderConfigurationBuilder;
 
 import java.util.Collections;
 import java.util.List;
 import org.jboss.logging.Logger;
 
-public class ConditionalFolioFactory implements ConditionalAuthenticatorFactory {
+public class FolioAuthenticatorFactory implements ConditionalAuthenticatorFactory {
 
-    public static final String ID = "conditional_folio_login";
+    public static final String PROVIDER_ID = "folio_login";
     static final String PREFIX = "folio_login";
-    private static final Logger LOG = Logger.getLogger(ConditionalFolioFactory.class);
+    private static final Logger LOG = Logger.getLogger(FolioAuthenticatorFactory.class);
 
     private static final FolioAuthenticator SINGLETON = new FolioAuthenticator();
     private static final AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES = {
@@ -28,17 +29,18 @@ public class ConditionalFolioFactory implements ConditionalAuthenticatorFactory 
             AuthenticationExecutionModel.Requirement.DISABLED
     };
 
-    @Override
-    public Authenticator create(KeycloakSession session) {
-        LOG.debugf("create");
-        return SINGLETON;
-    }
 
-    @Override
-    public ConditionalAuthenticator getSingleton() {
-        LOG.debugf("getSingleton");
-        return SINGLETON;
-    }
+    private static final List<ProviderConfigProperty> PROVIDER_CONFIG_PROPS = Collections.unmodifiableList(ProviderConfigurationBuilder.create()
+        .property().name("FOLIO base url")
+        .label("FOLIO OKAPI URL")
+        .helpText("The base URL of the FOLIO API")
+        .type(ProviderConfigProperty.STRING_TYPE).add()
+        .property().name("FOLIO tenant")
+        .label("FOLIO TENANT")
+        .helpText("The tenant ID")
+        .type(ProviderConfigProperty.STRING_TYPE).add()
+        .build()
+      );
 
     @Override
     public String getDisplayType() {
@@ -49,13 +51,14 @@ public class ConditionalFolioFactory implements ConditionalAuthenticatorFactory 
     @Override
     public String getReferenceCategory() {
         LOG.debugf("getReferenceCategory");
-        return null;
+        return "condition";
     }
 
     @Override
     public boolean isConfigurable() {
         LOG.debugf("isConfigurable");
-        return true;
+        // FOR NOW
+        return false;
     }
 
     @Override
@@ -63,10 +66,11 @@ public class ConditionalFolioFactory implements ConditionalAuthenticatorFactory 
         LOG.debugf("getRequirementChoices");
         return REQUIREMENT_CHOICES;
     }
+
     @Override
     public boolean isUserSetupAllowed() {
         LOG.debugf("isUserSetupAllowed");
-        return false;
+        return true;
     }
 
     @Override
@@ -76,14 +80,20 @@ public class ConditionalFolioFactory implements ConditionalAuthenticatorFactory 
 
     @Override
     public List<ProviderConfigProperty> getConfigProperties() {
-        ProviderConfigProperty name = new ProviderConfigProperty();
+      return PROVIDER_CONFIG_PROPS;
+    }
 
-        name.setType(STRING_TYPE);
-        name.setName(PREFIX);
-        name.setLabel("Folio");
-        name.setHelpText("Folio");
+    /*
+    @Override
+    public Authenticator create(KeycloakSession session) {
+        LOG.debugf("create");
+        return SINGLETON;
+    }
+    */
 
-        return Collections.singletonList(name);
+    @Override
+    public ConditionalAuthenticator getSingleton() {
+      return SINGLETON;
     }
 
     @Override
@@ -104,7 +114,7 @@ public class ConditionalFolioFactory implements ConditionalAuthenticatorFactory 
     @Override
     public String getId() {
         LOG.debugf("getId");
-        return ID;
+        return PROVIDER_ID;
     }
 
 }
