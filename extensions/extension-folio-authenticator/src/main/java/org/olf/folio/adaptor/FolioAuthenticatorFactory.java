@@ -57,8 +57,7 @@ public class FolioAuthenticatorFactory implements ConditionalAuthenticatorFactor
     @Override
     public boolean isConfigurable() {
         LOG.debugf("isConfigurable");
-        // FOR NOW
-        return false;
+        return true;
     }
 
     @Override
