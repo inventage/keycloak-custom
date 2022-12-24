@@ -209,14 +209,6 @@
           "userSetupAllowed": false
         },
         {
-          "authenticator": "conditional_folio_login",
-          "authenticatorFlow": true,
-          "requirement": "CONDITIONAL",
-          "priority": 15,
-          "autheticatorFlow": false,
-          "userSetupAllowed": false
-        },
-        {
           "authenticatorFlow": true,
           "requirement": "CONDITIONAL",
           "priority": 20,

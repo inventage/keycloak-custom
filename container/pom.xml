@@ -30,11 +30,13 @@
             <artifactId>themes</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!--
         <dependency>
             <groupId>com.inventage.keycloak.custom</groupId>
             <artifactId>extension-folio-authenticator</artifactId>
             <version>${project.version}</version>
         </dependency>
+        -->
     </dependencies>
 
     <build>
@@ -67,7 +69,8 @@
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-                            <includeArtifactIds>extension-no-op-authenticator,themes,extension-folio-authenticator</includeArtifactIds>
+                            <!-- includeArtifactIds>extension-no-op-authenticator,themes,extension-folio-authenticator -->
+                            <includeArtifactIds>extension-no-op-authenticator,themes</includeArtifactIds>
                             <outputDirectory>${project.build.outputDirectory}/keycloak/providers</outputDirectory>
                         </configuration>
                     </execution>

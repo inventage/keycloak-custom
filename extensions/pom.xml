@@ -24,7 +24,6 @@
     </modules>
 
     <dependencies>
-        <!-- the server module must be built for copying the jars into -->
         <dependency>
             <groupId>com.inventage.keycloak.custom</groupId>
             <artifactId>server</artifactId>
