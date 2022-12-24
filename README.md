@@ -29,3 +29,10 @@ docker push NAME[:TAG]
 IF you add a new custom authentication provider and want that provider bundled into the docker image, don't forget to edit
 container/pom.xml and add your artefact ID to includeArtifactIds AND add your new authenticator to the list of dependencies in the
 container project.
+
+
+
+
+
+https://github.com/adorsys/keycloak-config-cli/blob/main/src/main/java/de/adorsys/keycloak/config/provider/KeycloakProvider.java
+

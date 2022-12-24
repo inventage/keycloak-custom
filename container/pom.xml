@@ -68,7 +68,7 @@
                         </goals>
                         <configuration>
                             <!-- includeArtifactIds>extension-no-op-authenticator,themes,extension-folio-authenticator -->
-                            <includeArtifactIds>extension-no-op-authenticator,themes</includeArtifactIds>
+                            <includeArtifactIds>extension-no-op-authenticator,themes,extension-folio-authenticator</includeArtifactIds>
                             <outputDirectory>${project.build.outputDirectory}/keycloak/providers</outputDirectory>
                         </configuration>
                     </execution>
