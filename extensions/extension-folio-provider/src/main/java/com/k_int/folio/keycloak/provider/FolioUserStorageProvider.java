@@ -1,4 +1,81 @@
 package com.k_int.folio.keycloak.provider;
 
-public class FolioUserStorageProvider {
+
+import org.keycloak.component.ComponentModel;
+import org.keycloak.credential.CredentialInput;
+import org.keycloak.credential.CredentialInputUpdater;
+import org.keycloak.credential.CredentialInputValidator;
+import org.keycloak.credential.hash.PasswordHashProvider;
+import org.keycloak.models.GroupModel;
+import org.keycloak.models.KeycloakSession;
+import org.keycloak.models.PasswordPolicy;
+import org.keycloak.models.RealmModel;
+import org.keycloak.models.RoleModel;
+import org.keycloak.models.UserCredentialModel;
+import org.keycloak.models.UserModel;
+import org.keycloak.models.credential.PasswordCredentialModel;
+import org.keycloak.storage.StorageId;
+import org.keycloak.storage.UserStorageProvider;
+import org.keycloak.storage.user.UserLookupProvider;
+import org.keycloak.storage.user.UserQueryProvider;
+import org.keycloak.storage.user.UserRegistrationProvider;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
+
+/**
+ * inspired by https://github.com/dasniko/keycloak-extensions-demo/blob/main/user-provider/src/main/java/dasniko/keycloak/user/PeanutsUserProvider.java
+ */
+public class FolioUserStorageProvider implements UserStorageProvider {
+
+  // implement in future: UserLookupProvider, UserQueryProvider, CredentialInputUpdater, CredentialInputValidator, UserRegistrationProvider {
+
+  private final KeycloakSession session;
+  private final ComponentModel model;
+
+  public FolioUserStorageProvider(KeycloakSession session, ComponentModel model) {
+    this.session = session;
+    this.model = model;
+  }
+
+  @Override
+  public void close() {
+  }
+
+  // These are from other interfaces
+  /*
+  @Override
+  public boolean supportsCredentialType(String credentialType) {
+    return PasswordCredentialModel.TYPE.equals(credentialType);
+  }
+
+  @Override
+  public boolean isConfiguredFor(RealmModel realm, UserModel user, String credentialType) {
+    return supportsCredentialType(credentialType);
+  }
+
+  @Override
+  public boolean isValid(RealmModel realm, UserModel user, CredentialInput input) {
+    if (!supportsCredentialType(input.getType()) || !(input instanceof UserCredentialModel)) {
+      return false;
+    }
+
+    return false;
+  }
+  */
+
+  @Override
+  public void preRemove(RealmModel realm) {
+  }
+
+  @Override
+  public void preRemove(RealmModel realm, GroupModel group) {
+  }
+
+  @Override
+  public void preRemove(RealmModel realm, RoleModel role) {
+  }
 }
