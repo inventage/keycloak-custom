@@ -29,9 +29,9 @@ import java.util.stream.Stream;
 /**
  * inspired by https://github.com/dasniko/keycloak-extensions-demo/blob/main/user-provider/src/main/java/dasniko/keycloak/user/PeanutsUserProvider.java
  */
-public class FolioUserStorageProvider implements UserStorageProvider {
+public class FolioUserStorageProvider implements UserStorageProvider, CredentialInputValidator {
 
-  // implement in future: UserLookupProvider, UserQueryProvider, CredentialInputUpdater, CredentialInputValidator, UserRegistrationProvider {
+  // implement in future: UserLookupProvider, UserQueryProvider, CredentialInputUpdater, UserRegistrationProvider {
 
   private final KeycloakSession session;
   private final ComponentModel model;
@@ -45,8 +45,9 @@ public class FolioUserStorageProvider implements UserStorageProvider {
   public void close() {
   }
 
-  // These are from other interfaces
-  /*
+
+  // CredentialInputProvider
+  // https://www.keycloak.org/docs-api/20.0.2/javadocs/org/keycloak/credential/CredentialInputValidator.html
   @Override
   public boolean supportsCredentialType(String credentialType) {
     return PasswordCredentialModel.TYPE.equals(credentialType);
@@ -65,6 +66,9 @@ public class FolioUserStorageProvider implements UserStorageProvider {
 
     return false;
   }
+
+  // These are from other interfaces
+  /*
   */
 
   @Override
