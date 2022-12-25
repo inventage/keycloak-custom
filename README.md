@@ -35,4 +35,4 @@ container project.
 
 
 https://github.com/adorsys/keycloak-config-cli/blob/main/src/main/java/de/adorsys/keycloak/config/provider/KeycloakProvider.java
-
+https://www.keycloak.org/docs/latest/server_development/#_user-storage-spi

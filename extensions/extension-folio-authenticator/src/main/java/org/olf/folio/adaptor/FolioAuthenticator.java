@@ -16,6 +16,16 @@ import org.keycloak.models.UserModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * https://www.baeldung.com/java-keycloak-custom-user-providers
+ * https://www.keycloak.org/docs/latest/server_development/#_user-storage-spi
+ *
+ * From: https://www.keycloak.org/docs/latest/server_development/index.html#_auth_spi
+ * When implementing an authenticator that uses Credentials to authenticate a user, you should have the authenticator implement the CredentialValidator interface. 
+ * This interfaces takes a class extending a CredentialProvider as a parameter, and will allow Keycloak to directly call the methods from the CredentialProvider. 
+ * The only method that needs to be implemented is getCredentialProvider method, which in our example allows the 
+ * SecretQuestionAuthenticator to retrieve the SecretQuestionCredentialProvider:
+ */
 public class FolioAuthenticator implements ConditionalAuthenticator {
 
    private final String OKAPI = "https://folio-snapshot-okapi.dev.folio.org/";
