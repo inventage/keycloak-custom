@@ -37,6 +37,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.Header;
+
 
 import org.jboss.logging.Logger;
 
@@ -143,9 +145,16 @@ public class FolioUserStorageProvider implements UserStorageProvider,
 
         if ( response != null ) {
           log.debugf("Got okapi response %s",response.toString());
-          String token = response.getFirstHeader("X-Okapi-Token").getValue().toString();
+          Header okapi_token_header = response.getFirstHeader("X-Okapi-Token");
+          String token = null;
+          if ( okapi_token_header != null )
+            token = okapi_token_header.getValue().toString();
+          else 
+            log.warn("Response did not carry an X-Okapi-Token - likely invalid user");
   
           // call '/bl-users/login' with token (expected 201)
+          /*
+          This block really needs moving to getUserByUsername and to use the username and password configured for the provider
           log.info("/bl-users/login");
           if (token != null){
              String blusers_url = cfg_baseUrl + "/bl-users/login";
@@ -158,6 +167,7 @@ public class FolioUserStorageProvider implements UserStorageProvider,
           } else { 
             throw new Exception("Invaid token, check credentials."); 
           }
+          */
         }
         else {
           log.warn("NULL response from OKAPI");
@@ -189,9 +199,12 @@ public class FolioUserStorageProvider implements UserStorageProvider,
   @Override
   public UserModel getUserByUsername(RealmModel realm, String username) {
     log.debugf("getUserByUsername: %s", username);
+    // Pass back the user model containing username we were asked to look up - this
+    // should change to use the users endpoint to try and look up the user before we attempt to
+    // login. Return null if the userid doesn't exist in folio
     FolioUser folio_user = new FolioUser();
     folio_user.setFolioUUID("1234");
-    folio_user.setUsername("mockuser");
+    folio_user.setUsername(username);
     folio_user.setFirstName("mockuserfirst");
     folio_user.setLastName("mockuserlast");
     folio_user.setEmail("mockemail");
