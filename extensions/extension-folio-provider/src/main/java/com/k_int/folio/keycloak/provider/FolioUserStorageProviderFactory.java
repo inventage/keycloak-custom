@@ -2,6 +2,7 @@ package com.k_int.folio.keycloak.provider;
 
 import org.keycloak.component.ComponentModel;
 import org.keycloak.component.ComponentValidationException;
+import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.provider.ProviderConfigProperty;
@@ -9,13 +10,13 @@ import org.keycloak.provider.ProviderConfigurationBuilder;
 import org.keycloak.storage.UserStorageProviderFactory;
 import org.keycloak.utils.StringUtil;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jboss.logging.Logger;
+import org.keycloak.Config;
 
 public class FolioUserStorageProviderFactory implements UserStorageProviderFactory<FolioUserStorageProvider> {
 
   public static final String PROVIDER_ID = "folio-user";
-  private static Logger log = LoggerFactory.getLogger(FolioUserStorageProviderFactory.class);
+  private static final Logger log = Logger.getLogger(FolioUserStorageProviderFactory.class);
 
   @Override
   public FolioUserStorageProvider create(KeycloakSession session, ComponentModel model) {
@@ -25,6 +26,7 @@ public class FolioUserStorageProviderFactory implements UserStorageProviderFacto
 
   @Override
   public String getId() {
+    log.debug("FOLIO User Provider::getId");
     return PROVIDER_ID;
   }
 
@@ -52,4 +54,14 @@ public class FolioUserStorageProviderFactory implements UserStorageProviderFacto
       throw new ComponentValidationException("Configuration not properly set, please verify.");
     }
   }
+
+    @Override
+    public void init(Config.Scope scope) {
+        log.debugf("init");
+    }
+
+    @Override
+    public void postInit(KeycloakSessionFactory keycloakSessionFactory) {
+        log.debugf("postInit");
+    }
 }

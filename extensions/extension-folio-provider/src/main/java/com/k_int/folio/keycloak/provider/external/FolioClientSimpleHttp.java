@@ -13,12 +13,11 @@ import org.keycloak.models.KeycloakSession;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jboss.logging.Logger;
 
 public class FolioClientSimpleHttp implements FolioClient {
 
-	private static Logger log = LoggerFactory.getLogger(FolioClientSimpleHttp.class);
+	private static final Logger log = Logger.getLogger(FolioClientSimpleHttp.class);
 
 	private final CloseableHttpClient httpClient;
 	private final String baseUrl;
