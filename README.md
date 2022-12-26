@@ -24,6 +24,7 @@ Build with
 
 Push to nexus with
 docker push NAME[:TAG]
+docker image push docker.libsdev.k-int.com/reshare/hub-authn --all-tags
 
 
 IF you add a new custom authentication provider and want that provider bundled into the docker image, don't forget to edit
