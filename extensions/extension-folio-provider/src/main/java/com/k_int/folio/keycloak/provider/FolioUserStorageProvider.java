@@ -29,7 +29,9 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+// interface for talking to FOLIO for user details, and a Simple HTTP implementation
+import com.k_int.folio.keycloak.provider.external.FolioClient;
+import com.k_int.folio.keycloak.provider.external.FolioClientSimpleHttp;
 
 /**
  * inspired by https://github.com/dasniko/keycloak-extensions-demo/blob/main/user-provider/src/main/java/dasniko/keycloak/user/PeanutsUserProvider.java
@@ -41,10 +43,12 @@ public class FolioUserStorageProvider implements UserStorageProvider, Credential
   private static Logger log = LoggerFactory.getLogger(FolioUserStorageProvider.class);
   private final KeycloakSession session;
   private final ComponentModel model;
+  private final FolioClient client;
 
   public FolioUserStorageProvider(KeycloakSession session, ComponentModel model) {
     this.session = session;
     this.model = model;
+    this.client = new FolioClientSimpleHttp(session, model);
   }
 
   @Override
