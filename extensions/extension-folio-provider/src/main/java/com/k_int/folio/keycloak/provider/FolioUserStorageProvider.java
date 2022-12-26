@@ -75,19 +75,21 @@ public class FolioUserStorageProvider implements UserStorageProvider, Credential
 
   @Override
   public boolean isConfiguredFor(RealmModel realm, UserModel user, String credentialType) {
+    log.debug(String.format("isConfiguredFor(realm,user,%s)",credentialType));
     return supportsCredentialType(credentialType);
   }
 
   @Override
   public boolean isValid(RealmModel realm, UserModel user, CredentialInput input) {
+
     log.debug(String.format("isValid(...%s)",input.toString()));
-    if (!supportsCredentialType(input.getType()) || !(input instanceof PasswordCredentialModel)) {
+
+    if (!supportsCredentialType(input.getType()) || !(input instanceof UserCredentialModel)) {
       return false;
     }
 
-    
-    PasswordCredentialModel pcm = (PasswordCredentialModel) input;
-    String password = pcm.getPasswordSecretData().getValue();
+    UserCredentialModel ucm = (UserCredentialModel) input;
+    String password = ucm.getChallengeResponse();
     String username = user.getUsername();
 
     try {
