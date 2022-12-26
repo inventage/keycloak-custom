@@ -65,30 +65,33 @@ public class FolioAuthenticator implements ConditionalAuthenticator {
       // get okapi token first
       log.info("/authn/login");
       CloseableHttpClient client = HttpClients.createDefault();
-      String token_url = OKAPI + "/authn/login";
-      HttpPost httpPost = new HttpPost(token_url);
-      httpPost.setEntity(entity);
-      httpPost.setHeader("Accept", "application/json");
-      httpPost.setHeader("Content-type", "application/json");
-      httpPost.setHeader("X-Okapi-Tenant", tenant);
-      CloseableHttpResponse response = client.execute(httpPost);
-      String token = response.getFirstHeader("X-Okapi-Token").getValue().toString();
-      client.close();
-
-      // call '/bl-users/login' with token (expected 201)
-      log.info("/bl-users/login");
-      if (token != null){
-         CloseableHttpClient httpClient = HttpClients.createDefault();
-         String blusers_url = OKAPI + "/bl-users/login";
-         HttpPost postRequest = new HttpPost(blusers_url);
-         postRequest.setEntity(entity);
-         postRequest.setHeader("Content-type", "application/json");
-         postRequest.setHeader("X-Okapi-Token", token);
-         CloseableHttpResponse httpResponse = httpClient.execute(postRequest);
-         defaultResponseCode = httpResponse.getStatusLine().getStatusCode();
-         httpClient.close();
-
-      } else { throw new Exception("Invaid token, check credentials."); }
+      try {
+        String token_url = OKAPI + "/authn/login";
+        HttpPost httpPost = new HttpPost(token_url);
+        httpPost.setEntity(entity);
+        httpPost.setHeader("Accept", "application/json");
+        httpPost.setHeader("Content-type", "application/json");
+        httpPost.setHeader("X-Okapi-Tenant", tenant);
+        CloseableHttpResponse response = client.execute(httpPost);
+        String token = response.getFirstHeader("X-Okapi-Token").getValue().toString();
+  
+        // call '/bl-users/login' with token (expected 201)
+        log.info("/bl-users/login");
+        if (token != null){
+           String blusers_url = OKAPI + "/bl-users/login";
+           HttpPost postRequest = new HttpPost(blusers_url);
+           postRequest.setEntity(entity);
+           postRequest.setHeader("Content-type", "application/json");
+           postRequest.setHeader("X-Okapi-Token", token);
+           CloseableHttpResponse httpResponse = client.execute(postRequest);
+           defaultResponseCode = httpResponse.getStatusLine().getStatusCode();
+  
+        } else { throw new Exception("Invaid token, check credentials."); }
+      }
+      finally {
+        if ( client != null )
+          client.close();
+      }
 
       return defaultResponseCode;
    }

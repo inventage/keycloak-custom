@@ -33,6 +33,13 @@ import org.slf4j.LoggerFactory;
 import com.k_int.folio.keycloak.provider.external.FolioClient;
 import com.k_int.folio.keycloak.provider.external.FolioClientSimpleHttp;
 
+import org.keycloak.connections.httpclient.HttpClientProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.CloseableHttpResponse;
+
 /**
  * inspired by https://github.com/dasniko/keycloak-extensions-demo/blob/main/user-provider/src/main/java/dasniko/keycloak/user/PeanutsUserProvider.java
  */
@@ -46,6 +53,7 @@ public class FolioUserStorageProvider implements UserStorageProvider, Credential
   private final FolioClient client;
 
   public FolioUserStorageProvider(KeycloakSession session, ComponentModel model) {
+    log.debug("FolioUserStorageProvider::FolioUserStorageProvider(...)");
     this.session = session;
     this.model = model;
     this.client = new FolioClientSimpleHttp(session, model);
@@ -61,7 +69,7 @@ public class FolioUserStorageProvider implements UserStorageProvider, Credential
   // https://www.keycloak.org/docs-api/20.0.2/javadocs/org/keycloak/credential/CredentialInputValidator.html
   @Override
   public boolean supportsCredentialType(String credentialType) {
-    log.debug("supportsCredentialType({})",credentialType);
+    log.debug(String.format("supportsCredentialType(%s)",credentialType));
     return PasswordCredentialModel.TYPE.equals(credentialType);
   }
 
@@ -72,16 +80,25 @@ public class FolioUserStorageProvider implements UserStorageProvider, Credential
 
   @Override
   public boolean isValid(RealmModel realm, UserModel user, CredentialInput input) {
-    if (!supportsCredentialType(input.getType()) || !(input instanceof UserCredentialModel)) {
+    log.debug(String.format("isValid(...%s)",input.toString()));
+    if (!supportsCredentialType(input.getType()) || !(input instanceof PasswordCredentialModel)) {
       return false;
+    }
+
+    
+    PasswordCredentialModel pcm = (PasswordCredentialModel) input;
+    String password = pcm.getPasswordSecretData().getValue();
+    String username = user.getUsername();
+
+    try {
+      int response = attemptFolioLogin(username, password);
+    }
+    catch ( Exception e ) {
+      log.error("Exception talking to FOLIO/OKAPI",e);
     }
 
     return false;
   }
-
-  // These are from other interfaces
-  /*
-  */
 
   @Override
   public void preRemove(RealmModel realm) {
@@ -94,4 +111,52 @@ public class FolioUserStorageProvider implements UserStorageProvider, Credential
   @Override
   public void preRemove(RealmModel realm, RoleModel role) {
   }
+
+  private int attemptFolioLogin(String username, String password) throws Exception {
+
+      StringEntity entity = new StringEntity(String.format("{\"username\":\"%s\",\"password\":\"%s\"}", username, password));
+
+      int responseCode = 400;
+      CloseableHttpClient client = session.getProvider(HttpClientProvider.class).getHttpClient();
+      try {
+        String cfg_baseUrl = model.get(FolioProviderConstants.BASE_URL);
+        String cfg_tenant = model.get(FolioProviderConstants.TENANT);
+        String cfg_basicUsername = model.get(FolioProviderConstants.AUTH_USERNAME);
+        String cfg_basicPassword = model.get(FolioProviderConstants.AUTH_PASSWORD);
+  
+        log.debug(String.format("Attempting FOLIO to %s(%s)login with %s",cfg_baseUrl, cfg_tenant, entity));
+  
+        // get okapi token first
+        log.info("/authn/login");
+        String token_url = cfg_baseUrl + "/authn/login";
+        HttpPost httpPost = new HttpPost(token_url);
+        httpPost.setEntity(entity);
+        httpPost.setHeader("Accept", "application/json");
+        httpPost.setHeader("Content-type", "application/json");
+        httpPost.setHeader("X-Okapi-Tenant", cfg_tenant);
+        CloseableHttpResponse response = client.execute(httpPost);
+        String token = response.getFirstHeader("X-Okapi-Token").getValue().toString();
+  
+        // call '/bl-users/login' with token (expected 201)
+        log.info("/bl-users/login");
+        if (token != null){
+           String blusers_url = cfg_baseUrl + "/bl-users/login";
+           HttpPost postRequest = new HttpPost(blusers_url);
+           postRequest.setEntity(entity);
+           postRequest.setHeader("Content-type", "application/json");
+           postRequest.setHeader("X-Okapi-Token", token);
+           CloseableHttpResponse httpResponse = client.execute(postRequest);
+           responseCode = httpResponse.getStatusLine().getStatusCode();
+        } else { 
+          throw new Exception("Invaid token, check credentials."); 
+        }
+      }
+      finally {
+        if ( client != null ) 
+          client.close();
+      }
+
+      return responseCode;
+   }
+
 }

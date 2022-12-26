@@ -9,13 +9,17 @@ import org.keycloak.provider.ProviderConfigurationBuilder;
 import org.keycloak.storage.UserStorageProviderFactory;
 import org.keycloak.utils.StringUtil;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FolioUserStorageProviderFactory implements UserStorageProviderFactory<FolioUserStorageProvider> {
 
-  public static final String PROVIDER_ID = "folio-user-provider";
+  public static final String PROVIDER_ID = "folio-user";
+  private static Logger log = LoggerFactory.getLogger(FolioUserStorageProviderFactory.class);
 
   @Override
   public FolioUserStorageProvider create(KeycloakSession session, ComponentModel model) {
+    log.debug("create()...");
     return new FolioUserStorageProvider(session, model);
   }
 

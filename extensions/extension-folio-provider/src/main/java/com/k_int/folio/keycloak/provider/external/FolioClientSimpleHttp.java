@@ -13,9 +13,12 @@ import org.keycloak.models.KeycloakSession;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FolioClientSimpleHttp implements FolioClient {
 
+	private static Logger log = LoggerFactory.getLogger(FolioClientSimpleHttp.class);
 
 	private final CloseableHttpClient httpClient;
 	private final String baseUrl;
@@ -30,12 +33,16 @@ public class FolioClientSimpleHttp implements FolioClient {
 		this.tenant = model.get(FolioProviderConstants.TENANT);
 		this.basicUsername = model.get(FolioProviderConstants.AUTH_USERNAME);
 		this.basicPassword = model.get(FolioProviderConstants.AUTH_PASSWORD);
+		log.debug(String.format("new FolioClientSimpleHttp base url will be",this.baseUrl));
 	}
 
 
 	@Override
 	@SneakyThrows
 	public FolioUser getFolioUserById(String id) {
+
+		log.debug(String.format("getFolioUserById(%s)",id));
+
 		String url = String.format("%s/%s", baseUrl, id);
 		// SimpleHttp.Response response = SimpleHttp.doGet(url, httpClient).authBasic(basicUsername, basicPassword).asResponse();
 		// if (response.getStatus() == 404) {
