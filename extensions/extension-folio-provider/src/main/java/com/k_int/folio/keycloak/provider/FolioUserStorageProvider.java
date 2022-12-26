@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 // interface for talking to FOLIO for user details, and a Simple HTTP implementation
+import com.k_int.folio.keycloak.provider.external.FolioUser;
 import com.k_int.folio.keycloak.provider.external.FolioClient;
 import com.k_int.folio.keycloak.provider.external.FolioClientSimpleHttp;
 
@@ -42,9 +43,11 @@ import org.jboss.logging.Logger;
 /**
  * inspired by https://github.com/dasniko/keycloak-extensions-demo/blob/main/user-provider/src/main/java/dasniko/keycloak/user/PeanutsUserProvider.java
  */
-public class FolioUserStorageProvider implements UserStorageProvider, CredentialInputValidator {
+public class FolioUserStorageProvider implements UserStorageProvider, 
+                                                 UserLookupProvider,
+                                                 CredentialInputValidator {
 
-  // implement in future: UserLookupProvider, UserQueryProvider, CredentialInputUpdater, UserRegistrationProvider {
+  // implement in future: CredentialInputUpdater, UserRegistrationProvider, UserQueryProvider,
 
   private static final Logger log = Logger.getLogger(FolioUserStorageProvider.class);
   private final KeycloakSession session;
@@ -158,6 +161,47 @@ public class FolioUserStorageProvider implements UserStorageProvider, Credential
       }
 
       return responseCode;
-   }
+  }
 
+
+  @Override
+  public UserModel getUserByEmail(RealmModel realm, String email) {
+    log.debug("getUserByEmail");
+    FolioUser folio_user = new FolioUser();
+    folio_user.setFolioUUID("1234");
+    folio_user.setUsername("mockuser");
+    folio_user.setFirstName("mockuserfirst");
+    folio_user.setLastName("mockuserlast");
+    folio_user.setEmail("mockemail");
+    folio_user.setBarcode("mockbarcode");
+    return new FolioUserAdapter(session, realm, model, folio_user);
+  }
+
+
+  @Override
+  public UserModel getUserByUsername(RealmModel realm, String username) {
+    log.debugf("getUserByUsername: %s", username);
+    FolioUser folio_user = new FolioUser();
+    folio_user.setFolioUUID("1234");
+    folio_user.setUsername("mockuser");
+    folio_user.setFirstName("mockuserfirst");
+    folio_user.setLastName("mockuserlast");
+    folio_user.setEmail("mockemail");
+    folio_user.setBarcode("mockbarcode");
+    return new FolioUserAdapter(session, realm, model, folio_user);
+  }
+
+
+  @Override
+  public UserModel getUserById(RealmModel realm, String id) {
+    log.debugf("getUserById: %s", id);
+    FolioUser folio_user = new FolioUser();
+    folio_user.setFolioUUID("1234");
+    folio_user.setUsername("mockuser");
+    folio_user.setFirstName("mockuserfirst");
+    folio_user.setLastName("mockuserlast");
+    folio_user.setEmail("mockemail");
+    folio_user.setBarcode("mockbarcode");
+    return new FolioUserAdapter(session, realm, model, folio_user);
+  }
 }
