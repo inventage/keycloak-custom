@@ -45,7 +45,12 @@
       	    <artifactId>keycloak-model-legacy</artifactId>
             <scope>provided</scope>
 	</dependency>
-
+	<dependency>
+	    <groupId>org.projectlombok</groupId>
+	    <artifactId>lombok</artifactId>
+            <version>1.18.24</version>
+            <!--<scope>provided</scope>-->
+	</dependency>
     </dependencies>
 
     <build>
@@ -54,6 +59,18 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                  <source>${maven.compiler.source}</source>
+                  <target>${maven.compiler.target}</target>
+                  <annotationProcessorPaths>
+                    <path>
+                      <groupId>org.projectlombok</groupId>
+                      <artifactId>lombok</artifactId>
+                      <version>${lombok-version}</version>
+                    </path>
+                  </annotationProcessorPaths>
+                </configuration>
+
             </plugin>
             <!-- deploy extension -->
             <plugin>

@@ -38,6 +38,8 @@
         <keycloak.version>20.0.2</keycloak.version> <!-- update also keycloak-config-cli.version -->
         <keycloak-config-cli.version>20.0.1</keycloak-config-cli.version> <!-- from https://github.com/adorsys/keycloak-config-cli/releases -->
         <auto-service.version>1.0.1</auto-service.version>
+
+        <lombok-version>1.18.24</lombok-version>
     </properties>
 
     <dependencyManagement>
@@ -81,6 +83,14 @@
                 <artifactId>auto-service-annotations</artifactId>
                 <version>${auto-service.version}</version>
             </dependency>
+
+            <!-- Added by ian for FOLIO provider -->
+            <dependency>
+	        <groupId>org.projectlombok</groupId>
+	        <artifactId>lombok</artifactId>
+                <version>${lombok-version}</version>
+	    </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -125,10 +135,17 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.1</version>
+                    <version>3.10.1</version>
                     <configuration>
                         <source>${maven.compiler.source}</source>
                         <target>${maven.compiler.target}</target>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>${lombok-version}</version>
+                            </path>                         
+                        </annotationProcessorPaths>
                     </configuration>
                 </plugin>
                 <plugin>
