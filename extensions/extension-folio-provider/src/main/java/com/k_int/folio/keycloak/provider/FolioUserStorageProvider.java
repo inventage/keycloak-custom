@@ -118,7 +118,8 @@ public class FolioUserStorageProvider implements UserStorageProvider,
 
   private int attemptFolioLogin(String username, String password) throws Exception {
 
-      StringEntity entity = new StringEntity(String.format("{\"username\":\"%s\",\"password\":\"%s\"}", username, password));
+      String user_pass_json = String.format("{\"username\":\"%s\",\"password\":\"%s\"}", username, password);
+      StringEntity entity = new StringEntity(user_pass_json);
 
       int responseCode = 400;
       CloseableHttpClient client = session.getProvider(HttpClientProvider.class).getHttpClient();
@@ -128,7 +129,7 @@ public class FolioUserStorageProvider implements UserStorageProvider,
         String cfg_basicUsername = model.get(FolioProviderConstants.AUTH_USERNAME);
         String cfg_basicPassword = model.get(FolioProviderConstants.AUTH_PASSWORD);
   
-        log.debug(String.format("Attempting FOLIO to %s(%s)login with %s",cfg_baseUrl, cfg_tenant, entity));
+        log.debug(String.format("Attempting FOLIO to %s(%s)login with %s",cfg_baseUrl, cfg_tenant, user_pass_json));
   
         // get okapi token first
         log.info("/authn/login");
@@ -139,20 +140,27 @@ public class FolioUserStorageProvider implements UserStorageProvider,
         httpPost.setHeader("Content-type", "application/json");
         httpPost.setHeader("X-Okapi-Tenant", cfg_tenant);
         CloseableHttpResponse response = client.execute(httpPost);
-        String token = response.getFirstHeader("X-Okapi-Token").getValue().toString();
+
+        if ( response != null ) {
+          log.debugf("Got okapi response %s",response.toString());
+          String token = response.getFirstHeader("X-Okapi-Token").getValue().toString();
   
-        // call '/bl-users/login' with token (expected 201)
-        log.info("/bl-users/login");
-        if (token != null){
-           String blusers_url = cfg_baseUrl + "/bl-users/login";
-           HttpPost postRequest = new HttpPost(blusers_url);
-           postRequest.setEntity(entity);
-           postRequest.setHeader("Content-type", "application/json");
-           postRequest.setHeader("X-Okapi-Token", token);
-           CloseableHttpResponse httpResponse = client.execute(postRequest);
-           responseCode = httpResponse.getStatusLine().getStatusCode();
-        } else { 
-          throw new Exception("Invaid token, check credentials."); 
+          // call '/bl-users/login' with token (expected 201)
+          log.info("/bl-users/login");
+          if (token != null){
+             String blusers_url = cfg_baseUrl + "/bl-users/login";
+             HttpPost postRequest = new HttpPost(blusers_url);
+             postRequest.setEntity(entity);
+             postRequest.setHeader("Content-type", "application/json");
+             postRequest.setHeader("X-Okapi-Token", token);
+             CloseableHttpResponse httpResponse = client.execute(postRequest);
+             responseCode = httpResponse.getStatusLine().getStatusCode();
+          } else { 
+            throw new Exception("Invaid token, check credentials."); 
+          }
+        }
+        else {
+          log.warn("NULL response from OKAPI");
         }
       }
       finally {
