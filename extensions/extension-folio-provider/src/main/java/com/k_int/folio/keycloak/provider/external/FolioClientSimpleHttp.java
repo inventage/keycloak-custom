@@ -27,13 +27,16 @@ public class FolioClientSimpleHttp implements FolioClient {
 
 
 	public FolioClientSimpleHttp(KeycloakSession session, ComponentModel model) {
+
+		log.debug(String.format("model %s",model.toString()));
 		this.httpClient = session.getProvider(HttpClientProvider.class).getHttpClient();
+
 		this.baseUrl = model.get(FolioProviderConstants.BASE_URL);
-		log.debug(String.format("base url ",this.baseUrl));
+		log.debug(String.format("%s = %s ",FolioProviderConstants.BASE_URL,this.baseUrl));
 		this.tenant = model.get(FolioProviderConstants.TENANT);
-		log.debug(String.format("Tenant",this.tenant));
+		log.debug(String.format("%s = %s",FolioProviderConstants.TENANT,this.tenant));
 		this.basicUsername = model.get(FolioProviderConstants.AUTH_USERNAME);
-		log.debug(String.format("Username",this.tenant));
+		log.debug(String.format("%s = %s",FolioProviderConstants.AUTH_USERNAME,this.tenant));
 		this.basicPassword = model.get(FolioProviderConstants.AUTH_PASSWORD);
 	}
 

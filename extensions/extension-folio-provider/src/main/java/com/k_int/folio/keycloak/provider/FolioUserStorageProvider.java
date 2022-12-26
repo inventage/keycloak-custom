@@ -61,6 +61,7 @@ public class FolioUserStorageProvider implements UserStorageProvider,
     this.session = session;
     this.model = model;
     this.client = new FolioClientSimpleHttp(session, model);
+    log.info("FolioUserStorageProvider::FolioUserStorageProvider(...) COMPLETE");
   }
 
   @Override
@@ -86,7 +87,7 @@ public class FolioUserStorageProvider implements UserStorageProvider,
   @Override
   public boolean isValid(RealmModel realm, UserModel user, CredentialInput input) {
 
-    log.debug(String.format("isValid(...%s)",input.toString()));
+    log.debug(String.format("isValid(..%s,%s)",user.toString(),input.toString()));
 
     if (!supportsCredentialType(input.getType()) || !(input instanceof UserCredentialModel)) {
       return false;
@@ -98,6 +99,9 @@ public class FolioUserStorageProvider implements UserStorageProvider,
 
     try {
       int response = attemptFolioLogin(username, password);
+      log.debugf("Got response : $d",response);
+      if ( response == 201 )
+        return true;
     }
     catch ( Exception e ) {
       log.error("Exception talking to FOLIO/OKAPI",e);
@@ -196,6 +200,8 @@ public class FolioUserStorageProvider implements UserStorageProvider,
   }
 
 
+
+  // Experiment - see if we can get away with just converting the username string into a UserModel for the purposes of login
   @Override
   public UserModel getUserByUsername(RealmModel realm, String username) {
     log.debugf("getUserByUsername: %s", username);
@@ -203,12 +209,12 @@ public class FolioUserStorageProvider implements UserStorageProvider,
     // should change to use the users endpoint to try and look up the user before we attempt to
     // login. Return null if the userid doesn't exist in folio
     FolioUser folio_user = new FolioUser();
-    folio_user.setFolioUUID("1234");
+    // folio_user.setFolioUUID("1234");
     folio_user.setUsername(username);
-    folio_user.setFirstName("mockuserfirst");
-    folio_user.setLastName("mockuserlast");
-    folio_user.setEmail("mockemail");
-    folio_user.setBarcode("mockbarcode");
+    // folio_user.setFirstName("mockuserfirst");
+    // folio_user.setLastName("mockuserlast");
+    // folio_user.setEmail("mockemail");
+    // folio_user.setBarcode("mockbarcode");
     return new FolioUserAdapter(session, realm, model, folio_user);
   }
 
