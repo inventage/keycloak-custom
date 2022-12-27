@@ -65,14 +65,9 @@ public class FolioClientSimpleHttp implements FolioClient {
     // }
     // return response.asJson(Peanut.class);
           
-                FolioUser mock_user = new FolioUser();
-          mock_user.setFolioUUID("1234");
-          mock_user.setUsername("mockuser");
-          mock_user.setFirstName("mockuserfirst");
-          mock_user.setLastName("mockuserlast");
-          mock_user.setEmail("mockemail");
-          mock_user.setBarcode("mockbarcode");
-                return mock_user;
+    FolioUser mock_user = new FolioUser();
+    mock_user.setUsername("mockuser");
+    return mock_user;
   }
 
   @Override
@@ -115,25 +110,25 @@ public class FolioClientSimpleHttp implements FolioClient {
     return null;
   }     
 
-        /**
-         * Get an okapi session capable of looking up user details.
-         * use the URL, tenant, username and password configured in the keycloak provider screen. This gives us a
-         * JWT we can use to perform user lookup operations generally
-         * We cache the session jwt so we don't need to spam the login endpoint
-         * @return jwt we can use in X-Okapi-Token when looking up users or performing other API tasks
-         */
+  /**
+   * Get an okapi session capable of looking up user details.
+   * use the URL, tenant, username and password configured in the keycloak provider screen. This gives us a
+   * JWT we can use to perform user lookup operations generally
+   * We cache the session jwt so we don't need to spam the login endpoint
+   * @return jwt we can use in X-Okapi-Token when looking up users or performing other API tasks
+   */
   private String getValidOKAPISession() {
     if ( cached_okapi_api_session_jwt == null ) {  // ToDo: Or it has expired
 
       log.debug("Attempting to get new session token for OKAPI API");
 
       try {
-        String blusers_url = baseUrl + "/bl-users/login";
+        String login_url = baseUrl + "/authn/login";
         String user_pass_json = String.format("{\"username\":\"%s\",\"password\":\"%s\"}", basicUsername, basicPassword);
-        log.debugf("Attempt bl-users login at %s with %s",blusers_url,user_pass_json);
+        log.debugf("Attempt bl-users login at %s with %s",login_url,user_pass_json);
 
         StringEntity entity = new StringEntity(user_pass_json);
-        HttpPost postRequest = new HttpPost(blusers_url);
+        HttpPost postRequest = new HttpPost(login_url);
         postRequest.setEntity(entity);
         postRequest.setHeader("Content-type", "application/json");
         CloseableHttpResponse httpResponse = httpClient.execute(postRequest);

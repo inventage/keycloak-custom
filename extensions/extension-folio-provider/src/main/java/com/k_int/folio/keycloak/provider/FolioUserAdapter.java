@@ -36,17 +36,17 @@ public class FolioUserAdapter extends AbstractUserAdapter.Streams {
 
 	@Override
 	public String getFirstName() {
-		return user.getFirstName();
+		return user.getPersonal().getFirstName();
 	}
 
 	@Override
 	public String getLastName() {
-		return user.getLastName();
+		return user.getPersonal().getLastName();
 	}
 
 	@Override
 	public String getEmail() {
-		return user.getEmail();
+		return user.getPersonal().getEmail();
 	}
 
 	@Override

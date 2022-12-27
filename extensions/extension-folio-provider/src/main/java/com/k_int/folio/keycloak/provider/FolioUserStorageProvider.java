@@ -190,12 +190,12 @@ public class FolioUserStorageProvider implements UserStorageProvider,
   public UserModel getUserByEmail(RealmModel realm, String email) {
     log.debug("getUserByEmail");
     FolioUser folio_user = new FolioUser();
-    folio_user.setFolioUUID("1234");
+    // folio_user.setFolioUUID("1234");
     folio_user.setUsername("mockuser");
-    folio_user.setFirstName("mockuserfirst");
-    folio_user.setLastName("mockuserlast");
-    folio_user.setEmail("mockemail");
-    folio_user.setBarcode("mockbarcode");
+    // folio_user.setFirstName("mockuserfirst");
+    // folio_user.setLastName("mockuserlast");
+    // folio_user.setEmail("mockemail");
+    // folio_user.setBarcode("mockbarcode");
     return new FolioUserAdapter(session, realm, model, folio_user);
   }
 
@@ -224,12 +224,12 @@ public class FolioUserStorageProvider implements UserStorageProvider,
   public UserModel getUserById(RealmModel realm, String id) {
     log.debugf("getUserById: %s", id);
     FolioUser folio_user = new FolioUser();
-    folio_user.setFolioUUID("1234");
+    // folio_user.setFolioUUID("1234");
     folio_user.setUsername("mockuser");
-    folio_user.setFirstName("mockuserfirst");
-    folio_user.setLastName("mockuserlast");
-    folio_user.setEmail("mockemail");
-    folio_user.setBarcode("mockbarcode");
+    // folio_user.setFirstName("mockuserfirst");
+    // folio_user.setLastName("mockuserlast");
+    // folio_user.setEmail("mockemail");
+    // folio_user.setBarcode("mockbarcode");
     return new FolioUserAdapter(session, realm, model, folio_user);
   }
 }
