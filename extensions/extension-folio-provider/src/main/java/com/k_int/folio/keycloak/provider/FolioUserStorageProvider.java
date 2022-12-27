@@ -230,11 +230,14 @@ public class FolioUserStorageProvider implements UserStorageProvider,
     FolioUser folio_user = client.getFolioUserByUsername(StorageId.externalId(id));
 
     // and not FolioUser folio_user = client.getFolioUserById(StorageId.externalId(id));
-
     if ( folio_user != null ) {
-      return new FolioUserAdapter(session, realm, model, folio_user);
+      log.debugf("client.getFolioUserByUsername returned %s",folio_user.toString());
+      UserModel user_model =  new FolioUserAdapter(session, realm, model, folio_user);
+      log.debugf("Converted user model is %s",user_model.toString());
+      return user_model;
     }
 
+    log.debug("getUserById did not return a user - returning null");
     return null;
   }
 }
