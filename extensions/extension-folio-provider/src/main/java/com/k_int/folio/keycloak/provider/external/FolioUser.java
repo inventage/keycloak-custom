@@ -2,7 +2,7 @@ package com.k_int.folio.keycloak.provider.external;
 
 import lombok.Data;
 import java.util.List;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * This is what the users endpoint returns for a query
@@ -17,6 +17,7 @@ import java.util.List;
  */
 
 @lombok.Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class FolioUser {
 	private String id;
 	private String username;
