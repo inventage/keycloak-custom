@@ -201,21 +201,22 @@ public class FolioUserStorageProvider implements UserStorageProvider,
 
 
 
-  // Experiment - see if we can get away with just converting the username string into a UserModel for the purposes of login
   @Override
   public UserModel getUserByUsername(RealmModel realm, String username) {
     log.debugf("getUserByUsername: %s", username);
-    // Pass back the user model containing username we were asked to look up - this
-    // should change to use the users endpoint to try and look up the user before we attempt to
-    // login. Return null if the userid doesn't exist in folio
-    FolioUser folio_user = new FolioUser();
-    // folio_user.setFolioUUID("1234");
-    folio_user.setUsername(username);
-    // folio_user.setFirstName("mockuserfirst");
-    // folio_user.setLastName("mockuserlast");
-    // folio_user.setEmail("mockemail");
-    // folio_user.setBarcode("mockbarcode");
-    return new FolioUserAdapter(session, realm, model, folio_user);
+    FolioUser folio_user = client.getFolioUserByUsername(username);
+
+    // If we got a response, from our api object convert it into a keycloak user model and return it
+    if ( folio_user != null ) {
+      log.debugf("Result of getUserByUsername(%s): %s",username,folio_user.toString());
+      return new FolioUserAdapter(session, realm, model, folio_user);
+    }
+    else {
+      log.warnf("Unable to locate user %s",username);
+    }
+
+    // Otherwise all bets are off
+    return null;
   }
 
 

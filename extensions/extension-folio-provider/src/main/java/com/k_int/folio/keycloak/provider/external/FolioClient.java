@@ -21,4 +21,8 @@ public interface FolioClient {
 	@Path("/{id}")
 	FolioUser getFolioUserById(@PathParam("id") String id);
 
+        /**
+         * II: Don't think we need to expose this in keycloak so not adding the ws annotations
+         */
+        public FolioUser getFolioUserByUsername(String id);
 }
