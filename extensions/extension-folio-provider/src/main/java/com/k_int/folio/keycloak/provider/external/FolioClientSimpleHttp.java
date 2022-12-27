@@ -59,15 +59,20 @@ public class FolioClientSimpleHttp implements FolioClient {
     log.debug(String.format("getFolioUserById(%s)",id));
 
     String url = String.format("%s/%s", baseUrl, id);
-    // SimpleHttp.Response response = SimpleHttp.doGet(url, httpClient).authBasic(basicUsername, basicPassword).asResponse();
-    // if (response.getStatus() == 404) {
-    //   throw new WebApplicationException(response.getStatus());
-    // }
-    // return response.asJson(Peanut.class);
-          
-    FolioUser mock_user = new FolioUser();
-    mock_user.setUsername("mockuser");
-    return mock_user;
+    String api_session_token = getValidOKAPISession();
+    if ( api_session_token != null ) {
+      String get_user_url = String.format("%s/users/%s",baseUrl,id);
+      SimpleHttp.Response response = SimpleHttp.doGet(get_user_url, httpClient)
+                                                   .header("X-Okapi-Token", api_session_token)
+                                                   .asResponse();
+      FolioUser fu = response.asJson(FolioUser.class);
+      return fu;
+    }
+    else {
+      log.warn("No session api token");
+    }
+
+    return null;
   }
 
   @Override
@@ -95,16 +100,9 @@ public class FolioClientSimpleHttp implements FolioClient {
         return fusr.getUsers().get(0);
 
        return null;
-      // FolioUser mock_user = new FolioUser();
-      // mock_user.setFolioUUID("1234");
-      // mock_user.setUsername("mockuser");
-      // mock_user.setFirstName("mockuserfirst");
-      // mock_user.setLastName("mockuserlast");
-      // mock_user.setEmail("mockemail");
-      // mock_user.setBarcode("mockbarcode");
-      // return mock_user;
     }
     else { 
+      log.warn("No session api token");
     }
 
     return null;
