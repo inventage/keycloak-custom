@@ -180,8 +180,6 @@ public class FolioUserStorageProvider implements UserStorageProvider,
         }
       }
       finally {
-        if ( client != null ) 
-          client.close();
       }
 
       return responseCode;
