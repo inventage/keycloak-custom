@@ -124,15 +124,18 @@ public class FolioClientSimpleHttp implements FolioClient {
 
       try {
         String login_url = baseUrl + "/authn/login";
-        String user_pass_json = String.format("{\"username\":\"%s\",\"password\":\"%s\"}", basicUsername, basicPassword);
+        String user_pass_json = String.format("{ \"username\":\"%s\", \"password\":\"%s\" }", basicUsername, basicPassword);
         log.debugf("Attempt bl-users login at %s with %s",login_url,user_pass_json);
 
         StringEntity entity = new StringEntity(user_pass_json);
         HttpPost postRequest = new HttpPost(login_url);
         postRequest.setEntity(entity);
+        postRequest.setHeader("Accept", "application/json");
+        postRequest.setHeader("X-Okapi-Tenant", tenant);
         postRequest.setHeader("Content-type", "application/json");
         CloseableHttpResponse httpResponse = httpClient.execute(postRequest);
         log.debugf("Okapi API login: %d",httpResponse.getStatusLine().getStatusCode());
+
         // The httpResponse contains a number of headers, which should include an X-Okapi-Token if the login succeeded
         Header okapi_token_header = httpResponse.getFirstHeader("X-Okapi-Token");
 
