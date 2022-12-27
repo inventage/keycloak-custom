@@ -222,8 +222,15 @@ public class FolioUserStorageProvider implements UserStorageProvider,
 
   @Override
   public UserModel getUserById(RealmModel realm, String id) {
+
     log.debugf("getUserById: %s (%s)", id, StorageId.externalId(id));
-    FolioUser folio_user = client.getFolioUserById(StorageId.externalId(id));
+
+    // Whats going on here? in a user federation, keycloak constructs a user id as "f:uuid-of-provider:username" StorageId.externalId effectively
+    // parses that ID out to just username, so although the function is getUserById we actually need to call 
+    FolioUser folio_user = client.getFolioUserByUsername(StorageId.externalId(id));
+
+    // and not FolioUser folio_user = client.getFolioUserById(StorageId.externalId(id));
+
     if ( folio_user != null ) {
       return new FolioUserAdapter(session, realm, model, folio_user);
     }
