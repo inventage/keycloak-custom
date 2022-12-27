@@ -222,8 +222,8 @@ public class FolioUserStorageProvider implements UserStorageProvider,
 
   @Override
   public UserModel getUserById(RealmModel realm, String id) {
-    log.debugf("getUserById: %s", id);
-    FolioUser folio_user = client.getFolioUserById(id);
+    log.debugf("getUserById: %s (%s)", id, StorageId.externalId(id));
+    FolioUser folio_user = client.getFolioUserById(StorageId.externalId(id));
     if ( folio_user != null ) {
       return new FolioUserAdapter(session, realm, model, folio_user);
     }
