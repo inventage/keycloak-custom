@@ -37,15 +37,17 @@ public class FolioClientSimpleHttp implements FolioClient {
 
   public FolioClientSimpleHttp(KeycloakSession session, ComponentModel model) {
 
-    log.debug(String.format("model %s",model.toString()));
     this.httpClient = session.getProvider(HttpClientProvider.class).getHttpClient();
 
     this.baseUrl = model.get(FolioProviderConstants.BASE_URL);
     log.debug(String.format("%s = %s ",FolioProviderConstants.BASE_URL,this.baseUrl));
+
     this.tenant = model.get(FolioProviderConstants.TENANT);
     log.debug(String.format("%s = %s",FolioProviderConstants.TENANT,this.tenant));
+
     this.basicUsername = model.get(FolioProviderConstants.AUTH_USERNAME);
-    log.debug(String.format("%s = %s",FolioProviderConstants.AUTH_USERNAME,this.tenant));
+    log.debug(String.format("%s = %s",FolioProviderConstants.AUTH_USERNAME,this.basicUsername));
+
     this.basicPassword = model.get(FolioProviderConstants.AUTH_PASSWORD);
   }
 
@@ -107,6 +109,8 @@ public class FolioClientSimpleHttp implements FolioClient {
       // mock_user.setBarcode("mockbarcode");
       // return mock_user;
     }
+    else { 
+    }
 
     return null;
   }     
@@ -119,27 +123,33 @@ public class FolioClientSimpleHttp implements FolioClient {
          * @return jwt we can use in X-Okapi-Token when looking up users or performing other API tasks
          */
   private String getValidOKAPISession() {
-          if ( cached_okapi_api_session_jwt == null ) {  // ToDo: Or it has expired
-            try {
-              String blusers_url = baseUrl + "/bl-users/login";
-              String user_pass_json = String.format("{\"username\":\"%s\",\"password\":\"%s\"}", basicUsername, basicPassword);
-              StringEntity entity = new StringEntity(user_pass_json);
-              HttpPost postRequest = new HttpPost(blusers_url);
-              postRequest.setEntity(entity);
-              postRequest.setHeader("Content-type", "application/json");
-              CloseableHttpResponse httpResponse = httpClient.execute(postRequest);
-              log.debugf("Okapi API login: %d",httpResponse.getStatusLine().getStatusCode());
-              // The httpResponse contains a number of headers, which should include an X-Okapi-Token if the login succeeded
-              Header okapi_token_header = httpResponse.getFirstHeader("X-Okapi-Token");
-              if ( okapi_token_header != null )
-                cached_okapi_api_session_jwt = okapi_token_header.getValue().toString();
-              else
-                log.warn("Response did not carry an X-Okapi-Token - likely invalid API user");
-            }
-            catch ( Exception e ) {
-              log.error("Exception obtaining API session with OKAPI");
-            }
-          }
-          return cached_okapi_api_session_jwt;
+    if ( cached_okapi_api_session_jwt == null ) {  // ToDo: Or it has expired
+
+      log.debug("Attempting to get new session token for OKAPI API");
+
+      try {
+        String blusers_url = baseUrl + "/bl-users/login";
+        String user_pass_json = String.format("{\"username\":\"%s\",\"password\":\"%s\"}", basicUsername, basicPassword);
+        log.debugf("Attempt bl-users login at %s with %s",blusers_url,user_pass_json);
+
+        StringEntity entity = new StringEntity(user_pass_json);
+        HttpPost postRequest = new HttpPost(blusers_url);
+        postRequest.setEntity(entity);
+        postRequest.setHeader("Content-type", "application/json");
+        CloseableHttpResponse httpResponse = httpClient.execute(postRequest);
+        log.debugf("Okapi API login: %d",httpResponse.getStatusLine().getStatusCode());
+        // The httpResponse contains a number of headers, which should include an X-Okapi-Token if the login succeeded
+        Header okapi_token_header = httpResponse.getFirstHeader("X-Okapi-Token");
+
+        if ( okapi_token_header != null )
+          cached_okapi_api_session_jwt = okapi_token_header.getValue().toString();
+        else
+          log.warn("Okapi API Login Response did not carry an X-Okapi-Token - likely invalid API user");
+      }
+      catch ( Exception e ) {
+        log.error("Exception obtaining API session with OKAPI");
+      }
+    }
+    return cached_okapi_api_session_jwt;
   }
 }
