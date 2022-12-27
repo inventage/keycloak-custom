@@ -100,8 +100,10 @@ public class FolioUserStorageProvider implements UserStorageProvider,
     try {
       int response = attemptFolioLogin(username, password);
       log.debugf("Got response : $d",response);
-      if ( response == 201 )
+      if ( response == 201 ) {
+        log.debug("RETURNING isValid:: TRUE");
         return true;
+      }
     }
     catch ( Exception e ) {
       log.error("Exception talking to FOLIO/OKAPI",e);
