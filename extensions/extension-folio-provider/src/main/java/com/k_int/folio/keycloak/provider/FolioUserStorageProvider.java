@@ -84,6 +84,10 @@ public class FolioUserStorageProvider implements UserStorageProvider,
     return supportsCredentialType(credentialType);
   }
 
+
+  /**
+   *  
+   */
   @Override
   public boolean isValid(RealmModel realm, UserModel user, CredentialInput input) {
 
@@ -99,7 +103,7 @@ public class FolioUserStorageProvider implements UserStorageProvider,
 
     try {
       int response = attemptFolioLogin(username, password);
-      log.debugf("Got response : $d",response);
+      log.debugf("Got response : %d",response);
       if ( response == 201 ) {
         log.debug("RETURNING isValid:: TRUE");
         return true;
@@ -109,6 +113,7 @@ public class FolioUserStorageProvider implements UserStorageProvider,
       log.error("Exception talking to FOLIO/OKAPI",e);
     }
 
+    log.debug("RETURNING isValid:: FALSE");
     return false;
   }
 
@@ -157,23 +162,6 @@ public class FolioUserStorageProvider implements UserStorageProvider,
             token = okapi_token_header.getValue().toString();
           else 
             log.warn("Response did not carry an X-Okapi-Token - likely invalid user");
-  
-          // call '/bl-users/login' with token (expected 201)
-          /*
-          This block really needs moving to getUserByUsername and to use the username and password configured for the provider
-          log.info("/bl-users/login");
-          if (token != null){
-             String blusers_url = cfg_baseUrl + "/bl-users/login";
-             HttpPost postRequest = new HttpPost(blusers_url);
-             postRequest.setEntity(entity);
-             postRequest.setHeader("Content-type", "application/json");
-             postRequest.setHeader("X-Okapi-Token", token);
-             CloseableHttpResponse httpResponse = client.execute(postRequest);
-             responseCode = httpResponse.getStatusLine().getStatusCode();
-          } else { 
-            throw new Exception("Invaid token, check credentials."); 
-          }
-          */
         }
         else {
           log.warn("NULL response from OKAPI");
