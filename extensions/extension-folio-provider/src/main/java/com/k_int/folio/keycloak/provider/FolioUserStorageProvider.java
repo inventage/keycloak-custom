@@ -162,6 +162,8 @@ public class FolioUserStorageProvider implements UserStorageProvider,
             token = okapi_token_header.getValue().toString();
           else 
             log.warn("Response did not carry an X-Okapi-Token - likely invalid user");
+
+          responseCode = response.getStatusLine().getStatusCode();
         }
         else {
           log.warn("NULL response from OKAPI");
