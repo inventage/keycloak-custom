@@ -38,7 +38,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.Header;
-
+import java.util.Base64;
 
 import org.jboss.logging.Logger;
 
@@ -131,23 +131,22 @@ public class SierraUserStorageProvider implements UserStorageProvider,
   public void preRemove(RealmModel realm, RoleModel role) {
   }
 
-  private String getSierraSession(String base_url, String client_key, String secret) {
+  private String getSierraSession(String base_url, String client_key, String secret) throws Exception {
     String result = null;
     try {
-      String login_url = cfg_baseUrl + "/iii/sierra-api/v6/token"
-      HttpPost httpPost = new HttpPost(validate_url);
-      httpPost.setEntity(entity);
+      CloseableHttpClient client = session.getProvider(HttpClientProvider.class).getHttpClient();
+      String login_url = base_url + "/iii/sierra-api/v6/token";
+      HttpPost httpPost = new HttpPost(login_url);
       httpPost.setHeader("Accept", "application/json");
       httpPost.setHeader("Content-type", "application/json");
-      String encoded_auth = Base64.getEncoder().encodeToString((client_key+':'+secret).getBytes())
-      request.headers['Authorization'] = 'Basic '+encoded_auth
-
+      String encoded_auth = Base64.getEncoder().encodeToString((client_key+':'+secret).getBytes());
+      httpPost.setHeader("Authorization", "Basic "+encoded_auth);
       CloseableHttpResponse response = client.execute(httpPost);
 
       if ( response != null ) {
         result = response.toString();
-        log.debugf("Got sierra response %s",response.toString());
-        responseCode = response.getStatusLine().getStatusCode();
+        int responseCode = response.getStatusLine().getStatusCode();
+        log.debugf("Got sierra response %d %s",responseCode, response.toString());
       }
       else {
         log.warn("NULL response from SIERRA");
@@ -177,12 +176,10 @@ public class SierraUserStorageProvider implements UserStorageProvider,
         String validate_url = cfg_baseUrl + "/iii/sierra-api/v6/patrons/validate";
         HttpPost httpPost = new HttpPost(validate_url);
         httpPost.setEntity(entity);
-        httpPost.setHeader("Authorization", 'Bearer '+token);
+        httpPost.setHeader("Authorization", "Bearer "+token);
         httpPost.setHeader("Accept", "application/json");
         httpPost.setHeader("Content-type", "application/json");
-        httpPost.setHeader("X-Okapi-Tenant", cfg_tenant);
         CloseableHttpResponse response = client.execute(httpPost);
-
         if ( response != null ) {
           log.debugf("Got sierra response %s",response.toString());
           responseCode = response.getStatusLine().getStatusCode();

@@ -22,6 +22,7 @@
         <module>extension-no-op-protocol-mapper</module>
         <module>extension-folio-authenticator</module>
         <module>extension-folio-provider</module>
+        <module>extension-sierra-provider</module>
     </modules>
 
     <dependencies>

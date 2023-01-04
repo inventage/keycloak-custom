@@ -55,7 +55,7 @@ public class SierraClientSimpleHttp implements SierraClient {
     log.debug(String.format("getSierraUserById(%s)",id));
 
     String url = String.format("%s/%s", baseUrl, id);
-    String api_session_token = getValidOKAPISession();
+    String api_session_token = null; // getValidOKAPISession();
     if ( api_session_token != null ) {
       String get_user_url = String.format("%s/users/%s",baseUrl,id);
       SimpleHttp.Response response = SimpleHttp.doGet(get_user_url, httpClient)
