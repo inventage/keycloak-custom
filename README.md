@@ -19,6 +19,9 @@ Please see the tutorial [building a custom Keycloak container image](https://key
 
 Reshare-hub specific keycloak with plugins for LMS authn and other config
 
+
+In development, after checkout create a
+
 Build with
 ./mvnw clean install
 
