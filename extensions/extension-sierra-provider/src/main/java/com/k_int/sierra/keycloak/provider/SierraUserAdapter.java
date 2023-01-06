@@ -31,23 +31,31 @@ public class SierraUserAdapter extends AbstractUserAdapter.Streams {
 
 	@Override
 	public String getUsername() {
-		return "";
+		return user.getUsername();
 	}
 
 	@Override
 	public String getFirstName() {
-		return "";
+		return user.getFirstName();
 	}
 
 	@Override
 	public String getLastName() {
-		return "";
+		return user.getLastName();
 	}
 
 	@Override
 	public String getEmail() {
-		return "";
+		return user.getEmail();
 	}
+
+        public String getLocalSystemCode() {
+          return user.getLocalSystemCode();
+        }
+
+        public String getHomeLibraryCode() {
+          return user.getHomeLibraryCode();
+        }
 
 	@Override
 	public SubjectCredentialManager credentialManager() {

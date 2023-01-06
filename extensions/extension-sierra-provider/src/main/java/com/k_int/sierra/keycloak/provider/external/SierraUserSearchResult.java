@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SierraUserSearchResult {
   private List<SierraUser> users;
-  private long totalRecords;
+  private Long totalRecords;
   // Lets see if we can ignore resultInfo { totalRecords:n, diagnostics:[] }
 }
 

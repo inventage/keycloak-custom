@@ -14,6 +14,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class SierraUser {
 	private String id;
 	private String username;
+	private String firstName;
+	private String lastName;
+	private String email;
+        private String localSystemCode;
+        private String homeLibraryCode;
 	private List<String> groups;
 	private List<String> roles;
 }

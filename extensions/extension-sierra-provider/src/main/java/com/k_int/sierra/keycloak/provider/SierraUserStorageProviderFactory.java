@@ -41,6 +41,7 @@ public class SierraUserStorageProviderFactory implements UserStorageProviderFact
       .property(SierraProviderConstants.BASE_URL, "Base URL", "OKAPI Base URL", ProviderConfigProperty.STRING_TYPE, "", null)
       .property(SierraProviderConstants.CLIENT_KEY, "Client Key", "Sierra API Client Key", ProviderConfigProperty.STRING_TYPE, "", null)
       .property(SierraProviderConstants.SECRET, "Secret", "Sierra API Secret", ProviderConfigProperty.STRING_TYPE, "", null)
+      .property(SierraProviderConstants.LOCAL_SYSTEM_CODE, "Local System Code", "What is the code for the local system", ProviderConfigProperty.STRING_TYPE, "", null)
       .build();
   }
 
@@ -48,7 +49,8 @@ public class SierraUserStorageProviderFactory implements UserStorageProviderFact
   public void validateConfiguration(KeycloakSession session, RealmModel realm, ComponentModel config) throws ComponentValidationException {
     if ( StringUtil.isBlank(config.get(SierraProviderConstants.BASE_URL))
       || StringUtil.isBlank(config.get(SierraProviderConstants.CLIENT_KEY))
-      || StringUtil.isBlank(config.get(SierraProviderConstants.SECRET))) {
+      || StringUtil.isBlank(config.get(SierraProviderConstants.SECRET))
+      || StringUtil.isBlank(config.get(SierraProviderConstants.LOCAL_SYSTEM_CODE))) {
       throw new ComponentValidationException("Configuration not properly set, please verify.");
     }
   }

@@ -47,6 +47,10 @@ public class SierraClientSimpleHttp implements SierraClient {
     log.debug(String.format("%s = %s",SierraProviderConstants.SECRET,this.secret));
   }
 
+  private String getSierraSession() {
+    return null;
+  }
+
 
   @Override
   @SneakyThrows
@@ -55,7 +59,7 @@ public class SierraClientSimpleHttp implements SierraClient {
     log.debug(String.format("getSierraUserById(%s)",id));
 
     String url = String.format("%s/%s", baseUrl, id);
-    String api_session_token = null; // getValidOKAPISession();
+    String api_session_token = getSierraSession();
     if ( api_session_token != null ) {
       String get_user_url = String.format("%s/users/%s",baseUrl,id);
       SimpleHttp.Response response = SimpleHttp.doGet(get_user_url, httpClient)
@@ -76,7 +80,7 @@ public class SierraClientSimpleHttp implements SierraClient {
   public SierraUser getSierraUserByUsername(String username) {
     log.debug(String.format("getSierraUserByUsername(%s)",username));
   
-    String api_session_token = null; // getValidOKAPISession();
+    String api_session_token = getSierraSession();
 
     if ( api_session_token != null ) {
 
@@ -103,5 +107,15 @@ public class SierraClientSimpleHttp implements SierraClient {
 
     return null;
   }     
+
+  /**
+   *  
+   */
+  @Override
+  public boolean isValid(String barcode, String pin) {
+    log.debugf("isValid(..%s,%s)",barcode,pin);
+    String api_session_token = getSierraSession();
+    return false;
+  }
 
 }

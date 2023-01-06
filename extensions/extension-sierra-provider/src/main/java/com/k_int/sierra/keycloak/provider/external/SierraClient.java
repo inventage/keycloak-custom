@@ -25,4 +25,9 @@ public interface SierraClient {
          * II: Don't think we need to expose this in keycloak so not adding the ws annotations
          */
         public SierraUser getSierraUserByUsername(String id);
+
+
+        // Check the pin to see if it's correct
+	public boolean isValid(String barcode, String pin);
+
 }
