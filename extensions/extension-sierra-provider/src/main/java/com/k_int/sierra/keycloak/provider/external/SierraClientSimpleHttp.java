@@ -134,10 +134,35 @@ public class SierraClientSimpleHttp implements SierraClient {
    *  
    */
   @Override
-  public boolean isValid(String barcode, String pin) {
+  public boolean isValid(String barcode, String pin) throws java.io.UnsupportedEncodingException, java.io.IOException {
+
+    boolean result = false;
+
     log.debugf("isValid(..%s,%s)",barcode,pin);
     String api_session_token = getSierraSession();
-    return false;
+    String login_url = this.baseUrl + "/iii/sierra-api/v6/patrons/validate";
+
+    // SimpleHttp simpleHttp = SimpleHttp.doPost(httpAuthenticationChannelUri, session)
+    //                             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+    //                             .json(channelRequest)
+    //                             .auth(createBearerToken(request, client));
+
+    String user_pin_json = String.format("{\"barcode\":\"%s\",\"pin\":\"%s\"}", barcode, pin);
+    StringEntity entity = new StringEntity(user_pin_json);
+
+    SimpleHttp.Response response = SimpleHttp.doPost(login_url, httpClient)
+                                                 .header("Authorization", "Basic "+api_session_token)
+                                                 .header("Accept", "application/json" )
+                                                 .header("Content-Type", "application/json" )
+                                                 .json(entity)
+                                                 .asResponse();
+
+    if ( response.getStatus() == 204 ) {
+      result = true;
+    }
+
+    return result;
   }
+
 
 }

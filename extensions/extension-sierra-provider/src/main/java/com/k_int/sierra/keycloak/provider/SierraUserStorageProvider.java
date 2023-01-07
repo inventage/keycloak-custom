@@ -102,17 +102,13 @@ public class SierraUserStorageProvider implements UserStorageProvider,
     String username = user.getUsername();
 
     try {
-      int response = attemptSierraLogin(username, password);
-      log.debugf("Got response : %d",response);
-
-      // Sierra returns 204 when the user is valid
-      if ( response == 204 ) {
+      if ( client.isValid(username,password) ) {
         log.debug("RETURNING isValid:: TRUE");
         return true;
       }
     }
     catch ( Exception e ) {
-      log.error("Exception talking to SIERRA/OKAPI",e);
+      log.error("Exception talking to SIERRA",e);
     }
 
     log.debug("RETURNING isValid:: FALSE");
@@ -130,70 +126,6 @@ public class SierraUserStorageProvider implements UserStorageProvider,
   @Override
   public void preRemove(RealmModel realm, RoleModel role) {
   }
-
-  private String getSierraSession(String base_url, String client_key, String secret) throws Exception {
-    String result = null;
-    try {
-      CloseableHttpClient client = session.getProvider(HttpClientProvider.class).getHttpClient();
-      String login_url = base_url + "/iii/sierra-api/v6/token";
-      HttpPost httpPost = new HttpPost(login_url);
-      httpPost.setHeader("Accept", "application/json");
-      httpPost.setHeader("Content-type", "application/json");
-      String encoded_auth = Base64.getEncoder().encodeToString((client_key+':'+secret).getBytes());
-      httpPost.setHeader("Authorization", "Basic "+encoded_auth);
-      CloseableHttpResponse response = client.execute(httpPost);
-
-      if ( response != null ) {
-        result = response.toString();
-        int responseCode = response.getStatusLine().getStatusCode();
-        log.debugf("Got sierra response %d %s",responseCode, response.toString());
-      }
-      else {
-        log.warn("NULL response from SIERRA");
-      }
-    }
-    finally {
-    }
-    return result;
-  }
-
-  private int attemptSierraLogin(String username, String password) throws Exception {
-
-      String user_pin_json = String.format("{\"barcode\":\"%s\",\"pin\":\"%s\"}", username, password);
-      StringEntity entity = new StringEntity(user_pin_json);
-
-      int responseCode = 400;
-      CloseableHttpClient client = session.getProvider(HttpClientProvider.class).getHttpClient();
-      try {
-        String cfg_baseUrl = model.get(SierraProviderConstants.BASE_URL);
-        String cfg_client_key = model.get(SierraProviderConstants.CLIENT_KEY);
-        String cfg_secret = model.get(SierraProviderConstants.SECRET);
-
-        String token = getSierraSession(cfg_baseUrl,cfg_client_key,cfg_secret);
-  
-        // get okapi token first
-        log.info("/iii/sierra-api/v6/patrons/validate");
-        String validate_url = cfg_baseUrl + "/iii/sierra-api/v6/patrons/validate";
-        HttpPost httpPost = new HttpPost(validate_url);
-        httpPost.setEntity(entity);
-        httpPost.setHeader("Authorization", "Bearer "+token);
-        httpPost.setHeader("Accept", "application/json");
-        httpPost.setHeader("Content-type", "application/json");
-        CloseableHttpResponse response = client.execute(httpPost);
-        if ( response != null ) {
-          log.debugf("Got sierra response %s",response.toString());
-          responseCode = response.getStatusLine().getStatusCode();
-        }
-        else {
-          log.warn("NULL response from SIERRA");
-        }
-      }
-      finally {
-      }
-
-      return responseCode;
-  }
-
 
   @Override
   public UserModel getUserByEmail(RealmModel realm, String email) {

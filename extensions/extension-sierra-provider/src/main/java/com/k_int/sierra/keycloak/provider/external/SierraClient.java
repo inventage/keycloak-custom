@@ -28,6 +28,9 @@ public interface SierraClient {
 
 
         // Check the pin to see if it's correct
-	public boolean isValid(String barcode, String pin);
+        /**
+         *
+         */
+	public boolean isValid(String barcode, String pin) throws java.io.UnsupportedEncodingException, java.io.IOException;
 
 }
