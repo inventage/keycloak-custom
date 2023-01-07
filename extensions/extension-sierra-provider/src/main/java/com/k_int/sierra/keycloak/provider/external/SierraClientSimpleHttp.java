@@ -161,6 +161,8 @@ public class SierraClientSimpleHttp implements SierraClient {
       result = true;
     }
 
+    log.debugf("isValid(%s,...) returning "+result,barcode);
+
     return result;
   }
 
