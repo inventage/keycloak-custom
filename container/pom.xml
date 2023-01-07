@@ -40,6 +40,11 @@
             <artifactId>extension-folio-provider</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.inventage.keycloak.custom</groupId>
+            <artifactId>extension-sierra-provider</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -73,7 +78,7 @@
                         </goals>
                         <configuration>
                             <!-- includeArtifactIds>extension-no-op-authenticator,themes,extension-folio-authenticator -->
-                            <includeArtifactIds>extension-no-op-authenticator,themes,extension-folio-authenticator,extension-folio-provider</includeArtifactIds>
+                            <includeArtifactIds>extension-no-op-authenticator,themes,extension-folio-authenticator,extension-folio-provider,extension-sierra-provider</includeArtifactIds>
                             <outputDirectory>${project.build.outputDirectory}/keycloak/providers</outputDirectory>
                         </configuration>
                     </execution>
