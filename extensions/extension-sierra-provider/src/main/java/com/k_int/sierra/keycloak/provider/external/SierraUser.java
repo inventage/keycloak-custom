@@ -7,16 +7,17 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 /**
  * This is what the users endpoint returns for a query
  *
+ * id,updatedDate,createdDate,expirationDate,names,barcodes,patronType,patronCodes,homeLibraryCode,emails
  */
 
 @lombok.Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SierraUser {
 	private String id;
-	private String username;
-	private String firstName;
-	private String lastName;
-	private String email;
+	private List<String> names;
+	private List<String> barcodes;
+	private List<String> emails;
+	private Integer patronType;
         private String localSystemCode;
         private String homeLibraryCode;
 	private List<String> groups;

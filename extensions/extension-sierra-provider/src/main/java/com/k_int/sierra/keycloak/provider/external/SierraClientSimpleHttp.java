@@ -108,20 +108,22 @@ public class SierraClientSimpleHttp implements SierraClient {
 
       // We lookup users by calling /users with query parameters limit, query, sortBy, etc
 
-      String user_query_url = String.format("%s/users?query=%s",baseUrl,"username%3d"+username);
-      log.debugf("attempting user lookup %s",user_query_url);
-      SimpleHttp.Response response = SimpleHttp.doGet(user_query_url, httpClient).header("X-Okapi-Token", api_session_token).asResponse();
+      String fields="id,updatedDate,createdDate,names,barcodes,patronType,patronCodes,homeLibraryCode";
+      String get_user_url = String.format("%s/iii/sierra-api/v6/patrons/%s?fields=%s",baseUrl,username,fields);
+      log.debugf("attempting user lookup %s",get_user_url);
+      SimpleHttp.Response response = SimpleHttp.doGet(get_user_url, httpClient)
+                     .header("Authorization", "Basic "+api_session_token)
+                     .asResponse();
 
       if (response.getStatus() == 404) {
         throw new WebApplicationException(response.getStatus());
       }
 
-      SierraUserSearchResult fusr = response.asJson(SierraUserSearchResult.class);
-      if ( ( fusr != null ) && 
-           ( fusr.getTotalRecords() == 1 ) )
-        return fusr.getUsers().get(0);
+      SierraUser usr = response.asJson(SierraUser.class);
+      if ( usr != null ) && 
+        return usr;
 
-       return null;
+      return null;
     }
     else { 
       log.warn("No session api token");
