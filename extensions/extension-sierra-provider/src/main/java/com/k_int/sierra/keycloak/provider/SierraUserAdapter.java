@@ -25,28 +25,37 @@ public class SierraUserAdapter extends AbstractUserAdapter.Streams {
 
 	public SierraUserAdapter(KeycloakSession session, RealmModel realm, ComponentModel model, SierraUser user) {
 		super(session, realm, model);
-		this.storageId = new StorageId(storageProviderModel.getId(), user.getUsername());
+		this.storageId = new StorageId(storageProviderModel.getId(), user.getId());
 		this.user = user;
 	}
 
 	@Override
 	public String getUsername() {
-		return user.getUsername();
+		return user.getId();
 	}
 
 	@Override
 	public String getFirstName() {
-		return user.getFirstName();
+		List<String> userNames = user.getNames();
+                if ( ( userNames == null ) || ( userNames.size() == 0 ) )
+                  return null;
+		return userNames.get(0);
 	}
 
 	@Override
 	public String getLastName() {
-		return user.getLastName();
+		List<String> userNames = user.getNames();
+                if ( ( userNames == null ) || ( userNames.size() == 1 ) )
+                  return null;
+		return userNames.get(userNames.size()-1);
 	}
 
 	@Override
 	public String getEmail() {
-		return user.getEmail();
+		List<String> emails = user.getEmails();
+                if ( ( emails == null ) || ( emails.size() == 1 ) )
+                  return null;
+		return emails.get(0);
 	}
 
         public String getLocalSystemCode() {
@@ -75,6 +84,8 @@ public class SierraUserAdapter extends AbstractUserAdapter.Streams {
 		attributes.add(UserModel.EMAIL, getEmail());
 		attributes.add(UserModel.FIRST_NAME, getFirstName());
 		attributes.add(UserModel.LAST_NAME, getLastName());
+		attributes.add("LocalSystemCode", getLocalSystemCode());
+		attributes.add("HomeLibraryCode", getHomeLibraryCode());
                 // We will add barcode here
 		// attributes.add("birthday", user.getBirthday());
 		// attributes.add("gender", user.getGender());

@@ -132,7 +132,7 @@ public class SierraUserStorageProvider implements UserStorageProvider,
     log.debug("getUserByEmail");
     SierraUser sierra_user = new SierraUser();
     // sierra_user.setSierraUUID("1234");
-    sierra_user.setUsername("mockuser");
+    sierra_user.setId("mockuser");
     // sierra_user.setFirstName("mockuserfirst");
     // sierra_user.setLastName("mockuserlast");
     // sierra_user.setEmail("mockemail");

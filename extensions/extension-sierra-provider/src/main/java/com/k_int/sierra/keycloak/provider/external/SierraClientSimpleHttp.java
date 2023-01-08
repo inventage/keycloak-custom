@@ -120,8 +120,11 @@ public class SierraClientSimpleHttp implements SierraClient {
       }
 
       SierraUser usr = response.asJson(SierraUser.class);
-      if ( usr != null ) && 
+      if ( usr != null ) {
+        // Inject the local system code
+        usr.setLocalSystemCode(this.localSystemCode);
         return usr;
+      }
 
       return null;
     }
