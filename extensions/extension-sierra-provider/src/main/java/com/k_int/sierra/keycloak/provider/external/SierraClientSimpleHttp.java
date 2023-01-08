@@ -21,8 +21,8 @@ import org.keycloak.component.ComponentModel;
 import org.keycloak.connections.httpclient.HttpClientProvider;
 import org.keycloak.models.KeycloakSession;
 import java.util.Base64;
-import org.apache.commons.collections4.map.LRUMap;
-
+// import org.apache.commons.collections4.map.LRUMap;
+import java.util.Map;
 
 
 /**
@@ -46,7 +46,8 @@ public class SierraClientSimpleHttp implements SierraClient {
   private final String secret;
   private final String localSystemCode;
 
-  private final LRUMap<String, SierraUser> userLookupCache = new LRUMap<String, SierraUser>(200);
+  // private final LRUMap<String, SierraUser> userLookupCache = new LRUMap<String, SierraUser>(200);
+  private final Map<String, SierraUser> userLookupCache = new java.util.HashMap<String, SierraUser>();
 
   // Suggestions for a better way to do this are MOST welcome
   // Field for barcode field: tag: b, field for uniqueid: tag: u

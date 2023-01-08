@@ -46,3 +46,11 @@ https://www.keycloak.org/docs/latest/server_development/#_user-storage-spi
 HOW TO TURN OFF THE USER CACHE - which should prevent the lowercasing
 
 https://stackoverflow.com/questions/69553369/how-to-access-the-original-case-sensitive-username-input-in-custom-user-storage
+
+
+
+IF you add dependencies on external libraries you will need to have them added to the wildfly manifest or the classloader will ignore them.. E.G. pom.xml/
+                            <manifestEntries>
+                                <Dependencies>org.apache.commons.collections</Dependencies>
+                            </manifestEntries>
+
