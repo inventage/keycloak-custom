@@ -42,24 +42,25 @@ public class SierraUserAdapter extends AbstractUserAdapter.Streams {
 	public String getFirstName() {
 		List<String> userNames = user.getNames();
                 if ( ( userNames == null ) || ( userNames.size() == 0 ) )
-                  return null;
+                  return getUsername();  // Fall back to username if we don't have a first name
 		return userNames.get(0);
 	}
 
 	@Override
 	public String getLastName() {
 		List<String> userNames = user.getNames();
-                if ( ( userNames == null ) || ( userNames.size() == 1 ) )
-                  return null;
-		return userNames.get(userNames.size()-1);
+                if ( ( userNames != null ) && ( userNames.size() > 0 ) )
+		  return userNames.get(userNames.size()-1);
+                return getUsername();
 	}
 
 	@Override
 	public String getEmail() {
 		List<String> emails = user.getEmails();
-                if ( ( emails == null ) || ( emails.size() == 1 ) )
-                  return null;
-		return emails.get(0);
+                if ( ( emails != null ) || ( emails.size() > 0 ) )
+		  return emails.get(0);
+		
+		return getUsername()+"@missingdata.nowhere";
 	}
 
         public String getLocalSystemCode() {
