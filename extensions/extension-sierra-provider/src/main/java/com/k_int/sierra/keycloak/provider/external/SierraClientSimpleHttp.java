@@ -22,6 +22,18 @@ import org.keycloak.connections.httpclient.HttpClientProvider;
 import org.keycloak.models.KeycloakSession;
 import java.util.Base64;
 
+
+/**
+ * Implement the sierra api.
+ * Here be dragons. Keycloak demands lowercase usernames. Sierra patron validation is case sensitve. fortunately
+ * sierra user lookup is case insensitve so we can look up a user record by a lower case uniqueId (The field kc-towers atleast seems
+ * to use for username) and the returned record contains the uniqueId in the uniqueIds field. We can then use that when
+ * we submit to the validate endpoint. So the flow is
+ *
+ * Keycloak.login(Lowercase username)
+ * Provider - lookup sierra user using that username
+ * Provider - validate using the uniqueId we got back from the user lookup rather than the username field.
+ */
 public class SierraClientSimpleHttp implements SierraClient {
 
   private static final Logger log = Logger.getLogger(SierraClientSimpleHttp.class);
@@ -33,7 +45,8 @@ public class SierraClientSimpleHttp implements SierraClient {
   private final String localSystemCode;
 
   // Suggestions for a better way to do this are MOST welcome
-  private static final String USER_LOOKUP_JSON_TEMPLATE = "{ \"target\": { \"record\": {\"type\": \"patron\"}, \"field\": {\"tag\":\"b\"} }, \"expr\": { \"op\": \"equals\", \"operands\": [\"%s\"] } }";
+  // Field for barcode field: tag: b, field for uniqueid: tag: u
+  private static final String USER_LOOKUP_JSON_TEMPLATE = "{ \"target\": { \"record\": {\"type\": \"patron\"}, \"field\": {\"tag\":\"u\"} }, \"expr\": { \"op\": \"equals\", \"operands\": [\"%s\"] } }";
   private static final String REQUIRED_USER_FIELDS = "id,updatedDate,createdDate,names,barcodes,patronType,patronCodes,homeLibraryCode,uniqueIds";
 
         // Not final - we expect that the jwt may become invalidated at some point and will need to be refreshed. TBC
@@ -67,7 +80,9 @@ public class SierraClientSimpleHttp implements SierraClient {
         log.debugf("Contact %s %s",login_url,encoded_auth);
 
         SimpleHttp.Response response = SimpleHttp.doPost(login_url, httpClient)
+                                             .header("Accept", "application/json" )
                                              .header("Authorization", "Basic "+encoded_auth)
+                                             .json(new StringEntity(""))
                                              .asResponse();
 
         log.debugf("Result of get token: %d",response.getStatus());
@@ -142,17 +157,22 @@ public class SierraClientSimpleHttp implements SierraClient {
 
       String get_user_url = String.format("%s/iii/sierra-api/v6/patrons/query?offset=0&limit=10",baseUrl);
 
-      String user_lookup_json = String.format(USER_LOOKUP_JSON_TEMPLATE, username);
-      log.debugf("User lookup query : %s",user_lookup_json);
-      StringEntity entity = new StringEntity(user_lookup_json);
+      // SimpleHttp expects the request json to be in a Java object form it can marshal into JSON. /sigh.
+      SierraSearchRequest patron_search_req = new SierraSearchRequest("patron","u",username);
 
+      log.debug(org.keycloak.util.JsonSerialization.writeValueAsString(patron_search_req));
 
       log.debugf("attempting user lookup %s",get_user_url);
+      // BEWARE .param does not do what you think it should - sourcecode here: http://www.java2s.com/example/java-src/pkg/org/keycloak/broker/provider/util/simplehttp-16d96.html
+      // if any params are set SimpleHttp will add the parameters and return a UrlEncodedFormEntity which is not what we want in this case.
+      // So we fall back to encoding params in the URL above, and then using .json to encode a POJO as Json ()
       SimpleHttp.Response response = SimpleHttp.doPost(get_user_url, httpClient)
                      .header("Authorization", "Bearer "+api_session_token)
                      .header("Accept", "application/json" )
                      .header("Content-Type", "application/json" )
-                     .json(entity)
+                     // .param("offset","0")
+                     // .param("limit","10")
+                     .json(patron_search_req)
                      .asResponse();
 
       if (response.getStatus() == 404) {
