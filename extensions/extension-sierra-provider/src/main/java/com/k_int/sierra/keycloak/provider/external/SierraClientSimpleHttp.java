@@ -50,9 +50,7 @@ public class SierraClientSimpleHttp implements SierraClient {
   private final Map<String, SierraUser> userLookupCache = new java.util.HashMap<String, SierraUser>();
 
   // Suggestions for a better way to do this are MOST welcome
-  // Field for barcode field: tag: b, field for uniqueid: tag: u
-  private static final String USER_LOOKUP_JSON_TEMPLATE = "{ \"target\": { \"record\": {\"type\": \"patron\"}, \"field\": {\"tag\":\"u\"} }, \"expr\": { \"op\": \"equals\", \"operands\": [\"%s\"] } }";
-  private static final String REQUIRED_USER_FIELDS = "id,updatedDate,createdDate,names,barcodes,patronType,patronCodes,homeLibraryCode,uniqueIds";
+  private static final String REQUIRED_USER_FIELDS = "id,updatedDate,createdDate,expirationDate,names,barcodes,patronType,patronCodes,homeLibraryCode,emails,message,blockInfo,autoBlockInfo,uniqueIds,emails";
 
         // Not final - we expect that the jwt may become invalidated at some point and will need to be refreshed. TBC
   private String cached_okapi_api_session_jwt;
