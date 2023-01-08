@@ -32,6 +32,10 @@ public class SierraClientSimpleHttp implements SierraClient {
   private final String secret;
   private final String localSystemCode;
 
+  // Suggestions for a better way to do this are MOST welcome
+  private static final String USER_LOOKUP_JSON_TEMPLATE = "{ \"target\": { \"record\": {\"type\": \"patron\"}, \"field\": {\"tag\":\"b\"} }, \"expr\": { \"op\": \"equals\", \"operands\": [\"%s\"] } }";
+  private static final String REQUIRED_USER_FIELDS = "id,updatedDate,createdDate,names,barcodes,patronType,patronCodes,homeLibraryCode,uniqueIds";
+
         // Not final - we expect that the jwt may become invalidated at some point and will need to be refreshed. TBC
   private String cached_okapi_api_session_jwt;
 
@@ -45,7 +49,7 @@ public class SierraClientSimpleHttp implements SierraClient {
     this.secret = model.get(SierraProviderConstants.SECRET);
     this.localSystemCode = model.get(SierraProviderConstants.LOCAL_SYSTEM_CODE);
 
-    log.debug(String.format("%s = %s ",SierraProviderConstants.BASE_URL,this.baseUrl));
+    log.debug(String.format("%s = %s",SierraProviderConstants.BASE_URL,this.baseUrl));
     log.debug(String.format("%s = %s",SierraProviderConstants.CLIENT_KEY,this.client_key));
     log.debug(String.format("%s = %s",SierraProviderConstants.SECRET,this.secret));
     log.debug(String.format("%s = %s",SierraProviderConstants.LOCAL_SYSTEM_CODE,this.localSystemCode));
@@ -54,20 +58,25 @@ public class SierraClientSimpleHttp implements SierraClient {
   private String getSierraSession() {
     log.debug("getSierraSession()");
     if ( cached_okapi_api_session_jwt == null ) {
-      log.debug("No cached session token - get one");
+
+      // Only for debugging - remove ASAP
+      log.debugf("No cached session token - get one : %s %s %s",baseUrl,client_key,secret);
       try {
         String login_url = baseUrl + "/iii/sierra-api/v6/token";
         String encoded_auth = Base64.getEncoder().encodeToString((client_key+':'+secret).getBytes());
         log.debugf("Contact %s %s",login_url,encoded_auth);
 
-        SimpleHttp.Response response = SimpleHttp.doGet(login_url, httpClient)
-                                                 .header("Authorization", "Basic "+encoded_auth)
-                                                 .asResponse();
+        SimpleHttp.Response response = SimpleHttp.doPost(login_url, httpClient)
+                                             .header("Authorization", "Basic "+encoded_auth)
+                                             .asResponse();
 
-        String token_response = response.asString();
+        log.debugf("Result of get token: %d",response.getStatus());
+
+        SierraAccessTokenResponse token_response = response.asJson(SierraAccessTokenResponse.class);
         log.debugf("Get token response: %s",token_response);
+
         if ( token_response != null )
-          cached_okapi_api_session_jwt = token_response;
+          cached_okapi_api_session_jwt = token_response.getAccess_token();
         else
           log.warn("Failed to get response from server");
       }
@@ -85,18 +94,33 @@ public class SierraClientSimpleHttp implements SierraClient {
   @Override
   @SneakyThrows
   public SierraUser getSierraUserById(String id) {
-
     log.debug(String.format("getSierraUserById(%s)",id));
-
-    String url = String.format("%s/%s", baseUrl, id);
     String api_session_token = getSierraSession();
+
     if ( api_session_token != null ) {
-      String get_user_url = String.format("%s/users/%s",baseUrl,id);
+
+      // We lookup users by calling /users with query parameters limit, query, sortBy, etc
+
+      String get_user_url = String.format("%s/iii/sierra-api/v6/patrons/%s?fields=%s",baseUrl,id,REQUIRED_USER_FIELDS);
+      log.debugf("attempting user lookup %s",get_user_url);
       SimpleHttp.Response response = SimpleHttp.doGet(get_user_url, httpClient)
-                                                   .header("X-Okapi-Token", api_session_token)
-                                                   .asResponse();
-      SierraUser fu = response.asJson(SierraUser.class);
-      return fu;
+                     .header("Authorization", "Bearer "+api_session_token)
+                     .asResponse();
+
+      if (response.getStatus() == 404) {
+        throw new WebApplicationException(response.getStatus());
+      }
+
+      log.debugf("Response as string: %s",response.asString());
+
+      SierraUser usr = response.asJson(SierraUser.class);
+      if ( usr != null ) {
+        // Inject the local system code
+        usr.setLocalSystemCode(this.localSystemCode);
+        return usr;
+      }
+
+      return null;
     }
     else {
       log.warn("No session api token");
@@ -114,13 +138,21 @@ public class SierraClientSimpleHttp implements SierraClient {
 
     if ( api_session_token != null ) {
 
-      // We lookup users by calling /users with query parameters limit, query, sortBy, etc
+      // First we have to try and find the id of the user with the supplied username via /iii/sierra-api/v6/patrons/query
 
-      String fields="id,updatedDate,createdDate,names,barcodes,patronType,patronCodes,homeLibraryCode,uniqueIds";
-      String get_user_url = String.format("%s/iii/sierra-api/v6/patrons/%s?fields=%s",baseUrl,username,fields);
+      String get_user_url = String.format("%s/iii/sierra-api/v6/patrons/query?offset=0&limit=10",baseUrl);
+
+      String user_lookup_json = String.format(USER_LOOKUP_JSON_TEMPLATE, username);
+      log.debugf("User lookup query : %s",user_lookup_json);
+      StringEntity entity = new StringEntity(user_lookup_json);
+
+
       log.debugf("attempting user lookup %s",get_user_url);
-      SimpleHttp.Response response = SimpleHttp.doGet(get_user_url, httpClient)
+      SimpleHttp.Response response = SimpleHttp.doPost(get_user_url, httpClient)
                      .header("Authorization", "Bearer "+api_session_token)
+                     .header("Accept", "application/json" )
+                     .header("Content-Type", "application/json" )
+                     .json(entity)
                      .asResponse();
 
       if (response.getStatus() == 404) {
@@ -129,11 +161,19 @@ public class SierraClientSimpleHttp implements SierraClient {
 
       log.debugf("Response as string: %s",response.asString());
 
-      SierraUser usr = response.asJson(SierraUser.class);
-      if ( usr != null ) {
+      SierraSearchResponse search_response = response.asJson(SierraSearchResponse.class);
+      if ( ( search_response != null ) && ( search_response.getTotal() == 1 ) ) {
         // Inject the local system code
+        SierraUser usr = SimpleHttp.doGet(search_response.getEntries().get(0).getLink()+"&fields="+REQUIRED_USER_FIELDS, httpClient)
+                            .header("Authorization", "Bearer "+api_session_token)
+                            .header("Accept", "application/json" )
+                            .asResponse()
+                            .asJson(SierraUser.class);
         usr.setLocalSystemCode(this.localSystemCode);
         return usr;
+      }
+      else {
+        log.warnf("Unable to find user with barcode matching %s",username);
       }
 
       return null;
@@ -166,7 +206,7 @@ public class SierraClientSimpleHttp implements SierraClient {
     StringEntity entity = new StringEntity(user_pin_json);
 
     SimpleHttp.Response response = SimpleHttp.doPost(login_url, httpClient)
-                                                 .header("Authorization", "Basic "+api_session_token)
+                                                 .header("Authorization", "Bearer "+api_session_token)
                                                  .header("Accept", "application/json" )
                                                  .header("Content-Type", "application/json" )
                                                  .json(entity)
