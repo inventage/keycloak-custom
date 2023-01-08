@@ -168,7 +168,7 @@ public class SierraUserStorageProvider implements UserStorageProvider,
 
     // Whats going on here? in a user federation, keycloak constructs a user id as "f:uuid-of-provider:username" StorageId.externalId effectively
     // parses that ID out to just username, so although the function is getUserById we actually need to call 
-    SierraUser sierra_user = client.getSierraUserByUsername(StorageId.externalId(id));
+    SierraUser sierra_user = client.getSierraUserById(StorageId.externalId(id));
 
     // and not SierraUser sierra_user = client.getSierraUserById(StorageId.externalId(id));
     if ( sierra_user != null ) {

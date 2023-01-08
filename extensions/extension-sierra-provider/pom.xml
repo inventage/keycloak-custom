@@ -51,6 +51,10 @@
             <version>1.18.24</version>
             <!--<scope>provided</scope>-->
 	</dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

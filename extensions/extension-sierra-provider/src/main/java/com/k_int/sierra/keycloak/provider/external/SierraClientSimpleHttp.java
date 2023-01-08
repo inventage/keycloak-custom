@@ -21,6 +21,8 @@ import org.keycloak.component.ComponentModel;
 import org.keycloak.connections.httpclient.HttpClientProvider;
 import org.keycloak.models.KeycloakSession;
 import java.util.Base64;
+import org.apache.commons.collections4.map.LRUMap;
+
 
 
 /**
@@ -43,6 +45,8 @@ public class SierraClientSimpleHttp implements SierraClient {
   private final String client_key;
   private final String secret;
   private final String localSystemCode;
+
+  private final LRUMap<String, SierraUser> userLookupCache = new LRUMap<String, SierraUser>(200);
 
   // Suggestions for a better way to do this are MOST welcome
   // Field for barcode field: tag: b, field for uniqueid: tag: u
@@ -110,6 +114,12 @@ public class SierraClientSimpleHttp implements SierraClient {
   @SneakyThrows
   public SierraUser getSierraUserById(String id) {
     log.debug(String.format("getSierraUserById(%s)",id));
+
+    if ( userLookupCache.containsKey(id) ) {
+      log.debug("Cache hit");
+      return userLookupCache.get(id);
+    }
+
     String api_session_token = getSierraSession();
 
     if ( api_session_token != null ) {
@@ -132,6 +142,9 @@ public class SierraClientSimpleHttp implements SierraClient {
       if ( usr != null ) {
         // Inject the local system code
         usr.setLocalSystemCode(this.localSystemCode);
+
+        // Stash this user in the cache so we don't hit sierra more than we need to
+        userLookupCache.put(id, usr);
         return usr;
       }
 
@@ -160,7 +173,7 @@ public class SierraClientSimpleHttp implements SierraClient {
       // SimpleHttp expects the request json to be in a Java object form it can marshal into JSON. /sigh.
       SierraSearchRequest patron_search_req = new SierraSearchRequest("patron","u",username);
 
-      log.debug(org.keycloak.util.JsonSerialization.writeValueAsString(patron_search_req));
+      // log.debug(org.keycloak.util.JsonSerialization.writeValueAsString(patron_search_req));
 
       log.debugf("attempting user lookup %s",get_user_url);
       // BEWARE .param does not do what you think it should - sourcecode here: http://www.java2s.com/example/java-src/pkg/org/keycloak/broker/provider/util/simplehttp-16d96.html
@@ -170,8 +183,6 @@ public class SierraClientSimpleHttp implements SierraClient {
                      .header("Authorization", "Bearer "+api_session_token)
                      .header("Accept", "application/json" )
                      .header("Content-Type", "application/json" )
-                     // .param("offset","0")
-                     // .param("limit","10")
                      .json(patron_search_req)
                      .asResponse();
 
@@ -179,17 +190,23 @@ public class SierraClientSimpleHttp implements SierraClient {
         throw new WebApplicationException(response.getStatus());
       }
 
-      log.debugf("Response as string: %s",response.asString());
-
+      // log.debugf("Response as string: %s",response.asString());
       SierraSearchResponse search_response = response.asJson(SierraSearchResponse.class);
+      log.debugf("Decoded search response %s",search_response.toString());
+
       if ( ( search_response != null ) && ( search_response.getTotal() == 1 ) ) {
-        // Inject the local system code
-        SierraUser usr = SimpleHttp.doGet(search_response.getEntries().get(0).getLink()+"&fields="+REQUIRED_USER_FIELDS, httpClient)
+        log.debugf("Search found a single record - attempting to retrieve %s",search_response.getEntries().get(0).getLink());
+
+        SimpleHttp.Response rsp = SimpleHttp.doGet(search_response.getEntries().get(0).getLink()+"?fields="+REQUIRED_USER_FIELDS, httpClient)
                             .header("Authorization", "Bearer "+api_session_token)
                             .header("Accept", "application/json" )
-                            .asResponse()
-                            .asJson(SierraUser.class);
+                            .asResponse();
+
+        // Inject the local system code
+        SierraUser usr = rsp.asJson(SierraUser.class);
         usr.setLocalSystemCode(this.localSystemCode);
+
+        log.debugf("Got user: %s",usr.toString());
         return usr;
       }
       else {
@@ -217,19 +234,16 @@ public class SierraClientSimpleHttp implements SierraClient {
     String api_session_token = getSierraSession();
     String login_url = this.baseUrl + "/iii/sierra-api/v6/patrons/validate";
 
-    // SimpleHttp simpleHttp = SimpleHttp.doPost(httpAuthenticationChannelUri, session)
-    //                             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-    //                             .json(channelRequest)
-    //                             .auth(createBearerToken(request, client));
-
-    String user_pin_json = String.format("{\"barcode\":\"%s\",\"pin\":\"%s\"}", barcode, pin);
-    StringEntity entity = new StringEntity(user_pin_json);
+    SierraPatronAuthenticationRequest req = SierraPatronAuthenticationRequest.builder()
+                                                  .barcode(barcode)
+                                                  .pin(pin)
+                                                  .build();
 
     SimpleHttp.Response response = SimpleHttp.doPost(login_url, httpClient)
                                                  .header("Authorization", "Bearer "+api_session_token)
                                                  .header("Accept", "application/json" )
                                                  .header("Content-Type", "application/json" )
-                                                 .json(entity)
+                                                 .json(req)
                                                  .asResponse();
 
     if ( response.getStatus() == 204 ) {

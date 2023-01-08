@@ -31,6 +31,10 @@ public class SierraUserAdapter extends AbstractUserAdapter.Streams {
 
 	@Override
 	public String getUsername() {
+		if ( ( user.getUniqueIds() != null ) && ( user.getUniqueIds().size() > 0 ) ) {
+		  return user.getUniqueIds().get(0);
+                }
+
 		return user.getId();
 	}
 
