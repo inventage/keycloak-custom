@@ -82,6 +82,26 @@
                             <outputDirectory>${project.build.outputDirectory}/keycloak/providers</outputDirectory>
                         </configuration>
                     </execution>
+
+                    <!-- providers don't classload from the usual route so we need to provide any extra dependencies here -->
+                    <!-- If you use a new artefact in your provider and get a class not found exception once deployed, you may need to -->
+                    <!-- add here -->
+                    <execution>
+                        <id>copy-provider-extra-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                          <artifactItems>
+                            <artifactItem>
+                              <groupId>org.apache.commons</groupId> <artifactId>commons-collections4</artifactId> <version>4.4</version> <type>jar</type> <overWrite>false</overWrite>
+                            </artifactItem>
+                          </artifactItems>
+                          <excludeTransitive>true</excludeTransitive>
+                          <outputDirectory>${project.build.outputDirectory}/keycloak/providers</outputDirectory>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <!-- for variable substitution -->

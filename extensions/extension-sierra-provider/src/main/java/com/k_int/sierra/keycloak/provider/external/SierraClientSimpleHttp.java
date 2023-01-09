@@ -21,7 +21,9 @@ import org.keycloak.component.ComponentModel;
 import org.keycloak.connections.httpclient.HttpClientProvider;
 import org.keycloak.models.KeycloakSession;
 import java.util.Base64;
-// import org.apache.commons.collections4.map.LRUMap;
+import org.apache.commons.collections4.map.LRUMap;
+import org.apache.commons.collections4.map.PassiveExpiringMap;
+import java.util.Collections;
 import java.util.Map;
 
 
@@ -46,11 +48,14 @@ public class SierraClientSimpleHttp implements SierraClient {
   private final String secret;
   private final String localSystemCode;
 
+  // private final Map<String, SierraUser> userLookupCache = new java.util.HashMap<String, SierraUser>();
   // private final LRUMap<String, SierraUser> userLookupCache = new LRUMap<String, SierraUser>(200);
-  private final Map<String, SierraUser> userLookupCache = new java.util.HashMap<String, SierraUser>();
+  // Wrap a LRU map with the passive expiry decorator
+  private static final long CACHE_TTL_MS = 1000 * 60 * 60; // Max cache TTL = 1h
+  private final Map<String, SierraUser> userLookupCache = Collections.synchronizedMap(new PassiveExpiringMap<String,SierraUser>(CACHE_TTL_MS,new LRUMap<String, SierraUser>(200)));
 
   // Suggestions for a better way to do this are MOST welcome
-  private static final String REQUIRED_USER_FIELDS = "id,updatedDate,createdDate,expirationDate,names,barcodes,patronType,patronCodes,homeLibraryCode,emails,message,blockInfo,autoBlockInfo,uniqueIds,emails";
+  private static final String REQUIRED_USER_FIELDS = "id,updatedDate,createdDate,expirationDate,names,barcodes,patronType,patronCodes,homeLibraryCode,emails,message,blockInfo,autoBlockInfo,uniqueIds";
 
         // Not final - we expect that the jwt may become invalidated at some point and will need to be refreshed. TBC
   private String cached_okapi_api_session_jwt;

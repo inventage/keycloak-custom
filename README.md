@@ -49,8 +49,5 @@ https://stackoverflow.com/questions/69553369/how-to-access-the-original-case-sen
 
 
 
-IF you add dependencies on external libraries you will need to have them added to the wildfly manifest or the classloader will ignore them.. E.G. pom.xml/
-                            <manifestEntries>
-                                <Dependencies>org.apache.commons.collections</Dependencies>
-                            </manifestEntries>
-
+IF you add dependencies on external libraries you will need to have them added to the providers directory explicitly as they won't be loadable through the normal route
+You can do this in container/pom.xml under the maven-dependency-plugin plugin

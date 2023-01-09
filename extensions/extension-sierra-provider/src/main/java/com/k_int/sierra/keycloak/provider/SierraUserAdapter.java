@@ -57,7 +57,7 @@ public class SierraUserAdapter extends AbstractUserAdapter.Streams {
 	@Override
 	public String getEmail() {
 		List<String> emails = user.getEmails();
-                if ( ( emails != null ) || ( emails.size() > 0 ) )
+                if ( ( emails != null ) && ( emails.size() > 0 ) )
 		  return emails.get(0);
 		
 		return getUsername()+"@missingdata.nowhere";
