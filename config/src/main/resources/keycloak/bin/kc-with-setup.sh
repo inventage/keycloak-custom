@@ -38,7 +38,6 @@ SERVER_OPTS="-Dkc.home.dir='$(abs_path '..')'"
 SERVER_OPTS="$SERVER_OPTS -Djboss.server.config.dir='$(abs_path '../conf')'"
 SERVER_OPTS="$SERVER_OPTS -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
 SERVER_OPTS="$SERVER_OPTS -Dquarkus-log-max-startup-records=10000"
-SERVER_OPTS="$SERVER_OPTS --spi-login-protocol-openid-connect-legacy-logout-redirect-uri=true"
 CLASSPATH_OPTS="'$(abs_path "../lib/quarkus-run.jar")'"
 
 DEBUG_MODE="${DEBUG:-false}"
@@ -46,6 +45,7 @@ DEBUG_PORT="${DEBUG_PORT:-8787}"
 DEBUG_SUSPEND="${DEBUG_SUSPEND:-n}"
 
 CONFIG_ARGS=${CONFIG_ARGS:-""}
+CONFIG_ARGS="$CONFIG_ARGS --spi-login-protocol-openid-connect-legacy-logout-redirect-uri=true"
 
 while [ "$#" -gt 0 ]
 do
