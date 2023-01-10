@@ -184,6 +184,8 @@ public class SierraClientSimpleHttp implements SierraClient {
       // if any params are set SimpleHttp will add the parameters and return a UrlEncodedFormEntity which is not what we want in this case.
       // So we fall back to encoding params in the URL above, and then using .json to encode a POJO as Json ()
       SimpleHttp.Response response = SimpleHttp.doPost(get_user_url, httpClient)
+                     .connectionRequestTimeoutMillis(1000*30)
+                     .connectTimeoutMillis(1000*30)
                      .header("Authorization", "Bearer "+api_session_token)
                      .header("Accept", "application/json" )
                      .header("Content-Type", "application/json" )
