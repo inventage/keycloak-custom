@@ -30,8 +30,10 @@ public class FolioClientSimpleHttp implements FolioClient {
   private final String tenant;
   private final String basicUsername;
   private final String basicPassword;
+  private final String localSystemCode;
+  private final String defaultHomeLibrary;
 
-        // Not final - we expect that the jwt may become invalidated at some point and will need to be refreshed. TBC
+  // Not final - we expect that the jwt may become invalidated at some point and will need to be refreshed. TBC
   private String cached_okapi_api_session_jwt;
 
 
@@ -47,6 +49,9 @@ public class FolioClientSimpleHttp implements FolioClient {
 
     this.basicUsername = model.get(FolioProviderConstants.AUTH_USERNAME);
     log.debug(String.format("%s = %s",FolioProviderConstants.AUTH_USERNAME,this.basicUsername));
+
+    this.defaultHomeLibrary = model.get(FolioProviderConstants.DEFAULT_HOME_LIBRARY);
+    this.localSystemCode = model.get(FolioProviderConstants.LOCAL_SYSTEM_CODE);
 
     this.basicPassword = model.get(FolioProviderConstants.AUTH_PASSWORD);
   }
@@ -66,6 +71,8 @@ public class FolioClientSimpleHttp implements FolioClient {
                                                    .header("X-Okapi-Token", api_session_token)
                                                    .asResponse();
       FolioUser fu = response.asJson(FolioUser.class);
+      fu.setHomeLibraryCode(this.defaultHomeLibrary);
+      fu.setLocalSystemCode(this.localSystemCode);
       return fu;
     }
     else {
@@ -95,11 +102,14 @@ public class FolioClientSimpleHttp implements FolioClient {
       }
 
       FolioUserSearchResult fusr = response.asJson(FolioUserSearchResult.class);
-      if ( ( fusr != null ) && 
-           ( fusr.getTotalRecords() == 1 ) )
-        return fusr.getUsers().get(0);
+      if ( ( fusr != null ) && ( fusr.getTotalRecords() == 1 ) ) {
+        FolioUser fu = fusr.getUsers().get(0);
+        fu.setHomeLibraryCode(this.defaultHomeLibrary);
+        fu.setLocalSystemCode(this.localSystemCode);
+        return fu;
+      }
 
-       return null;
+      return null;
     }
     else { 
       log.warn("No session api token");

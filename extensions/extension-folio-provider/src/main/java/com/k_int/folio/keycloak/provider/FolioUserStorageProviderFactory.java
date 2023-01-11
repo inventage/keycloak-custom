@@ -12,6 +12,7 @@ import org.keycloak.utils.StringUtil;
 import java.util.List;
 import org.jboss.logging.Logger;
 import org.keycloak.Config;
+import static java.util.Arrays.asList;
 
 public class FolioUserStorageProviderFactory implements UserStorageProviderFactory<FolioUserStorageProvider> {
 
@@ -42,6 +43,11 @@ public class FolioUserStorageProviderFactory implements UserStorageProviderFacto
       .property(FolioProviderConstants.TENANT, "Tenant", "OKAPI Tenant", ProviderConfigProperty.STRING_TYPE, "", null)
       .property(FolioProviderConstants.AUTH_USERNAME, "Username", "Username for OKAPI at the API", ProviderConfigProperty.STRING_TYPE, "", null)
       .property(FolioProviderConstants.AUTH_PASSWORD, "Password", "Password for OKAPI at the API", ProviderConfigProperty.PASSWORD, "", null)
+      .property(FolioProviderConstants.HOME_LIBRARY_METHOD, "Home Library Derivation", "How should this realm determin the home library of the patron", 
+                ProviderConfigProperty.LIST_TYPE, "Static",
+                asList("Static", "From Custom Property"))
+      .property(FolioProviderConstants.LOCAL_SYSTEM_CODE, "Local System Code", "Local System Code", ProviderConfigProperty.STRING_TYPE, "", null)
+      .property(FolioProviderConstants.DEFAULT_HOME_LIBRARY, "Default Home Library", "Default Home Library", ProviderConfigProperty.STRING_TYPE, "", null)
       .build();
   }
 
@@ -50,6 +56,9 @@ public class FolioUserStorageProviderFactory implements UserStorageProviderFacto
     if ( StringUtil.isBlank(config.get(FolioProviderConstants.BASE_URL))
       || StringUtil.isBlank(config.get(FolioProviderConstants.TENANT))
       || StringUtil.isBlank(config.get(FolioProviderConstants.AUTH_USERNAME))
+      || StringUtil.isBlank(config.get(FolioProviderConstants.HOME_LIBRARY_METHOD))
+      || StringUtil.isBlank(config.get(FolioProviderConstants.LOCAL_SYSTEM_CODE))
+      || StringUtil.isBlank(config.get(FolioProviderConstants.DEFAULT_HOME_LIBRARY))
       || StringUtil.isBlank(config.get(FolioProviderConstants.AUTH_PASSWORD))) {
       throw new ComponentValidationException("Configuration not properly set, please verify.");
     }

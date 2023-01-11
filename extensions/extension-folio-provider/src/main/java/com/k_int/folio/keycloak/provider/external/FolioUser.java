@@ -26,6 +26,8 @@ public class FolioUser {
         private String type;
         private String patronGroup;
         private UserPersonalData personal;
+        private String localSystemCode;
+        private String homeLibraryCode;
 	private List<String> groups;
 	private List<String> roles;
 }
