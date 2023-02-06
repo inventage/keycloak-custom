@@ -1,12 +1,27 @@
 {
-  "id": "example1",
-  "realm": "example1",
+  "id": "tutorial_passkey",
+  "realm": "tutorial_passkey",
   "enabled": true,
   "registrationAllowed": true,
   "adminEventsEnabled": true,
   "adminEventsDetailsEnabled": true,
   "eventsEnabled": true,
   "eventsExpiration": 259200,
+  "browserFlow": "browser-passkey",
+  "registrationFlow": "registration-passkey",
+  "requiredActions": [
+    {
+      "alias": "webauthn-register-passwordless",
+      "name": "Webauthn Register Passwordless",
+      "providerId": "webauthn-register-passwordless",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 10,
+      "config": {}
+    }
+  ],
+  "webAuthnPolicyPasswordlessAuthenticatorAttachment":  "not specified",
+  "webAuthnPolicyPasswordlessRequireResidentKey": "Yes",
   "enabledEventTypes": [
     "AUTHREQID_TO_TOKEN",
     "AUTHREQID_TO_TOKEN_ERROR",
@@ -117,9 +132,8 @@
   "accountTheme": "inventage.v2",
   "authenticationFlows": [
     {
-      "id": "b1d0fb54-74a8-444a-9860-972a3434ec44",
-      "alias": "browser2",
-      "description": "browser based authentication",
+      "alias": "browser-passkey",
+      "description": "Passkey or Password Authentication",
       "providerId": "basic-flow",
       "topLevel": true,
       "builtIn": false,
@@ -128,102 +142,118 @@
           "authenticator": "auth-cookie",
           "authenticatorFlow": false,
           "requirement": "ALTERNATIVE",
-          "priority": 10,
-          "autheticatorFlow": false,
-          "userSetupAllowed": false
-        },
-        {
-          "authenticator": "auth-spnego",
-          "authenticatorFlow": false,
-          "requirement": "DISABLED",
-          "priority": 20,
-          "autheticatorFlow": false,
-          "userSetupAllowed": false
-        },
-        {
-          "authenticator": "identity-provider-redirector",
-          "authenticatorFlow": false,
-          "requirement": "ALTERNATIVE",
-          "priority": 25,
+          "priority": 0,
           "autheticatorFlow": false,
           "userSetupAllowed": false
         },
         {
           "authenticatorFlow": true,
           "requirement": "ALTERNATIVE",
-          "priority": 30,
+          "priority": 1,
           "autheticatorFlow": true,
-          "flowAlias": "browser2 forms",
+          "flowAlias": "Login Options",
           "userSetupAllowed": false
         }
       ]
     },
     {
-      "id": "01798868-5121-454c-b860-57d7c4cdd214",
-      "alias": "browser2 Browser - Conditional OTP",
-      "description": "Flow to determine if the OTP is required for the authentication",
+      "alias": "Registration Options",
+      "description": "",
       "providerId": "basic-flow",
       "topLevel": false,
       "builtIn": false,
       "authenticationExecutions": [
         {
-          "authenticator": "conditional-user-configured",
+          "authenticator": "passkey-or-password-registration",
           "authenticatorFlow": false,
-          "requirement": "REQUIRED",
-          "priority": 10,
+          "requirement": "ALTERNATIVE",
+          "priority": 0,
           "autheticatorFlow": false,
           "userSetupAllowed": false
         },
         {
-          "authenticator": "auth-otp-form",
+          "authenticator": "password-registration",
           "authenticatorFlow": false,
-          "requirement": "REQUIRED",
-          "priority": 20,
+          "requirement": "ALTERNATIVE",
+          "priority": 1,
           "autheticatorFlow": false,
           "userSetupAllowed": false
         }
       ]
     },
     {
-      "id": "5b9b4127-911f-4d5b-b164-0fe3c944487e",
-      "alias": "browser2 forms",
-      "description": "Username, password, otp and other auth forms.",
+      "alias": "registration-passkey",
+      "description": "Passkey or Password Registration",
       "providerId": "basic-flow",
-      "topLevel": false,
+      "topLevel": true,
       "builtIn": false,
       "authenticationExecutions": [
         {
-          "authenticator": "auth-username-password-form",
-          "authenticatorFlow": false,
+          "authenticator": "registration-page-form",
+          "authenticatorFlow": true,
           "requirement": "REQUIRED",
-          "priority": 10,
-          "autheticatorFlow": false,
-          "userSetupAllowed": false
-        },
-        {
-          "authenticator": "no-operation-authenticator",
-          "authenticatorFlow": false,
-          "requirement": "REQUIRED",
-          "priority": 15,
-          "autheticatorFlow": false,
+          "priority": 0,
+          "autheticatorFlow": true,
+          "flowAlias": "Registration Form",
           "userSetupAllowed": false
         },
         {
           "authenticatorFlow": true,
-          "requirement": "CONDITIONAL",
-          "priority": 20,
+          "requirement": "REQUIRED",
+          "priority": 2,
           "autheticatorFlow": true,
-          "flowAlias": "browser2 Browser - Conditional OTP",
+          "flowAlias": "Registration Options",
+          "userSetupAllowed": false
+        }
+      ]
+    },
+    {
+      "alias": "Registration Form",
+      "description": "",
+      "providerId": "form-flow",
+      "topLevel": false,
+      "builtIn": false,
+      "authenticationExecutions": [
+        {
+          "authenticator": "user-creation-no-account",
+          "authenticatorFlow": false,
+          "requirement": "REQUIRED",
+          "priority": 0,
+          "autheticatorFlow": false,
+          "userSetupAllowed": false
+        }
+      ]
+    },
+    {
+      "alias": "Login Options",
+      "description": "",
+      "providerId": "basic-flow",
+      "topLevel": false,
+      "builtIn": false,
+      "authenticationExecutions": [
+        {
+          "authenticator": "passkey-login-form",
+          "authenticatorFlow": false,
+          "requirement": "ALTERNATIVE",
+          "priority": 0,
+          "autheticatorFlow": false,
+          "userSetupAllowed": false
+        },
+        {
+          "authenticator": "auth-password-form",
+          "authenticatorFlow": false,
+          "requirement": "ALTERNATIVE",
+          "priority": 1,
+          "autheticatorFlow": false,
           "userSetupAllowed": false
         }
       ]
     }
   ],
-  "browserFlow": "browser2",
   "clients": [
     {
-      "id": "myclient",
-      "clientId": "myclient",
+      "id": "client_passkey",
+      "clientId": "client_passkey",
       "name": "",
       "description": "",
       "rootUrl": "",

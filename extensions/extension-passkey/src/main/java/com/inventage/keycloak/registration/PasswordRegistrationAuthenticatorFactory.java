@@ -1,5 +1,6 @@
-package com.inventage.keycloak.noopformauthenticator.infrastructure.authenticator;
+package com.inventage.keycloak.registration;
 
+import com.google.auto.service.AutoService;
 import org.keycloak.Config;
 import org.keycloak.authentication.Authenticator;
 import org.keycloak.authentication.AuthenticatorFactory;
@@ -8,21 +9,40 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.provider.ProviderConfigProperty;
 
-import java.util.Collections;
 import java.util.List;
 
-public class NoOperationFormAuthenticatorFactory implements AuthenticatorFactory {
+@AutoService(AuthenticatorFactory.class)
+public class PasswordRegistrationAuthenticatorFactory implements AuthenticatorFactory {
 
-    private static final String PROVIDER_ID = "no-operation-form-authenticator";
-
+    public static final String PROVIDER_ID = "password-registration";
     private static final AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES = {
             AuthenticationExecutionModel.Requirement.REQUIRED,
             AuthenticationExecutionModel.Requirement.ALTERNATIVE,
-            AuthenticationExecutionModel.Requirement.CONDITIONAL
+            AuthenticationExecutionModel.Requirement.DISABLED
     };
+
+    private static final PasswordRegistrationAuthenticator SINGLETON = new PasswordRegistrationAuthenticator();
+    @Override
+    public Authenticator create(KeycloakSession session) {
+        return SINGLETON;
+    }
+
+    @Override
+    public AuthenticationExecutionModel.Requirement[] getRequirementChoices() {
+        return REQUIREMENT_CHOICES;
+    }
+
+    @Override
+    public String getId() {
+        return PROVIDER_ID;
+    }
+
+
+
+
     @Override
     public String getDisplayType() {
-        return "No Operation Form Authenticator";
+        return "Password Registration form";
     }
 
     @Override
@@ -35,10 +55,6 @@ public class NoOperationFormAuthenticatorFactory implements AuthenticatorFactory
         return false;
     }
 
-    @Override
-    public AuthenticationExecutionModel.Requirement[] getRequirementChoices() {
-        return REQUIREMENT_CHOICES;
-    }
 
     @Override
     public boolean isUserSetupAllowed() {
@@ -47,37 +63,29 @@ public class NoOperationFormAuthenticatorFactory implements AuthenticatorFactory
 
     @Override
     public String getHelpText() {
-        return "This Authenticator shows a question";
+        return "Passkey Tutorial: Should not be used in combination with built-in Authenticators/Forms. Form for setting up a password for a new user account.";
     }
 
     @Override
     public List<ProviderConfigProperty> getConfigProperties() {
-        return Collections.emptyList();
+        return null;
+    }
+
+
+    @Override
+    public void init(Config.Scope config) {
+
     }
 
     @Override
-    public Authenticator create(KeycloakSession keycloakSession) {
-        return new NoOperationFormAuthenticator();
-    }
+    public void postInit(KeycloakSessionFactory factory) {
 
-    @Override
-    public void init(Config.Scope scope) {
-        //NOP
-    }
-
-    @Override
-    public void postInit(KeycloakSessionFactory keycloakSessionFactory) {
-        //NOP
     }
 
     @Override
     public void close() {
-        //NOP
+
     }
 
-    @Override
-    public String getId() {
-        return PROVIDER_ID;
-    }
+
 }
-
