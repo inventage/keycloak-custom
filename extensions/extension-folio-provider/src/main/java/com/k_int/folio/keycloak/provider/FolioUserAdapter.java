@@ -36,17 +36,26 @@ public class FolioUserAdapter extends AbstractUserAdapter.Streams {
 
 	@Override
 	public String getFirstName() {
-		return user.getPersonal().getFirstName();
+		if ( user.getPersonal() != null ) {
+			return user.getPersonal().getFirstName();
+		}
+		return user.getUsername();
 	}
 
 	@Override
 	public String getLastName() {
-		return user.getPersonal().getLastName();
+		if ( user.getPersonal() != null ) {
+			return user.getPersonal().getLastName();
+		}
+		return null;
 	}
 
 	@Override
 	public String getEmail() {
-		return user.getPersonal().getEmail();
+		if ( user.getPersonal() != null ) {
+			return user.getPersonal().getEmail();
+		}
+		return null;
 	}
 
 	@Override
