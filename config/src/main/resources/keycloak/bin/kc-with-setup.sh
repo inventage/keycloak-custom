@@ -1,6 +1,9 @@
 #!/bin/bash
 
-### copied from https://github.com/keycloak/keycloak/blob/main/quarkus/dist/src/main/content/bin/kc.sh
+# ========================================
+# Mostly opied from https://github.com/keycloak/keycloak/blob/main/quarkus/dist/src/main/content/bin/kc.sh
+# See delimiter near the bottom
+# ========================================
 
 case "$(uname)" in
     CYGWIN*)
@@ -38,7 +41,8 @@ SERVER_OPTS="-Dkc.home.dir='$(abs_path '..')'"
 SERVER_OPTS="$SERVER_OPTS -Djboss.server.config.dir='$(abs_path '../conf')'"
 SERVER_OPTS="$SERVER_OPTS -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
 SERVER_OPTS="$SERVER_OPTS -Dquarkus-log-max-startup-records=10000"
-CLASSPATH_OPTS="'$(abs_path "../lib/quarkus-run.jar")'"
+SERVER_OPTS="$SERVER_OPTS --add-opens java.base/java.lang.invoke=ALL-UNNAMED"
+CLASSPATH_OPTS="'$(abs_path "../lib/quarkus-run.jar"):$(abs_path "../lib/bootstrap/*")'"
 
 DEBUG_MODE="${DEBUG:-false}"
 DEBUG_PORT="${DEBUG_PORT:-8787}"
@@ -119,9 +123,16 @@ if [[ (! $CONFIG_ARGS = *"--optimized"*) ]] && [[ ! "$CONFIG_ARGS" == " build"* 
 fi
 
 eval exec "'$JAVA'" $JAVA_RUN_OPTS &
+
+# ========================================
+# Above: Copied from https://github.com/keycloak/keycloak/blob/main/quarkus/dist/src/main/content/bin/kc.sh
+#        (and added the & at the very end)
+# Below: Added by Inventage
+# ========================================
+
 export KEYCLOAK_PID=$!
 
 source $DIRNAME/keycloak-setup.sh
 
-# to keep the container running until keycloak shuts down
+#to keep the container running until keycloak shuts down
 wait $KEYCLOAK_PID
