@@ -71,6 +71,10 @@ public class SierraUserAdapter extends AbstractUserAdapter.Streams {
           return user.getHomeLibraryCode();
         }
 
+        public String getHomeLibraryPatronId() {
+          return user.getId();
+        }
+
 	@Override
 	public SubjectCredentialManager credentialManager() {
 		return new LegacyUserCredentialManager(session, realm, this);
@@ -91,6 +95,7 @@ public class SierraUserAdapter extends AbstractUserAdapter.Streams {
 		attributes.add(UserModel.LAST_NAME, getLastName());
 		attributes.add("LocalSystemCode", getLocalSystemCode());
 		attributes.add("HomeLibraryCode", getHomeLibraryCode());
+		attributes.add("LocalSystemPatronId", getHomeLibraryPatronId());
                 // We will add barcode here
 		// attributes.add("birthday", user.getBirthday());
 		// attributes.add("gender", user.getGender());

@@ -77,6 +77,10 @@ public class FolioUserAdapter extends AbstractUserAdapter.Streams {
           return user.getHomeLibraryCode();
         }
 
+	public String getHomeLibraryPatronId() {
+          return user.getId();
+	}
+
 	@Override
 	public Map<String, List<String>> getAttributes() {
 		MultivaluedHashMap<String, String> attributes = new MultivaluedHashMap<>();
@@ -87,6 +91,7 @@ public class FolioUserAdapter extends AbstractUserAdapter.Streams {
                 // Needed for EVERY DCB Hub authentication provider
                 attributes.add("LocalSystemCode", getLocalSystemCode());
                 attributes.add("HomeLibraryCode", getHomeLibraryCode());
+                attributes.add("LocalSystemPatronId", getHomeLibraryPatronId());
                 // We will add barcode here
 		// attributes.add("birthday", user.getBirthday());
 		// attributes.add("gender", user.getGender());
