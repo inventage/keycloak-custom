@@ -25,7 +25,7 @@ RUN /opt/keycloak/bin/kc.sh build
 USER root
 # allow timezone configuration, see also https://access.redhat.com/solutions/5616681
 RUN ln -sf /usr/share/zoneinfo/Europe/Zurich /etc/localtime
-RUN chmod -R g+rwX /opt/keycloak
+RUN chmod -R g+rwx /opt/keycloak
 
 USER 1000
 WORKDIR /opt/keycloak
