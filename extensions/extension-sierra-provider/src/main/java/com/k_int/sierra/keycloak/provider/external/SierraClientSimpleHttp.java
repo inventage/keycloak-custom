@@ -47,6 +47,7 @@ public class SierraClientSimpleHttp implements SierraClient {
   private final String client_key;
   private final String secret;
   private final String localSystemCode;
+  private final String authMode;
 
   // private final Map<String, SierraUser> userLookupCache = new java.util.HashMap<String, SierraUser>();
   // private final LRUMap<String, SierraUser> userLookupCache = new LRUMap<String, SierraUser>(200);
@@ -69,11 +70,13 @@ public class SierraClientSimpleHttp implements SierraClient {
     this.client_key = model.get(SierraProviderConstants.CLIENT_KEY);
     this.secret = model.get(SierraProviderConstants.SECRET);
     this.localSystemCode = model.get(SierraProviderConstants.LOCAL_SYSTEM_CODE);
+    this.authMode = model.get(SierraProviderConstants.AUTH_MODE);
 
     log.debug(String.format("%s = %s",SierraProviderConstants.BASE_URL,this.baseUrl));
     log.debug(String.format("%s = %s",SierraProviderConstants.CLIENT_KEY,this.client_key));
     log.debug(String.format("%s = %s",SierraProviderConstants.SECRET,this.secret));
     log.debug(String.format("%s = %s",SierraProviderConstants.LOCAL_SYSTEM_CODE,this.localSystemCode));
+    log.debug(String.format("%s = %s",SierraProviderConstants.AUTH_MODE,this.authMode));
   }
 
   private String getSierraSession() {
@@ -164,7 +167,18 @@ public class SierraClientSimpleHttp implements SierraClient {
   @Override
   @SneakyThrows
   public SierraUser getSierraUserByUsername(String username) {
-    log.debug(String.format("getSierraUserByUsername(%s)",username));
+    return getSierraUserByX(username,"u");
+  }
+
+  @Override
+  @SneakyThrows
+  public SierraUser getSierraUserByBarcode(String username) {
+    return getSierraUserByX(username,"b");
+  }
+
+  @SneakyThrows
+  public SierraUser getSierraUserByX(String username, String idtype) {
+    log.debug(String.format("getSierraUserByX(%s,%s)",username,idtype));
   
     String api_session_token = getSierraSession();
 
@@ -175,7 +189,7 @@ public class SierraClientSimpleHttp implements SierraClient {
       String get_user_url = String.format("%s/iii/sierra-api/v6/patrons/query?offset=0&limit=10",baseUrl);
 
       // SimpleHttp expects the request json to be in a Java object form it can marshal into JSON. /sigh.
-      SierraSearchRequest patron_search_req = new SierraSearchRequest("patron","u",username);
+      SierraSearchRequest patron_search_req = new SierraSearchRequest("patron",idtype,username);
 
       // log.debug(org.keycloak.util.JsonSerialization.writeValueAsString(patron_search_req));
 
@@ -233,6 +247,15 @@ public class SierraClientSimpleHttp implements SierraClient {
    */
   @Override
   public boolean isValid(String barcode, String pin) throws java.io.UnsupportedEncodingException, java.io.IOException {
+    if ( ( this.authMode == null ) || ( this.authMode.equals("PIN") ) ) {
+      return isValidByPin(barcode,pin);
+    }
+    else {
+      return isValidByName(barcode,pin);
+    }
+  }
+
+  public boolean isValidByPin(String barcode, String pin) throws java.io.UnsupportedEncodingException, java.io.IOException {
 
     boolean result = false;
 
@@ -254,6 +277,36 @@ public class SierraClientSimpleHttp implements SierraClient {
 
     if ( response.getStatus() == 204 ) {
       result = true;
+    }
+
+    log.debugf("isValid(%s,...) returning "+result,barcode);
+
+    return result;
+  }
+
+  public boolean isValidByName(String barcode, String pin) throws java.io.UnsupportedEncodingException, java.io.IOException {
+
+    boolean result = false;
+
+    log.debugf("isValid(..%s,%s)",barcode,pin);
+    String api_session_token = getSierraSession();
+    String login_url = this.baseUrl + "/iii/sierra-api/v6/patrons/validate";
+
+    SierraUser su = getSierraUserByUsername(barcode);
+    if ( su != null ) {
+      if ( su.getNames() != null ) {
+        log.debugf("Got user record... testing name against %s for %s",pin,su.getNames().toString());
+        for ( String s : su.getNames() ) {
+          log.debugf("Testing %s",s);
+          if ( ( s.length() > 3 ) && ( s.toLowerCase().startsWith(pin.toLowerCase() ) ) ) {
+            log.debugf("Pin %s matches name %s",pin,s);
+            result=true;
+          }
+        }
+      }
+      else {
+        log.debugf("Names array was null for user %s",barcode);
+      }
     }
 
     log.debugf("isValid(%s,...) returning "+result,barcode);
