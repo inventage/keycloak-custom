@@ -251,14 +251,14 @@ public class SierraClientSimpleHttp implements SierraClient {
    *  
    */
   @Override
-  public boolean isValid(String barcode, String pin) throws java.io.UnsupportedEncodingException, java.io.IOException {
+  public boolean isValid(String userid, String pin) throws java.io.UnsupportedEncodingException, java.io.IOException {
     if ( ( this.authMode == null ) || ( this.authMode.equals("PIN") ) ) {
       log.debug("Authmode is PIN");
-      return isValidByPin(barcode,pin);
+      return isValidByPin(userid,pin);
     }
     else {
       log.debug("Authmode is NAME");
-      return isValidByName(barcode,pin);
+      return isValidByName(userid,pin);
     }
   }
 
@@ -291,15 +291,15 @@ public class SierraClientSimpleHttp implements SierraClient {
     return result;
   }
 
-  public boolean isValidByName(String barcode, String pin) throws java.io.UnsupportedEncodingException, java.io.IOException {
+  public boolean isValidByName(String sierra_user_id, String pin) throws java.io.UnsupportedEncodingException, java.io.IOException {
 
     boolean result = false;
 
-    log.debugf("isValid(..%s,%s)",barcode,pin);
+    log.debugf("isValid(..%s,%s)",sierra_user_id,pin);
     String api_session_token = getSierraSession();
     String login_url = this.baseUrl + "/iii/sierra-api/v6/patrons/validate";
 
-    SierraUser su = getSierraUserByBarcode(barcode);
+    SierraUser su = getSierraUserById(sierra_user_id);
     if ( su != null ) {
       if ( su.getNames() != null ) {
         log.debugf("Got user record... testing name against %s for %s",pin,su.getNames().toString());
@@ -312,14 +312,14 @@ public class SierraClientSimpleHttp implements SierraClient {
         }
       }
       else {
-        log.debugf("Names array was null for user %s",barcode);
+        log.debugf("Names array was null for user %s",sierra_user_id);
       }
     }
     else {
-      log.warn("No user record for barcode "+barcode);
+      log.warn("No user record for barcode "+sierra_user_id);
     }
 
-    log.debugf("isValid(%s,...) returning "+result,barcode);
+    log.debugf("isValid(%s,...) returning "+result,sierra_user_id);
 
     return result;
   }
