@@ -248,9 +248,11 @@ public class SierraClientSimpleHttp implements SierraClient {
   @Override
   public boolean isValid(String barcode, String pin) throws java.io.UnsupportedEncodingException, java.io.IOException {
     if ( ( this.authMode == null ) || ( this.authMode.equals("PIN") ) ) {
+      log.debug("Authmode is PIN");
       return isValidByPin(barcode,pin);
     }
     else {
+      log.debug("Authmode is NAME");
       return isValidByName(barcode,pin);
     }
   }
@@ -292,7 +294,7 @@ public class SierraClientSimpleHttp implements SierraClient {
     String api_session_token = getSierraSession();
     String login_url = this.baseUrl + "/iii/sierra-api/v6/patrons/validate";
 
-    SierraUser su = getSierraUserByUsername(barcode);
+    SierraUser su = getSierraUserByBarcode(barcode);
     if ( su != null ) {
       if ( su.getNames() != null ) {
         log.debugf("Got user record... testing name against %s for %s",pin,su.getNames().toString());
@@ -307,6 +309,9 @@ public class SierraClientSimpleHttp implements SierraClient {
       else {
         log.debugf("Names array was null for user %s",barcode);
       }
+    }
+    else {
+      log.warn("No user record for barcode "+barcode);
     }
 
     log.debugf("isValid(%s,...) returning "+result,barcode);
