@@ -167,7 +167,12 @@ public class SierraClientSimpleHttp implements SierraClient {
   @Override
   @SneakyThrows
   public SierraUser getSierraUserByUsername(String username) {
-    return getSierraUserByX(username,"u");
+    // authMode determines if the username is an actual username, or a barcode (For NAME based authentication)
+    if ( ( this.authMode == null ) || ( this.authMode.equals("PIN") ) ) {
+      return getSierraUserByX(username,"u");
+    }
+
+    return getSierraUserByX(username,"b");
   }
 
   @Override
