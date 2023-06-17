@@ -48,6 +48,7 @@ public class SierraClientSimpleHttp implements SierraClient {
   private final String secret;
   private final String localSystemCode;
   private final String authMode;
+  private final String userProp;
 
   // private final Map<String, SierraUser> userLookupCache = new java.util.HashMap<String, SierraUser>();
   // private final LRUMap<String, SierraUser> userLookupCache = new LRUMap<String, SierraUser>(200);
@@ -71,12 +72,14 @@ public class SierraClientSimpleHttp implements SierraClient {
     this.secret = model.get(SierraProviderConstants.SECRET);
     this.localSystemCode = model.get(SierraProviderConstants.LOCAL_SYSTEM_CODE);
     this.authMode = model.get(SierraProviderConstants.AUTH_MODE);
+    this.userProp = model.get(SierraProviderConstants.USER_PROP);
 
     log.debug(String.format("%s = %s",SierraProviderConstants.BASE_URL,this.baseUrl));
     log.debug(String.format("%s = %s",SierraProviderConstants.CLIENT_KEY,this.client_key));
     log.debug(String.format("%s = %s",SierraProviderConstants.SECRET,this.secret));
     log.debug(String.format("%s = %s",SierraProviderConstants.LOCAL_SYSTEM_CODE,this.localSystemCode));
     log.debug(String.format("%s = %s",SierraProviderConstants.AUTH_MODE,this.authMode));
+    log.debug(String.format("%s = %s",SierraProviderConstants.USER_PROP,this.userProp));
   }
 
   private String getSierraSession() {
@@ -168,10 +171,11 @@ public class SierraClientSimpleHttp implements SierraClient {
   @SneakyThrows
   public SierraUser getSierraUserByUsername(String username) {
     // authMode determines if the username is an actual username, or a barcode (For NAME based authentication)
-    if ( ( this.authMode == null ) || ( this.authMode.equals("PIN") ) ) {
+    if ( ( this.userProp == null ) || ( this.userProp.equals("USERNAME") ) ) {
       return getSierraUserByX(username,"u");
     }
 
+    // Using by BARCODE
     return getSierraUserByX(username,"b");
   }
 

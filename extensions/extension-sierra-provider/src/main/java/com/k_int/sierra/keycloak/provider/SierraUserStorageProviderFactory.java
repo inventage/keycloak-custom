@@ -38,12 +38,14 @@ public class SierraUserStorageProviderFactory implements UserStorageProviderFact
   @Override
   public List<ProviderConfigProperty> getConfigProperties() {
     List<String> AUTH_MODE_OPTIONS=List.of("PIN","NAME");
+    List<String> USER_NAME_OPTIONS=List.of("USERNAME","BARCODE");
     return ProviderConfigurationBuilder.create()
       .property(SierraProviderConstants.BASE_URL, "Base URL", "Sierra API Base URL", ProviderConfigProperty.STRING_TYPE, "", null)
       .property(SierraProviderConstants.CLIENT_KEY, "Client Key", "Sierra API Client Key", ProviderConfigProperty.STRING_TYPE, "", null)
       .property(SierraProviderConstants.SECRET, "Secret", "Sierra API Secret", ProviderConfigProperty.STRING_TYPE, "", null)
       .property(SierraProviderConstants.LOCAL_SYSTEM_CODE, "Local System Code", "What is the code for the local system", ProviderConfigProperty.STRING_TYPE, "", null)
-      .property(SierraProviderConstants.AUTH_MODE, "Authentication Mode", "Pin or Name", ProviderConfigProperty.STRING_TYPE, "PIN", AUTH_MODE_OPTIONS)
+      .property(SierraProviderConstants.AUTH_MODE, "Authentication Mode", "Pin or Name", ProviderConfigProperty.LIST_TYPE, "PIN", AUTH_MODE_OPTIONS)
+      .property(SierraProviderConstants.USER_PROP, "User Property", "username or barcode", ProviderConfigProperty.LIST_TYPE, "BARCODE", USER_NAME_OPTIONS)
       .build();
   }
 
