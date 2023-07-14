@@ -1,5 +1,6 @@
 package com.inventage.keycloak.noopformauthenticator.infrastructure.authenticator;
 
+import jakarta.ws.rs.core.MultivaluedMap;
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.Authenticator;
@@ -8,7 +9,6 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 
-import javax.ws.rs.core.MultivaluedMap;
 
 
 /**
