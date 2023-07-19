@@ -22,11 +22,6 @@
         </dependency>
         <dependency>
             <groupId>com.inventage.keycloak.custom</groupId>
-            <artifactId>extension-no-op-authenticator</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.inventage.keycloak.custom</groupId>
             <artifactId>themes</artifactId>
             <version>${project.version}</version>
         </dependency>
