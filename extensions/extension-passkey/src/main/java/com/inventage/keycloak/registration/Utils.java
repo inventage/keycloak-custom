@@ -1,5 +1,7 @@
 package com.inventage.keycloak.registration;
 
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.FormContext;
 import org.keycloak.events.Details;
@@ -12,8 +14,6 @@ import org.keycloak.userprofile.UserProfile;
 import org.keycloak.userprofile.UserProfileContext;
 import org.keycloak.userprofile.UserProfileProvider;
 
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;

@@ -18,6 +18,7 @@
 package com.inventage.keycloak.registration;
 
 import com.google.auto.service.AutoService;
+import jakarta.ws.rs.core.MultivaluedMap;
 import org.keycloak.authentication.FormContext;
 import org.keycloak.authentication.ValidationContext;
 import org.keycloak.authentication.forms.RegistrationUserCreation;
@@ -32,7 +33,6 @@ import org.keycloak.userprofile.UserProfileContext;
 import org.keycloak.userprofile.UserProfileProvider;
 import org.keycloak.userprofile.ValidationException;
 
-import javax.ws.rs.core.MultivaluedMap;
 import java.util.List;
 
 

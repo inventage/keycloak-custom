@@ -1,5 +1,6 @@
 package com.inventage.keycloak.registration;
 
+import jakarta.ws.rs.core.MultivaluedMap;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.Authenticator;
 import org.keycloak.authentication.requiredactions.WebAuthnPasswordlessRegisterFactory;
@@ -8,8 +9,6 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.sessions.AuthenticationSessionModel;
-
-import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * This class contains all the logic when the passkey-or-password-registration.ftl file is rendered or interacted with.
