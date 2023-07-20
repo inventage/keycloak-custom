@@ -20,8 +20,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <keycloak.dir>./target/keycloak</keycloak.dir>
         <keycloak.target.dir>../server/${keycloak.dir}/</keycloak.target.dir> <!-- used in config & extension modules -->
         <keycloak.providers.dir>../../server/${keycloak.dir}/providers</keycloak.providers.dir> <!-- used in extension modules -->
@@ -32,8 +32,8 @@
         <docker.verbose>true</docker.verbose>
         <docker.imagePropertyConfiguration>override</docker.imagePropertyConfiguration>
         <!-- versions -->
-        <keycloak.version>20.0.3</keycloak.version> <!-- update also keycloak-config-cli.version -->
-        <keycloak-config-cli.version>20.0.1</keycloak-config-cli.version> <!-- from https://github.com/adorsys/keycloak-config-cli/releases -->
+        <keycloak.version>22.0.0</keycloak.version> <!-- update also keycloak-config-cli.version -->
+        <keycloak-config-cli.version>22.0.0</keycloak-config-cli.version> <!-- from https://github.com/adorsys/keycloak-config-cli/releases -->
         <auto-service.version>1.0.1</auto-service.version>
     </properties>
 
@@ -57,7 +57,7 @@
             <dependency>
                 <groupId>io.quarkus</groupId>
                 <artifactId>quarkus-bootstrap-runner</artifactId>
-                <version>2.7.5.Final</version>
+                <version>3.2.0.Final</version>
             </dependency>
             <!-- junit -->
             <dependency>
