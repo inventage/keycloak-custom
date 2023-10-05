@@ -31,7 +31,7 @@
         <docker.verbose>true</docker.verbose>
         <docker.imagePropertyConfiguration>override</docker.imagePropertyConfiguration>
         <!-- versions -->
-        <keycloak.version>22.0.3</keycloak.version> <!-- update also keycloak-config-cli.version -->
+        <keycloak.version>22.0.4</keycloak.version> <!-- update also keycloak-config-cli.version -->
         <keycloak-config-cli.version>22.0.0</keycloak-config-cli.version> <!-- from https://github.com/adorsys/keycloak-config-cli/releases -->
         <auto-service.version>1.0.1</auto-service.version>
     </properties>
