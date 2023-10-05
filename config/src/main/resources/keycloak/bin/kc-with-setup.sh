@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ========================================
-# Mostly opied from https://github.com/keycloak/keycloak/blob/main/quarkus/dist/src/main/content/bin/kc.sh
+# Mostly copied from https://github.com/keycloak/keycloak/blob/main/quarkus/dist/src/main/content/bin/kc.sh
 # See delimiter near the bottom
 # ========================================
 
