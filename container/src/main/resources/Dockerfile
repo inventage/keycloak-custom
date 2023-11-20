@@ -29,4 +29,5 @@ RUN chmod -R g+rwx /opt/keycloak
 
 USER 1000
 WORKDIR /opt/keycloak
-ENTRYPOINT ["/opt/keycloak/bin/kc-with-setup.sh", "start"]
+ENTRYPOINT ["/opt/keycloak/bin/kc-with-setup.sh"]
+CMD start
