@@ -1,6 +1,6 @@
 {
-  "id":"master",
   "realm": "master",
+  "enabled": true,
   "adminEventsEnabled": true,
   "adminEventsDetailsEnabled": true,
   "eventsEnabled": true,
