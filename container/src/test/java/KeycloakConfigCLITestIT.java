@@ -32,7 +32,7 @@ class KeycloakConfigCLITestIT {
                 .password(keycloak.getAdminPassword())
                 .build();
 
-        Optional<RealmRepresentation> testRealm = keycloakAdminClient.realms().findAll().stream().filter(realmRepresentation -> realmRepresentation.getRealm().equals("example1")).findFirst();
+        Optional<RealmRepresentation> testRealm = keycloakAdminClient.realms().findAll().stream().filter(realmRepresentation -> realmRepresentation.getRealm().equals("testcontainer")).findFirst();
         Assertions.assertTrue(testRealm.isPresent(), "Realm `testcontainer` should exist. Realm import via keycloak-config-cli failed.");
     }
 }
