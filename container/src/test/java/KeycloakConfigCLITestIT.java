@@ -1,9 +1,10 @@
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.representations.idm.RealmRepresentation;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import utils.KeycloakCustomContainer;
 
@@ -14,10 +15,18 @@ import java.util.Optional;
 class KeycloakConfigCLITestIT {
 
     private static final String DOCKER_IMAGE_NAME = "docker-registry.inventage.com:10094/com.inventage.keycloak.custom.container:latest";
-    private final Map<String, String> envMap = Map.of("KC_DB", "dev-mem", "KC_LOG_LEVEL", "info");
-    @Container
-    private final KeycloakCustomContainer keycloak = new KeycloakCustomContainer(DOCKER_IMAGE_NAME)
+    private static final Map<String, String> envMap = Map.of("KC_DB", "dev-mem", "KC_LOG_LEVEL", "info");
+    private static final KeycloakCustomContainer keycloak = new KeycloakCustomContainer(DOCKER_IMAGE_NAME)
             .withEnv(envMap);
+
+    @BeforeAll
+    static void beforeAll() {
+        keycloak.start();
+    }
+    @AfterAll
+    static void afterAll() {
+        keycloak.stop();
+    }
     @Test
     void test_startup() {
         Assertions.assertTrue(keycloak.isRunning());
