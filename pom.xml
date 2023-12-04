@@ -35,6 +35,7 @@
         <keycloak-config-cli.version>22.0.4</keycloak-config-cli.version> <!-- from https://github.com/adorsys/keycloak-config-cli/releases -->
         <auto-service.version>1.0.1</auto-service.version>
         <testcontainers-keycloak.version>3.1.0</testcontainers-keycloak.version>
+        <testcontainers-postgres.version>1.19.3</testcontainers-postgres.version>
         <junit-jupiter-engine.version>5.9.2</junit-jupiter-engine.version>
         <failsafe-plugin.version>3.2.2</failsafe-plugin.version>
     </properties>
@@ -92,6 +93,12 @@
                 <groupId>org.testcontainers</groupId>
                 <artifactId>junit-jupiter</artifactId>
                 <version>1.19.1</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${testcontainers-postgres.version}</version>
                 <scope>test</scope>
             </dependency>
             <!-- for registering SPIs by annotation -->
