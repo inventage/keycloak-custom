@@ -222,13 +222,12 @@
   "browserFlow": "browser2",
   "clients": [
     {
-      "id": "myclient",
       "clientId": "myclient",
       "name": "",
       "description": "",
       "rootUrl": "",
       "adminUrl": "",
-      "baseUrl": "",
+      "baseUrl": "https://www.keycloak.org/app/#url=http://localhost:8080&realm=example1&client=myclient",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
