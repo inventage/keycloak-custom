@@ -40,15 +40,18 @@ class KeycloakConfigCLITestIT {
                         "KC_LOG_LEVEL", "info"));
         keycloak.start();
     }
+
     @AfterAll
     static void afterAll() {
         keycloak.stop();
         postgres.close();
     }
+
     @Test
     void test_startup() {
         Assertions.assertTrue(keycloak.isRunning());
     }
+
     @Test
     void test_import_realm() {
         Keycloak keycloakAdminClient = KeycloakBuilder.builder()
