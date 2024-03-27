@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Testcontainers
-class KeycloakConfigCLITestIT {
+class KeycloakCustomTestIT {
 
     private static final String DOCKER_IMAGE_NAME = "docker-registry.inventage.com:10094/com.inventage.keycloak.custom.container:latest";
     private static final String POSTGRES_DOCKER_IMAGE_NAME = "postgres:13-alpine";
@@ -38,7 +38,13 @@ class KeycloakConfigCLITestIT {
                         "KC_DB_PASSWORD", postgres.getPassword(),
                         "KC_DB_URL", jdbcUrl,
                         "KC_LOG_LEVEL", "info"));
-        keycloak.start();
+        try {
+            keycloak.start();
+        }
+        catch (Exception e) {
+            System.err.println(keycloak.getLogs());
+            throw e;
+        }
     }
 
     @AfterAll
@@ -62,7 +68,7 @@ class KeycloakConfigCLITestIT {
                 .password(keycloak.getAdminPassword())
                 .build();
 
-        Optional<RealmRepresentation> testRealm = keycloakAdminClient.realms().findAll().stream().filter(realmRepresentation -> realmRepresentation.getRealm().equals("example1")).findFirst();
-        Assertions.assertTrue(testRealm.isPresent(), "Realm `testcontainer` should exist. Realm import via keycloak-config-cli failed.");
+        Optional<RealmRepresentation> example1 = keycloakAdminClient.realms().findAll().stream().filter(realmRepresentation -> realmRepresentation.getRealm().equals("example1")).findFirst();
+        Assertions.assertTrue(example1.isPresent(), "Realm `example1` should exist. Realm import via keycloak-config-cli failed.");
     }
 }
