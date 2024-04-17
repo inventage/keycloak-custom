@@ -16,6 +16,7 @@
         <module>themes</module>
         <module>container</module>
         <module>docker-compose</module>
+        <module>helm</module>
     </modules>
 
     <properties>
@@ -26,7 +27,7 @@
         <keycloak.providers.dir>../../server/${keycloak.dir}/providers</keycloak.providers.dir> <!-- used in extension modules -->
         <keycloak.themes.dir>../server/${keycloak.dir}/themes</keycloak.themes.dir> <!-- used in themes module -->
         <docker.registry>docker-registry.inventage.com:10094/</docker.registry>
-        <docker.image.name>${project.groupId}.${project.artifactId}</docker.image.name>
+        <docker.image.name>com.inventage.keycloak.custom.container</docker.image.name>
         <docker.contextDir>${project.build.outputDirectory}</docker.contextDir>
         <docker.verbose>true</docker.verbose>
         <docker.imagePropertyConfiguration>override</docker.imagePropertyConfiguration>
@@ -80,13 +81,6 @@
                 <groupId>com.github.dasniko</groupId>
                 <artifactId>testcontainers-keycloak</artifactId>
                 <version>${testcontainers-keycloak.version}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-engine</artifactId>
-                <version>${junit-jupiter-engine.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -231,6 +225,51 @@
                             <goals>
                                 <goal>push</goal>
                             </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <!-- See https://github.com/kokuwaio/helm-maven-plugin for documentation -->
+                    <groupId>io.kokuwa.maven</groupId>
+                    <artifactId>helm-maven-plugin</artifactId>
+                    <version>6.13.0</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <chartVersion>${project.version}</chartVersion>
+                        <chartDirectory>${project.basedir}/helm/target/chart</chartDirectory>
+                        <useLocalHelmBinary>false</useLocalHelmBinary>
+                        <debug>true</debug>
+                        <skipUpload>false</skipUpload>
+                        <skipPushLogin>true</skipPushLogin>
+                        <uploadRepoSnapshot>
+                            <name>ghcr</name>
+                            <url>ghcr.io/keycloak-competence-center</url>
+                            <type>NEXUS</type>
+                            <username>${env.GITHUB_ACTOR}</username>
+                            <password>${env.GITHUB_TOKEN}</password>
+                        </uploadRepoSnapshot>
+                        <uploadRepoStable>
+                            <name>ghcr</name>
+                            <url>ghcr.io/keycloak-competence-center</url>
+                            <type>NEXUS</type>
+                            <username>${env.GITHUB_ACTOR}</username>
+                            <password>${env.GITHUB_TOKEN}</password>
+                        </uploadRepoStable>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>default-upload</id>
+                            <phase>none</phase>
+                        </execution>
+                        <execution>
+                            <id>upload</id>
+                            <goals>
+                                <goal>init</goal>
+                                <goal>lint</goal>
+                                <goal>package</goal>
+                                <goal>push</goal>
+                            </goals>
+                            <phase>deploy</phase>
                         </execution>
                     </executions>
                 </plugin>

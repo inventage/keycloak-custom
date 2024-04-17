@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>parent</artifactId>
+        <groupId>com.inventage.keycloak.custom</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>helm</artifactId>
+    <packaging>helm</packaging>
+
+    <properties>
+        <chart.directory>${project.basedir}/src/generated/keycloak-custom-chart</chart.directory>
+
+        <!-- Image names in chart should always use the inventage registry! -->
+        <docker.registry.name>docker-registry.inventage.com:10121</docker.registry.name>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>with-substitution</id>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <outputDirectory>${chart.directory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!-- See https://github.com/kokuwaio/helm-maven-plugin for documentation -->
+                <groupId>io.kokuwa.maven</groupId>
+                <artifactId>helm-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>${project.build.directory}/**/charts/**/charts/portal-lib</exclude>
+                    </excludes>
+                    <chartDirectory>${chart.directory}</chartDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>default-cli</id>
+                        <configuration>
+                            <skipInstall>false</skipInstall>
+                            <skipUpgrade>false</skipUpgrade>
+                            <releaseName>keycloak-custom</releaseName>
+                            <values>
+                                <yamlFiles>
+                                    <yamlFiles>${chart.directory}/values.yaml</yamlFiles>
+                                </yamlFiles>
+                            </values>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
