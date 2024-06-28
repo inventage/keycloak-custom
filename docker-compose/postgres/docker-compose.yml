@@ -9,7 +9,7 @@ services:
       - PGDATA=/var/lib/postgresql/data/pgdata
       - POSTGRES_PASSWORD=postgres
     volumes:
-      - ./volume/pgdata/:/var/lib/postgresql/data/pgdata
+      - ./volume/16/pgdata/:/var/lib/postgresql/data/pgdata
     networks:
       - postgres
 

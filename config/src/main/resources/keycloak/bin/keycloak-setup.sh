@@ -60,7 +60,7 @@ runKeycloakConfigCli
 echo " "
 echo "----------------- KEYCLOAK CLI ------------------"
 echo " "
-runKeycloakCli
+# runKeycloakCli : temporary disabled because of error `Failed to create config file: /.keycloak/kcadm.config`
 
 echo " "
 echo "--------------- KEYCLOAK SETUP FINISHED ----------------"
