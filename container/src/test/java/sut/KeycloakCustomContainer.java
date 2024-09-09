@@ -1,4 +1,4 @@
-package utils;
+package sut;
 
 import dasniko.testcontainers.keycloak.ExtendableKeycloakContainer;
 import org.slf4j.Logger;
@@ -11,17 +11,18 @@ import java.time.Duration;
 
 public class KeycloakCustomContainer extends ExtendableKeycloakContainer<KeycloakCustomContainer> {
 
-    private final WaitStrategy waitStrategy;
-    private final long startupTimeout;
+    public static final String DEFAULT_DOCKER_IMAGE_NAME = "docker-registry.inventage.com:10094/com.inventage.keycloak.custom.container:latest";
+
     private static final String DEFAULT_WAIT_LOG_REGEX = ".*KEYCLOAK SETUP FINISHED.*";
     private static final long DEFAULT_STARTUP_TIMEOUT = 3;
-
     private static final Logger LOGGER = LoggerFactory.getLogger(KeycloakCustomContainer.class);
 
-    public KeycloakCustomContainer(String dockerImageName, WaitStrategy waitStrategy, long startupTimeout) {
-        super(dockerImageName);
-        this.waitStrategy = waitStrategy;
-        this.startupTimeout = startupTimeout;
+    private final WaitStrategy waitStrategy;
+    private final long startupTimeout;
+
+
+    public KeycloakCustomContainer() {
+        this(DEFAULT_DOCKER_IMAGE_NAME);
     }
 
     public KeycloakCustomContainer(String dockerImageName){
@@ -39,6 +40,5 @@ public class KeycloakCustomContainer extends ExtendableKeycloakContainer<Keycloa
         super.configure();
         setWaitStrategy(this.waitStrategy);
     }
-
 
 }
