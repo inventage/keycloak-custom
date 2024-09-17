@@ -15,9 +15,9 @@ createRealm() {
     # arguments
     REALM_NAME=$1
     #
-    EXISTING_REALM=$($KCADM get realms/$REALM_NAME)
+    EXISTING_REALM=$($KCADM get realms/$REALM_NAME ${KCADM_CONFIG})
     if [ "$EXISTING_REALM" == "" ]; then
-        $KCADM create realms -s realm="${REALM_NAME}" -s enabled=true
+        $KCADM create realms -s realm="${REALM_NAME}" -s enabled=true ${KCADM_CONFIG}
     fi
 }
 
@@ -29,7 +29,7 @@ createClient() {
     #
     ID=$(getClient $REALM_NAME $CLIENT_ID)
     if [[ "$ID" == "" ]]; then
-        $KCADM create clients -r $REALM_NAME -s clientId=$CLIENT_ID -s enabled=true
+        $KCADM create clients -r $REALM_NAME -s clientId=$CLIENT_ID -s enabled=true ${KCADM_CONFIG}
     fi
     echo $(getClient $REALM_NAME $CLIENT_ID)
 }
@@ -40,7 +40,7 @@ getClient () {
     REALM=$1
     CLIENT_ID=$2
     #
-    ID=$($KCADM get clients -r $REALM --fields id,clientId | jq '.[] | select(.clientId==("'$CLIENT_ID'")) | .id')
+    ID=$($KCADM get clients -r $REALM --fields id,clientId ${KCADM_CONFIG} | jq '.[] | select(.clientId==("'$CLIENT_ID'")) | .id')
     echo $(sed -e 's/"//g' <<< $ID)
 }
 
@@ -52,7 +52,7 @@ createUser() {
     #
     USER_ID=$(getUser $REALM_NAME $USER_NAME)
     if [ "$USER_ID" == "" ]; then
-        $KCADM create users -r $REALM_NAME -s username=$USER_NAME -s enabled=true
+        $KCADM create users -r $REALM_NAME -s username=$USER_NAME -s enabled=true ${KCADM_CONFIG}
     fi
     echo $(getUser $REALM_NAME $USER_NAME)
 }
@@ -63,6 +63,6 @@ getUser() {
     REALM_NAME=$1
     USERNAME=$2
     #
-    USER=$($KCADM get users -r $REALM_NAME -q username=$USERNAME | jq '.[] | select(.username==("'$USERNAME'")) | .id' )
+    USER=$($KCADM get users -r $REALM_NAME -q username=$USERNAME ${KCADM_CONFIG} | jq '.[] | select(.username==("'$USERNAME'")) | .id' )
     echo $(sed -e 's/"//g' <<< $USER)
 }

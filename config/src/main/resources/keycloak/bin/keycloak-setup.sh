@@ -39,11 +39,12 @@ runKeycloakConfigCli() {
 runKeycloakCli() {
   if [ "$KCADM" == "" ]; then
       KCADM="${BASEDIR}"/kcadm.sh
+      KCADM_CONFIG="--config /tmp/.keycloak/kcadm.config"
       echo "Using $KCADM as the admin CLI."
   fi
 
   # login to admin console
-  ${KCADM} config credentials --server http://localhost:8080 --user "${KEYCLOAK_ADMIN}" --password "${KEYCLOAK_ADMIN_PASSWORD}" --realm master
+  ${KCADM} config credentials --server http://localhost:8080 --user "${KEYCLOAK_ADMIN}" --password "${KEYCLOAK_ADMIN_PASSWORD}" --realm master ${KCADM_CONFIG}
 
   # helper functions using kc admin cli
   source "${BASEDIR}"/keycloak-cli-helpers.sh
@@ -60,7 +61,7 @@ runKeycloakConfigCli
 echo " "
 echo "----------------- KEYCLOAK CLI ------------------"
 echo " "
-# runKeycloakCli : temporary disabled because of error `Failed to create config file: /.keycloak/kcadm.config`
+runKeycloakCli
 
 echo " "
 echo "--------------- KEYCLOAK SETUP FINISHED ----------------"
