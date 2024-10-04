@@ -134,5 +134,12 @@ export KEYCLOAK_PID=$!
 
 source $DIRNAME/keycloak-setup.sh
 
+forwardSigterm() {
+    echo "--> SIGTERM received - forwarding to java pid"
+    kill -TERM "$KEYCLOAK_PID" 2>/dev/null
+}
+
+trap forwardSigterm SIGTERM
+
 #to keep the container running until keycloak shuts down
 wait $KEYCLOAK_PID
