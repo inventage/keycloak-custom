@@ -15,6 +15,8 @@
     <file url="file://$PROJECT_DIR$/extensions/extension-no-op-protocol-mapper/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/extensions/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/extensions/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/helm/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/helm/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/keycloak-server/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/server/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/server/src/main/resources" charset="UTF-8" />
