@@ -8,7 +8,7 @@
     <option name="MAIN_CLASS_NAME" value="io.quarkus.bootstrap.runner.QuarkusEntryPoint" />
     <module name="server" />
     <option name="PROGRAM_PARAMETERS" value="start" />
-    <option name="VM_PARAMETERS" value="-Dkc.home.dir=$ProjectFileDir$/server/target/keycloak/ -Djboss.server.config.dir=$ProjectFileDir$/server/target/keycloak/conf/" />
+    <option name="VM_PARAMETERS" value="-Dkc.home.dir=$ProjectFileDir$/server/target/keycloak/ -Djboss.server.config.dir=$ProjectFileDir$/server/target/keycloak/conf/ -Dliquibase.duplicateFileMode=WARN" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/server/target/keycloak" />
     <extension name="net.ashald.envfile">
       <option name="IS_ENABLED" value="true" />

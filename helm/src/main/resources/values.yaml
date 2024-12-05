@@ -22,12 +22,12 @@ keycloakx:
     relativePath: "/"
 
   extraEnv: |
-    - name: KEYCLOAK_ADMIN
+    - name: KC_BOOTSTRAP_ADMIN_USERNAME
       valueFrom:
         secretKeyRef:
           name: {{ include "keycloak.fullname" . }}-admin-creds
           key: user
-    - name: KEYCLOAK_ADMIN_PASSWORD
+    - name: KC_BOOTSTRAP_ADMIN_PASSWORD
       valueFrom:
         secretKeyRef:
           name: {{ include "keycloak.fullname" . }}-admin-creds

@@ -66,7 +66,10 @@ public class SystemUnderTest {
         keycloak = new KeycloakCustomContainer()
                 .withLogConsumer(new Slf4jLogConsumer(LOGGER))
                 .withNetwork(network)
-                .withEnv(Map.of("KC_DB", "postgres",
+                .withEnv(Map.of(
+                        "KC_BOOTSTRAP_ADMIN_USERNAME", "admin",
+                        "KC_BOOTSTRAP_ADMIN_PASSWORD", "admin",
+                        "KC_DB", "postgres",
                         "KC_DB_USERNAME" , postgres.getUsername(),
                         "KC_DB_PASSWORD", postgres.getPassword(),
                         "KC_DB_URL", jdbcUrl,

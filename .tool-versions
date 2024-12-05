@@ -1,0 +1,3 @@
+# "java 21" is an asdf alias, so that it doesn't matter which distribution (corretto, temurin, zulu, yni) is used
+# see also https://github.com/andrewthauer/asdf-alias
+java 21
