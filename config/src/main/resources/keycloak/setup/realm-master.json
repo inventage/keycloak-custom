@@ -116,5 +116,41 @@
     "VERIFY_EMAIL_ERROR",
     "VERIFY_PROFILE",
     "VERIFY_PROFILE_ERROR"
+  ],
+  "users":[
+    {
+      "username": "$(env:KEYCLOAK_CONFIG_CLI_SETUP_USERNAME:-keycloak-config-cli)",
+      "enabled": true,
+      "email": "keycloak-config-cli@mail.com",
+      "firstName": "keycloak-config-cli",
+      "lastName": "for keycloak-setup.sh",
+      "credentials": [
+        {
+          "type": "password",
+          "userLabel": "initial",
+          "value": "$(env:KEYCLOAK_CONFIG_CLI_SETUP_PASSWORD)"
+        }
+      ],
+      "realmRoles": [
+        "admin"
+      ]
+    },
+    {
+      "username": "$(env:WEB_CONSOLE_ADMIN_USERNAME:-admin)",
+      "enabled": true,
+      "email": "admin@mail.com",
+      "firstName": "Admin",
+      "lastName": "of Keycloak",
+      "credentials": [
+        {
+          "type": "password",
+          "userLabel": "initial",
+          "value": "$(env:WEB_CONSOLE_ADMIN_PASSWORD)"
+        }
+      ],
+      "realmRoles": [
+        "admin"
+      ]
+    }
   ]
 }
