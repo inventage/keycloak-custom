@@ -128,7 +128,7 @@
         {
           "type": "password",
           "userLabel": "initial",
-          "value": "$(env:KEYCLOAK_CONFIG_CLI_SETUP_PASSWORD)"
+          "value": "$(env:KEYCLOAK_CONFIG_CLI_SETUP_PASSWORD:-)"
         }
       ],
       "realmRoles": [
@@ -145,7 +145,7 @@
         {
           "type": "password",
           "userLabel": "initial",
-          "value": "$(env:WEB_CONSOLE_ADMIN_PASSWORD)"
+          "value": "$(env:WEB_CONSOLE_ADMIN_PASSWORD:-)"
         }
       ],
       "realmRoles": [
