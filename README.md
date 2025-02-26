@@ -12,14 +12,20 @@ Hence, during the first setup of Keycloak we add two additional admin users:
 Keycloak-config-cli uses the user which is configured with `KEYCLOAK_CONFIG_CLI_*` and kcadm uses `KEYCLOAK_CLI_*` during the setup.
 
 ```shell
-# KC_BOOTSTRAP_ADMIN_USERNAME is the username of the initial admin user
+# KC_BOOTSTRAP_ADMIN_USERNAME
 KC_BOOTSTRAP_ADMIN_USERNAME=bootstrap
+
+# KC_BOOTSTRAP_ADMIN_PASSWORD
+KC_BOOTSTRAP_ADMIN_PASSWORD=bootstrap (overwrite!)
+
 # KEYCLOAK_CONFIG_CLI_SETUP_USERNAME is the username used in realm-master.json for creating user used by keycloak-config-cli
 KEYCLOAK_CONFIG_CLI_SETUP_USERNAME=keycloak-config-cli
+# KEYCLOAK_CONFIG_CLI_SETUP_PASSWORD is the password used in realm-master.json for the created keycloak-config-cli user
 # WEB_CONSOLE_ADMIN_USERNAME is the username for access the web admin console
 WEB_CONSOLE_ADMIN_USERNAME=admin
+# WEB_CONSOLE_ADMIN_PASSWORD is the password used in realm-master.json for the created admin user
 
-(The varibles for the passwords are hidden in an other file)
+(The passwords of the new admin users are hidden in another file)
 
 # Replace the 4 'KC_BOOTSTRAP_ADMIN_*' variable names with 'KEYCLOAK_CONFIG_CLI_SETUP_*' as soon as the bootstrap user has been deleted
 KEYCLOAK_CONFIG_CLI_USERNAME=${KC_BOOTSTRAP_ADMIN_USERNAME}
