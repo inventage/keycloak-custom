@@ -1,7 +1,45 @@
 Keycloak-Custom
 ===
 
-User account bootstrapping ...
+#### Admin Users Setup
+
+Since [Keycloak 26 there are Bootstrap Admin Users](https://www.keycloak.org/docs/latest/upgrading/#admin-bootstrapping-and-recovery), who are used for the first start and setup of Keycloak. Afterward, this user should be deleted.
+Hence, during the first setup of Keycloak we add two additional admin users:
+
+- Admin user für keycloak-config-cli
+- Admin user für Admin Web Console
+
+Keycloak-config-cli uses the user which is configured with `KEYCLOAK_CONFIG_CLI_*` and kcadm uses `KEYCLOAK_CLI_*` during the setup.
+
+```shell
+# KC_BOOTSTRAP_ADMIN_USERNAME is the username of the initial admin user
+KC_BOOTSTRAP_ADMIN_USERNAME=bootstrap
+# KEYCLOAK_CONFIG_CLI_SETUP_USERNAME is the username used in realm-master.json for creating user used by keycloak-config-cli
+KEYCLOAK_CONFIG_CLI_SETUP_USERNAME=keycloak-config-cli
+# WEB_CONSOLE_ADMIN_USERNAME is the username for access the web admin console
+WEB_CONSOLE_ADMIN_USERNAME=admin
+
+(The varibles for the passwords are hidden in an other file)
+
+# Replace the 4 'KC_BOOTSTRAP_ADMIN_*' variable names with 'KEYCLOAK_CONFIG_CLI_SETUP_*' as soon as the bootstrap user has been deleted
+KEYCLOAK_CONFIG_CLI_USERNAME=${KC_BOOTSTRAP_ADMIN_USERNAME}
+KEYCLOAK_CONFIG_CLI_PASSWORD=${KC_BOOTSTRAP_ADMIN_PASSWORD}
+KEYCLOAK_CLI_USERNAME=KC_BOOTSTRAP_ADMIN_USERNAME
+KEYCLOAK_CLI_PASSWORD=KC_BOOTSTRAP_ADMIN_PASSWORD
+```
+
+After the first run of the setup (`kc-with-setup.sh`) the configuration has to be adapted such that config tools are utilizing the new users.
+This means `KEYCLOAK_CONFIG_CLI_*` has to be set to the value of `KEYCLOAK_CONFIG_CLI_SETUP_*` and `KEYCLOAK_CLI_*` to the environment variable names `KC_BOOTSTRAP_ADMIN_*`  
+
+```shell
+# Replace the 4 'KC_BOOTSTRAP_ADMIN_*' variable names with 'KEYCLOAK_CONFIG_CLI_SETUP_*' as soon as the bootstrap user has been deleted
+KEYCLOAK_CONFIG_CLI_USERNAME=${KEYCLOAK_CONFIG_CLI_SETUP_USERNAME}
+KEYCLOAK_CONFIG_CLI_PASSWORD=${KEYCLOAK_CONFIG_CLI_SETUP_PASSWORD}
+KEYCLOAK_CLI_USERNAME=KEYCLOAK_CONFIG_CLI_SETUP_USERNAME
+KEYCLOAK_CLI_PASSWORD=KEYCLOAK_CONFIG_CLI_SETUP_PASSWORD
+```
+
+After that, the bootstrap admin user can be safely deleted.
 
 Project Template
 ---
