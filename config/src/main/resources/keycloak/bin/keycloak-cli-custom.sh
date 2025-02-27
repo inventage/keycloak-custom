@@ -7,5 +7,6 @@ echo "----------------- keycloak_custom_config.sh ---------------"
 echo ""
 
 createRealm example2
+sleep 60
 createClient example2 client1
 createUser example2 user1

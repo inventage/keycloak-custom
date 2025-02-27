@@ -64,7 +64,7 @@ runKeycloakConfigCli
 echo " "
 echo "----------------- KEYCLOAK CLI ------------------"
 echo " "
-#runKeycloakCli
+runKeycloakCli
 
 echo " "
 echo "--------------- KEYCLOAK SETUP FINISHED ----------------"
