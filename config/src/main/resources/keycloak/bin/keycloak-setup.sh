@@ -25,7 +25,6 @@ runKeycloakConfigCli() {
   java -jar "${BASEDIR}"/client/keycloak-config-cli-"${keycloak-config-cli.version}".jar \
       --keycloak.url=http://localhost:8080/ \
       --keycloak.ssl-verify=true \
-      --keycloak.grant-type="${KEYCLOAK_CONFIG_CLI_GRANT_TYPE}" \
       --keycloak.user="${KC_BOOTSTRAP_ADMIN_USERNAME}" \
       --keycloak.password="${KC_BOOTSTRAP_ADMIN_PASSWORD}" \
       --keycloak.availability-check.enabled=true \
