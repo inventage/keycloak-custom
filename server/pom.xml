@@ -26,6 +26,16 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-bootstrap-runner</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.inventage.keycloak.custom</groupId>
+            <artifactId>extension-no-op-authenticator</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.inventage.keycloak.custom</groupId>
+            <artifactId>extension-no-op-protocol-mapper</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -46,6 +56,19 @@
                             <includeGroupIds>org.keycloak</includeGroupIds>
                             <includeArtifactIds>keycloak-quarkus-dist</includeArtifactIds>
                             <outputDirectory>${project.build.directory}</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <!-- extract jars of extensions -->
+                    <execution>
+                        <id>unpack-signature-extension</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeGroupIds>com.inventage.keycloak.custom</includeGroupIds>
+                            <includeArtifactIds>extension-no-op-authenticator, extension-no-op-protocol-mapper</includeArtifactIds>
+                            <outputDirectory>${project.build.directory}/keycloak/providers</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
