@@ -10,6 +10,8 @@
 
 trap 'exit' ERR
 
+WAIT_INTERVAL_SECONDS=10
+
 # the new realm is also set as enabled
 createRealm() {
     # arguments
@@ -19,6 +21,42 @@ createRealm() {
     if [ "$EXISTING_REALM" == "" ]; then
         $KCADM create realms -s realm="${REALM_NAME}" -s enabled=true ${KCADM_CONFIG}
     fi
+    waitUntilRealmIsAvailable $REALM_NAME
+}
+
+# get the name of the realm for a given name
+getRealm () {
+    REALM_NAME=$1
+    REALM=$($KCADM get realms --fields realm ${KCADM_CONFIG} | jq '.[] | select(.realm==("'$REALM_NAME'")) | .realm')
+    echo $(sed -e 's/"//g' <<< $REALM)
+}
+
+# wait until realm is available
+waitUntilRealmIsAvailable () {
+    echo "Wait until realm is available"
+    REALM_NAME=$1
+
+    for i in $(seq 0 9); do
+      seconds=$((i*WAIT_INTERVAL_SECONDS))
+      attempts=$((i + 1))
+      echo "Attempt number: $attempts"
+
+      GET_REALM=$(getRealm "$REALM_NAME")
+
+      if [[ $GET_REALM == "$REALM_NAME" ]]; then
+        echo "Realm available after $attempts attempt(s)"
+        echo "Realm available after $seconds second(s)"
+        return
+      fi
+
+      # sleep for specified interval
+      echo "wait for $WAIT_INTERVAL_SECONDS second(s) before next check"
+      sleep $WAIT_INTERVAL_SECONDS
+
+    done
+
+    echo "Creating Realm Failed"
+    exit 1
 }
 
 # the new client is also set as enabled
