@@ -46,8 +46,16 @@ runKeycloakCli() {
       echo "Using $KCADM as the admin CLI."
   fi
 
-  # login to admin console
-  ${KCADM} config credentials --server http://localhost:8080 --client $KEYCLOAK_CONFIG_CLI_CLIENT_ID --secret $KEYCLOAK_CONFIG_CLI_CLIENT_SECRET --realm master ${KCADM_CONFIG}
+  if [ "$KC_BOOTSTRAP_ADMIN_USERNAME" == "" ];
+  then
+    # login with config user
+    echo "Use kcadm with config user"
+    ${KCADM} config credentials --server http://localhost:8080 --client $KEYCLOAK_CONFIG_CLI_CLIENT_ID --secret $KEYCLOAK_CONFIG_CLI_CLIENT_SECRET --realm master ${KCADM_CONFIG}
+  else
+    # login with bootstrap admin
+    echo "Use kcadm with bootstrap user"
+    ${KCADM} config credentials --server http://localhost:8080 --user $KC_BOOTSTRAP_ADMIN_USERNAME --password $KC_BOOTSTRAP_ADMIN_PASSWORD --realm master ${KCADM_CONFIG}
+  fi
 
   # helper functions using kc admin cli
   source "${BASEDIR}"/keycloak-cli-helpers.sh
@@ -64,7 +72,7 @@ runKeycloakConfigCli
 echo " "
 echo "----------------- KEYCLOAK CLI ------------------"
 echo " "
-#runKeycloakCli
+runKeycloakCli
 
 echo " "
 echo "--------------- KEYCLOAK SETUP FINISHED ----------------"

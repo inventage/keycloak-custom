@@ -3,7 +3,7 @@
 trap 'exit' ERR
 
 echo ""
-echo "----------------- keycloak_custom_config.sh ---------------"
+echo "----------------- keycloak-cli-custom.sh ---------------"
 echo ""
 
 createRealm example2
