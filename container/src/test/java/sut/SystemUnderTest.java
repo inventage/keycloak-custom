@@ -6,6 +6,7 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class SystemUnderTest {
@@ -62,18 +63,10 @@ public class SystemUnderTest {
     }
 
     private KeycloakCustomContainer startKeycloak(PostgreSQLContainer postgres) {
-        final String jdbcUrl = String.format("jdbc:postgresql://%s:5432/%s?loggerLevel=OFF", NETWORK_ALIAS_POSTGRES, DATABASE_NAME_POSTGRES);
         keycloak = new KeycloakCustomContainer()
                 .withLogConsumer(new Slf4jLogConsumer(LOGGER))
                 .withNetwork(network)
-                .withEnv(Map.of(
-                        "KC_BOOTSTRAP_ADMIN_CLIENT_ID", "temp-admin",
-                        "KC_BOOTSTRAP_ADMIN_CLIENT_SECRET", "admin",
-                        "KC_DB", "postgres",
-                        "KC_DB_USERNAME" , postgres.getUsername(),
-                        "KC_DB_PASSWORD", postgres.getPassword(),
-                        "KC_DB_URL", jdbcUrl,
-                        "KC_LOG_LEVEL", "info"));
+                .withEnv(getKeycloakEnvs());
         try {
             keycloak.start();
             return keycloak;
@@ -81,6 +74,23 @@ public class SystemUnderTest {
             System.err.println(keycloak.getLogs());
             throw e;
         }
+    }
+
+    private Map<String, String> getKeycloakEnvs() {
+        HashMap<String, String> envs = new HashMap<>();
+        envs.put("KC_BOOTSTRAP_ADMIN_CLIENT_ID", "temp-admin");
+        envs.put("KC_BOOTSTRAP_ADMIN_CLIENT_SECRET", "admin");
+        envs.put("KEYCLOAK_CONFIG_CLI_CLIENT_ID", "keycloak-config-cli");
+        envs.put("KEYCLOAK_CONFIG_CLI_CLIENT_SECRET", "keycloak-config-cli");
+        envs.put("KEYCLOAK_GRANTTYPE", "client_credentials");
+        envs.put("KEYCLOAK_CLIENTID", "${KC_BOOTSTRAP_ADMIN_CLIENT_ID}");
+        envs.put("KEYCLOAK_CLIENTSECRET", "${KC_BOOTSTRAP_ADMIN_CLIENT_SECRET}");
+        envs.put("KC_DB", "postgres");
+        envs.put("KC_DB_USERNAME" , postgres.getUsername());
+        envs.put("KC_DB_PASSWORD", postgres.getPassword());
+        envs.put("KC_DB_URL", String.format("jdbc:postgresql://%s:5432/%s?loggerLevel=OFF", NETWORK_ALIAS_POSTGRES, DATABASE_NAME_POSTGRES));
+        envs.put("KC_LOG_LEVEL", "info");
+        return envs;
     }
 
     public void stop() {
