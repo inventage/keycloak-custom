@@ -67,8 +67,8 @@ public class SystemUnderTest {
                 .withLogConsumer(new Slf4jLogConsumer(LOGGER))
                 .withNetwork(network)
                 .withEnv(Map.of(
-                        "KC_BOOTSTRAP_ADMIN_USERNAME", "admin",
-                        "KC_BOOTSTRAP_ADMIN_PASSWORD", "admin",
+                        "KC_BOOTSTRAP_ADMIN_CLIENT_ID", "temp-admin",
+                        "KC_BOOTSTRAP_ADMIN_CLIENT_SECRET", "admin",
                         "KC_DB", "postgres",
                         "KC_DB_USERNAME" , postgres.getUsername(),
                         "KC_DB_PASSWORD", postgres.getPassword(),
