@@ -25,8 +25,6 @@ runKeycloakConfigCli() {
   java -jar "${BASEDIR}"/client/keycloak-config-cli-"${keycloak-config-cli.version}".jar \
       --keycloak.url=http://localhost:8080/ \
       --keycloak.ssl-verify=true \
-      --keycloak.user="${KC_BOOTSTRAP_ADMIN_USERNAME}" \
-      --keycloak.password="${KC_BOOTSTRAP_ADMIN_PASSWORD}" \
       --keycloak.availability-check.enabled=true \
       --keycloak.availability-check.timeout=300s \
       --import.var-substitution.enabled=true \
@@ -46,8 +44,11 @@ runKeycloakCli() {
       echo "Using $KCADM as the admin CLI."
   fi
 
-  # login to admin console
-  ${KCADM} config credentials --server http://localhost:8080 --client $KEYCLOAK_CONFIG_CLI_CLIENT_ID --secret $KEYCLOAK_CONFIG_CLI_CLIENT_SECRET --realm master ${KCADM_CONFIG}
+  eval "KC_ADMIN_CLIENT_ID=${KEYCLOAK_CLIENTID}"
+  eval "KC_ADMIN_CLIENT_SECRET=${KEYCLOAK_CLIENTSECRET}"
+
+  echo "Use kcadm with bootstrap client ${KC_ADMIN_CLIENT_ID}"
+  ${KCADM} config credentials --server http://localhost:8080 --client ${KC_ADMIN_CLIENT_ID} --secret ${KC_ADMIN_CLIENT_SECRET} --realm master ${KCADM_CONFIG}
 
   # helper functions using kc admin cli
   source "${BASEDIR}"/keycloak-cli-helpers.sh
@@ -64,7 +65,7 @@ runKeycloakConfigCli
 echo " "
 echo "----------------- KEYCLOAK CLI ------------------"
 echo " "
-#runKeycloakCli
+runKeycloakCli
 
 echo " "
 echo "--------------- KEYCLOAK SETUP FINISHED ----------------"
