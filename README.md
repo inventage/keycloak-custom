@@ -20,7 +20,7 @@ tutorial [building a custom Keycloak container image](https://keycloak.ch/keyclo
 for the details of this project.
 
 
-Admin Users Setup
+Configuration of Keycloak
 ---
 
 Since [Keycloak 26 there are Bootstrap Admin Users and clients](https://www.keycloak.org/docs/latest/upgrading/#admin-bootstrapping-and-recovery),
