@@ -103,7 +103,7 @@ public class SystemUnderTest {
     }
 
     private void stopKeycloak() {
-        keycloak.start();
+        keycloak.stop();
     }
 
     private void stopPostgres() {
