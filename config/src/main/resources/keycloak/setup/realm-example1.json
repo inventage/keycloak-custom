@@ -233,7 +233,7 @@
       "description": "",
       "rootUrl": "",
       "adminUrl": "",
-      "baseUrl": "https://www.keycloak.org/app/#url=http://localhost:8080&realm=example1&client=myclient",
+      "baseUrl": "",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
