@@ -32,7 +32,7 @@
         <docker.verbose>true</docker.verbose>
         <docker.imagePropertyConfiguration>override</docker.imagePropertyConfiguration>
         <!-- versions -->
-        <keycloak.version>26.2.3</keycloak.version> <!-- update also keycloak-config-cli.version -->
+        <keycloak.version>26.2.4</keycloak.version> <!-- update also keycloak-config-cli.version -->
         <keycloak-config-cli.version>26.1.0_v6.4.0</keycloak-config-cli.version> <!-- from https://github.com/adorsys/keycloak-config-cli/releases -->
         <auto-service.version>1.0.1</auto-service.version>
         <!-- https://github.com/dasniko/testcontainers-keycloak/releases -->
