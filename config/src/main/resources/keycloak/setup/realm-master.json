@@ -1,6 +1,7 @@
 {
   "realm": "master",
   "enabled": true,
+  "sslRequired": "$(env:REALM_MASTER_SSL_REQUIRED:-external)",
   "adminEventsEnabled": true,
   "adminEventsDetailsEnabled": true,
   "eventsEnabled": true,

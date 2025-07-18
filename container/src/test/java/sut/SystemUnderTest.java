@@ -78,6 +78,9 @@ public class SystemUnderTest {
 
     private Map<String, String> getKeycloakEnvs() {
         HashMap<String, String> envs = new HashMap<>();
+        envs.put("KC_HTTP_ENABLED", "true");
+        envs.put("KC_HOSTNAME_STRICT_HTTPS", "false");
+        envs.put("REALM_MASTER_SSL_REQUIRED", "none");
         envs.put("KC_BOOTSTRAP_ADMIN_CLIENT_ID", "temp-admin");
         envs.put("KC_BOOTSTRAP_ADMIN_CLIENT_SECRET", "admin");
         envs.put("KEYCLOAK_CONFIG_CLI_CLIENT_ID", "keycloak-config-cli");
