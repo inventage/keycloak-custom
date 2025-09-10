@@ -260,22 +260,20 @@
                         <chartDirectory>${project.basedir}/helm/target/chart</chartDirectory>
                         <useLocalHelmBinary>false</useLocalHelmBinary>
                         <debug>true</debug>
-                        <skipUpload>false</skipUpload>
-                        <skipPushLogin>true</skipPushLogin>
                         <uploadRepoSnapshot>
                             <name>ghcr</name>
                             <url>ghcr.io/keycloak-competence-center</url>
-                            <type>NEXUS</type>
                             <username>${env.GITHUB_ACTOR}</username>
                             <password>${env.GITHUB_TOKEN}</password>
                         </uploadRepoSnapshot>
                         <uploadRepoStable>
                             <name>ghcr</name>
                             <url>ghcr.io/keycloak-competence-center</url>
-                            <type>NEXUS</type>
                             <username>${env.GITHUB_ACTOR}</username>
                             <password>${env.GITHUB_TOKEN}</password>
                         </uploadRepoStable>
+                        <skipUpload>true</skipUpload> <!-- upload is for HTTP PUT, we use push i.e. OCI-->
+                        <skipPushLogin>true</skipPushLogin> <!-- authentication happens with registry-login  -->
                     </configuration>
                     <executions>
                         <execution>
@@ -288,6 +286,7 @@
                                 <goal>init</goal>
                                 <goal>lint</goal>
                                 <goal>package</goal>
+                                <goal>registry-login</goal>                                
                                 <goal>push</goal>
                             </goals>
                             <phase>deploy</phase>

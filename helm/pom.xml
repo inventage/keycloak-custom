@@ -15,9 +15,6 @@
 
     <properties>
         <chart.directory>${project.basedir}/src/generated/keycloak-custom-chart</chart.directory>
-
-        <!-- Image names in chart should always use the inventage registry! -->
-        <docker.registry.name>docker-registry.inventage.com:10121</docker.registry.name>
     </properties>
 
     <build>
@@ -57,12 +54,10 @@
                     <execution>
                         <id>default-cli</id>
                         <configuration>
-                            <skipInstall>false</skipInstall>
-                            <skipUpgrade>false</skipUpgrade>
-                            <releaseName>keycloak-custom</releaseName>
                             <values>
+                                <!-- extra value settings for the lint command -->
                                 <yamlFiles>
-                                    <yamlFiles>${chart.directory}/values.yaml</yamlFiles>
+                                    <yamlFile>${chart.directory}/values.yaml</yamlFile>
                                 </yamlFiles>
                             </values>
                         </configuration>
