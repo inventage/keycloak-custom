@@ -36,10 +36,11 @@
         <keycloak-config-cli.version>26.1.0_v6.4.0</keycloak-config-cli.version> <!-- from https://github.com/adorsys/keycloak-config-cli/releases -->
         <auto-service.version>1.0.1</auto-service.version>
         <!-- https://github.com/dasniko/testcontainers-keycloak/releases -->
-        <testcontainers-keycloak.version>3.4.0</testcontainers-keycloak.version>
-        <testcontainers-postgres.version>1.19.3</testcontainers-postgres.version>
-        <junit-jupiter-engine.version>5.9.2</junit-jupiter-engine.version>
-        <failsafe-plugin.version>3.2.2</failsafe-plugin.version>
+        <testcontainers-keycloak.version>3.7.0</testcontainers-keycloak.version>
+        <testcontainers-postgres.version>1.21.1</testcontainers-postgres.version>
+        <testcontainers.version>1.20.6</testcontainers.version>
+        <junit-jupiter-engine.version>5.12.1</junit-jupiter-engine.version>
+        <failsafe-plugin.version>3.2.5</failsafe-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -80,7 +81,7 @@
             <dependency>
                 <groupId>org.testcontainers</groupId>
                 <artifactId>junit-jupiter</artifactId>
-                <version>1.19.1</version>
+                <version>${testcontainers.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -190,7 +191,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>3.1.2</version>
+                    <version>3.8.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
