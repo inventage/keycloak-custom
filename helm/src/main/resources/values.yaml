@@ -25,13 +25,42 @@ keycloakx:
     - name: KC_BOOTSTRAP_ADMIN_USERNAME
       valueFrom:
         secretKeyRef:
-          name: {{ include "keycloak.fullname" . }}-admin-creds
+          name: {{ include "keycloak.fullname" . }}-bootstrap-admin-creds
           key: user
     - name: KC_BOOTSTRAP_ADMIN_PASSWORD
       valueFrom:
         secretKeyRef:
-          name: {{ include "keycloak.fullname" . }}-admin-creds
+          name: {{ include "keycloak.fullname" . }}-bootstrap-admin-creds
           key: password
+    - name: KC_BOOTSTRAP_ADMIN_CLIENT_ID
+      valueFrom:
+        secretKeyRef:
+          name: {{ include "keycloak.fullname" . }}-bootstrap-admin-client-creds
+          key: client-id
+    - name: KC_BOOTSTRAP_ADMIN_CLIENT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: {{ include "keycloak.fullname" . }}-bootstrap-admin-client-creds
+          key: client-secret
+
+    - name: KEYCLOAK_CONFIG_CLI_CLIENT_ID
+      valueFrom:
+        secretKeyRef:
+          name: {{ include "keycloak.fullname" . }}-config-cli-client-creds
+          key: client-id
+    - name: KEYCLOAK_CONFIG_CLI_CLIENT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: {{ include "keycloak.fullname" . }}-config-cli-client-creds
+          key: client-secret
+
+    - name: KEYCLOAK_CLIENTID
+      value: ${KC_BOOTSTRAP_ADMIN_CLIENT_ID}
+    - name: KEYCLOAK_CLIENTSECRET
+      value: ${KC_BOOTSTRAP_ADMIN_CLIENT_SECRET}
+    - name: KEYCLOAK_GRANTTYPE
+      value: client_credentials
+
     - name: JAVA_OPTS_APPEND
       value: >-
         -Djava.awt.headless=true
@@ -49,12 +78,18 @@ keycloakx:
     database: keycloak
 
   secrets:
-    admin-creds:
-      annotations:
-        my-test-annotation: Test secret for {{ include "keycloak.fullname" . }}
+    bootstrap-admin-creds:
       stringData:
-        user: admin
-        password: secret
+        user: temp-admin
+        password: admin
+    bootstrap-admin-client-creds:
+      stringData:
+        client-id: temp-client-admin
+        client-secret: admin
+    config-cli-client-creds:
+      stringData:
+        client-id: keycloak-config-cli
+        client-secret: keycloak-config-cli
 
   securityContext:
     # See https://github.com/keycloak/keycloak/issues/11286
