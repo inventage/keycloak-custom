@@ -54,11 +54,11 @@ keycloakx:
           name: {{ include "keycloak.fullname" . }}-config-cli-client-creds
           key: client-secret
 
-    - name: KEYCLOAK_CLIENTID
+    - name: KEYCLOAK_CLIENT_ID_REF
       value: ${KC_BOOTSTRAP_ADMIN_CLIENT_ID}
-    - name: KEYCLOAK_CLIENTSECRET
+    - name: KEYCLOAK_CLIENT_SECRET_REF
       value: ${KC_BOOTSTRAP_ADMIN_CLIENT_SECRET}
-    - name: KEYCLOAK_GRANTTYPE
+    - name: KEYCLOAK_GRANT_TYPE
       value: client_credentials
 
     - name: JAVA_OPTS_APPEND

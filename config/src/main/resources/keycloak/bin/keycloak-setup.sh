@@ -21,15 +21,15 @@ runKeycloakConfigCli() {
   echo "--- Running Keycloak Config CLI"
   echo ""
 
-  eval "KC_ADMIN_CLIENT_ID=${KEYCLOAK_CLIENTID}"
-  eval "KC_ADMIN_CLIENT_SECRET=${KEYCLOAK_CLIENTSECRET}"
+  eval "KC_ADMIN_CLIENT_ID=${KEYCLOAK_CLIENT_ID_REF}"
+  eval "KC_ADMIN_CLIENT_SECRET=${KEYCLOAK_CLIENT_SECRET_REF}"
 
   echo "Use keycloak-config-cli with client '${KC_ADMIN_CLIENT_ID}'"
   # run keycloak-config-cli
   java -jar "${BASEDIR}"/client/keycloak-config-cli-"${keycloak-config-cli.version}".jar \
       --keycloak.url=http://localhost:8080/ \
       --keycloak.ssl-verify=true \
-      --keycloak.grant-type="${KEYCLOAK_GRANTTYPE}" \
+      --keycloak.grant-type="${KEYCLOAK_GRANT_TYPE}" \
       --keycloak.client-id="${KC_ADMIN_CLIENT_ID}" \
       --keycloak.client-secret="${KC_ADMIN_CLIENT_SECRET}" \
       --keycloak.availability-check.enabled=true \
@@ -51,8 +51,8 @@ runKeycloakCli() {
       echo "Using $KCADM as the admin CLI."
   fi
 
-  eval "KC_ADMIN_CLIENT_ID=${KEYCLOAK_CLIENTID}"
-  eval "KC_ADMIN_CLIENT_SECRET=${KEYCLOAK_CLIENTSECRET}"
+  eval "KC_ADMIN_CLIENT_ID=${KEYCLOAK_CLIENT_ID_REF}"
+  eval "KC_ADMIN_CLIENT_SECRET=${KEYCLOAK_CLIENT_SECRET_REF}"
 
   echo "Use kcadm with client '${KC_ADMIN_CLIENT_ID}'"
   ${KCADM} config credentials --server http://localhost:8080 --client ${KC_ADMIN_CLIENT_ID} --secret ${KC_ADMIN_CLIENT_SECRET} --realm master ${KCADM_CONFIG}
