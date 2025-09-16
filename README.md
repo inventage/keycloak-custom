@@ -80,6 +80,8 @@ Our setup script uses two **configuration tools**: [keycloak-config-cli](https:/
       KEYCLOAK_CLIENT_SECRET_REF=${KEYCLOAK_CONFIG_CLI_CLIENT_SECRET}
       ```
 
+![bootstrap process](.docs/bootstrap-process.png)
+
 The following table shows which admin accounts are created after the first start of Keycloak and the first execution of the setup script:
 
 | Configuration Account       | Temporary           | Permanent                                  |
