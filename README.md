@@ -1,8 +1,6 @@
-Keycloak-Custom
-===
+# Keycloak-Custom
 
-Project Template
----
+## Project Template
 
 This project is based on the [custom Keycloak template](https://github.com/inventage/keycloak-custom). It is structured
 as a multi-module Maven build and contains the following top-level modules:
@@ -19,8 +17,9 @@ Please see the
 tutorial [building a custom Keycloak container image](https://keycloak.ch/keycloak-tutorials/tutorial-custom-keycloak/)
 for the details of this project.
 
-Configuration of Keycloak
----
+## Configuration of Keycloak
+
+### Bootstrap Process
 
 Since [Keycloak 26 there are temporary bootstrap admin accounts for user and client](https://www.keycloak.org/docs/latest/upgrading/#admin-bootstrapping-and-recovery),
 which are created and used during the first start of Keycloak. Afterward, this user/client should be deleted.
@@ -108,3 +107,43 @@ You can achieve this by setting `KEYCLOAK_CLIENT_ID_REF` to `${KEYCLOAK_CONFIG_C
 | `KEYCLOAK_GRANT_TYPE`               | Property used by keycloak-config-cli, it is either `password` or `client_credentials` | `client_credentials`                  |
 | `KEYCLOAK_CLIENT_ID_REF`            | Property used by keycloak-config-cli and kcadm                                        | `${KC_BOOTSTRAP_ADMIN_CLIENT_ID}`     |
 | `KEYCLOAK_CLIENT_SECRET_REF`        | Property used by keycloak-config-cli and kcadm                                        | `${KC_BOOTSTRAP_ADMIN_CLIENT_SECRET}` |
+
+### realm-example.json
+
+In order to update the realm-example.json, it is recommended to follow these steps:
+
+- On the admin UI, create a new realm
+- Export the `realm-export.json` (default config)
+- Configure a single entity i.e. `client`, `clientScope`, `role`, `identityProvider` etc.
+- Export the `realm-export.json` (custom config)
+- Compare the changes between the export (diff)
+  - In order to compare the JSON files more effectively:
+  - Remove any `id`' keys (those are Keycloak internal ids)
+  - Sort all objects and arrays recursively
+  - All of the above can be applied with the following `jq` script:
+
+    ```bash
+    jq --sort-keys '
+        walk(
+            if type == "object" then 
+                del(.id, .containerId)
+            else 
+                . 
+            end
+        ) | 
+        walk(
+            if type == "array" then 
+                if (.[] | select(type == "object")) then 
+                    sort_by(try .name catch "", try .alias catch "", try .flowAlias catch "") 
+                else 
+                    sort 
+                end 
+            else 
+                . 
+            end
+        )' realm-example.json
+    ```
+
+  - Start a new `realm-example.json`, including only the custom config that deviates from the default config (the diff from the previous step)
+  - Replace any environment specific configuration i.e. URL, client-ids and client-secrets with env vars
+  - Apply the configuration with the `keycloak-config-cli`
