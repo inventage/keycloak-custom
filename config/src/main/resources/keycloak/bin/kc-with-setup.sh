@@ -183,9 +183,7 @@ eval exec "'$JAVA'" $JAVA_RUN_OPTS &
 # Below: Added by Inventage
 # ========================================
 
-export KEYCLOAK_PID=$!
-
-source $DIRNAME/keycloak-setup.sh
+KEYCLOAK_PID=$!
 
 forwardSigterm() {
     echo "--> SIGTERM received - forwarding to java pid"
@@ -194,5 +192,9 @@ forwardSigterm() {
 
 trap forwardSigterm SIGTERM
 
+source $DIRNAME/keycloak-setup.sh
+
 #to keep the container running until keycloak shuts down
 wait $KEYCLOAK_PID
+
+echo "--> Keycloak process has shut down. Exiting."
