@@ -286,7 +286,7 @@
                                 <goal>init</goal>
                                 <goal>lint</goal>
                                 <goal>package</goal>
-                                <goal>registry-login</goal>                                
+                                <goal>registry-login</goal>
                                 <goal>push</goal>
                             </goals>
                             <phase>deploy</phase>

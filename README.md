@@ -125,21 +125,21 @@ In order to update the realm-example.json, it is recommended to follow these ste
     ```bash
     jq --sort-keys '
         walk(
-            if type == "object" then 
+            if type == "object" then
                 del(.id, .containerId)
-            else 
-                . 
+            else
+                .
             end
-        ) | 
+        ) |
         walk(
-            if type == "array" then 
-                if (.[] | select(type == "object")) then 
-                    sort_by(try .name catch "", try .alias catch "", try .flowAlias catch "") 
-                else 
-                    sort 
-                end 
-            else 
-                . 
+            if type == "array" then
+                if (.[] | select(type == "object")) then
+                    sort_by(try .name catch "", try .alias catch "", try .flowAlias catch "")
+                else
+                    sort
+                end
+            else
+                .
             end
         )' realm-example.json
     ```
