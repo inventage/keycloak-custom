@@ -24,5 +24,27 @@ jobs:
           distribution: "temurin"
           cache: maven
 
+      - name: Replace "SNAPSHOT" within POM version with date, build number and commit hash
+        run: |
+          snapshot_version=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)
+          major_minor_patch=$(echo "${snapshot_version}" | sed 's/SNAPSHOT//g')
+          date=$(date -u +%Y%m%d%H%M)
+          release_candidate_version=${major_minor_patch}${date}-${{github.run_number}}-${GITHUB_SHA::8}
+          ./mvnw versions:set -DnewVersion=${release_candidate_version}
+
       - name: Build with Maven
-        run: mvn -B verify --file pom.xml
+        run: ./mvnw -B -DmultiArchBuild=true -DskipTests deploy --file pom.xml
+        env:
+          # used to push docker images and helm charts to the GHCR
+          GITHUB_ACTOR: ${{ github.repository_owner }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # https://github.com/actions/delete-package-versions
+      - name: Remove outdated docker images
+        uses: actions/delete-package-versions@v4
+        with:
+          package-name: "keycloak-custom/com.inventage.keycloak.custom.container"
+          package-type: "container"
+          min-versions-to-keep: 5
+          delete-only-pre-release-versions: "true"
+        continue-on-error: true

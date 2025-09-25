@@ -14,7 +14,7 @@ keycloakx:
 
   image:
     # The custom image repository
-    repository: docker-registry.inventage.com:10094/com.inventage.keycloak.custom.container
+    repository: ghcr.io/inventage/keycloak-custom/com.inventage.keycloak.custom.container
     # Overrides the Keycloak image tag whose default is the chart appVersion
     tag: 1.0.0-SNAPSHOT
 
