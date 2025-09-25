@@ -43,7 +43,7 @@ jobs:
       - name: Remove outdated docker images
         uses: actions/delete-package-versions@v4
         with:
-          package-name: "inventage/com.inventage.keycloak.custom.container"
+          package-name: "keycloak-custom/com.inventage.keycloak.custom.container"
           package-type: "container"
           min-versions-to-keep: 5
           delete-only-pre-release-versions: "true"
