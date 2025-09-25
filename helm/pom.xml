@@ -45,9 +45,6 @@
                 <groupId>io.kokuwa.maven</groupId>
                 <artifactId>helm-maven-plugin</artifactId>
                 <configuration>
-                    <excludes>
-                        <exclude>${project.build.directory}/**/charts/**/charts/portal-lib</exclude>
-                    </excludes>
                     <chartDirectory>${chart.directory}</chartDirectory>
                 </configuration>
                 <executions>
