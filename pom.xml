@@ -26,7 +26,7 @@
         <keycloak.target.dir>../server/${keycloak.dir}/</keycloak.target.dir> <!-- used in config & extension modules -->
         <keycloak.providers.dir>../../server/${keycloak.dir}/providers</keycloak.providers.dir> <!-- used in extension modules -->
         <keycloak.themes.dir>../server/${keycloak.dir}/themes</keycloak.themes.dir> <!-- used in themes module -->
-        <docker.registry>docker-registry.inventage.com:10094/</docker.registry>
+        <docker.registry>ghcr.io/inventage/keycloak-custom/</docker.registry>
         <docker.image.name>com.inventage.keycloak.custom.container</docker.image.name>
         <docker.contextDir>${project.build.outputDirectory}</docker.contextDir>
         <docker.verbose>true</docker.verbose>
@@ -116,6 +116,9 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
                     <version>3.1.1</version>
+                    <configuration>
+                        <skip>true</skip>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -246,6 +249,12 @@
                             <goals>
                                 <goal>push</goal>
                             </goals>
+                            <configuration>
+                                <authConfig>
+                                    <username>${env.GITHUB_ACTOR}</username>
+                                    <password>${env.GITHUB_TOKEN}</password>
+                                </authConfig>
+                            </configuration>                            
                         </execution>
                     </executions>
                 </plugin>
@@ -289,7 +298,7 @@
                                 <goal>registry-login</goal>
                                 <goal>push</goal>
                             </goals>
-                            <phase>deploy</phase>
+                            <phase>none</phase> <!-- ghcr does not support helm charts -->
                         </execution>
                     </executions>
                 </plugin>
