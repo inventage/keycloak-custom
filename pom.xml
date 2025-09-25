@@ -289,17 +289,6 @@
                             <id>default-upload</id>
                             <phase>none</phase>
                         </execution>
-                        <execution>
-                            <id>upload</id>
-                            <goals>
-                                <goal>init</goal>
-                                <goal>lint</goal>
-                                <goal>package</goal>
-                                <goal>registry-login</goal>
-                                <goal>push</goal>
-                            </goals>
-                            <phase>none</phase> <!-- ghcr does not support helm charts -->
-                        </execution>
                     </executions>
                 </plugin>
             </plugins>
