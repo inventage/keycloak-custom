@@ -47,6 +47,7 @@ jobs:
           package-type: "container"
           min-versions-to-keep: 5
           delete-only-pre-release-versions: "true"
+        continue-on-error: true
 
       - name: Configure Git
         run: |
