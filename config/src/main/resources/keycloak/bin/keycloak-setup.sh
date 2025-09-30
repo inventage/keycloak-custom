@@ -54,11 +54,11 @@ runKeycloakCli() {
   eval "ADMIN_CLIENT_ID=${KEYCLOAK_CLIENT_ID_REF}"
   eval "ADMIN_CLIENT_SECRET=${KEYCLOAK_CLIENT_SECRET_REF}"
 
-  echo "Use kcadm with client '${KC_ADMIN_CLIENT_ID}'"
+  echo "Use kcadm with client '${ADMIN_CLIENT_ID}'"
   ${KCADM} config credentials \
     --server http://localhost:8080 \
-    --client ${ADMIN_CLIENT_ID} \
-    --secret ${ADMIN_CLIENT_SECRET} \
+    --client "${ADMIN_CLIENT_ID}" \
+    --secret "${ADMIN_CLIENT_SECRET}" \
     --realm master \
     ${KCADM_CONFIG}
 
