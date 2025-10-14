@@ -5,6 +5,8 @@
 # See delimiter near the bottom
 # ========================================
 
+#!/bin/sh
+
 case "$(uname)" in
     CYGWIN*)
         IS_CYGWIN="true"
@@ -46,23 +48,34 @@ SERVER_OPTS="$SERVER_OPTS -Dpicocli.disable.closures=true"
 SERVER_OPTS="$SERVER_OPTS -Dquarkus-log-max-startup-records=10000"
 CLASSPATH_OPTS="'$(abs_path "../lib/quarkus-run.jar")'"
 
-DEBUG_MODE="${DEBUG:-false}"
-DEBUG_PORT="${DEBUG_PORT:-8787}"
-DEBUG_SUSPEND="${DEBUG_SUSPEND:-n}"
+DEBUG_MODE="${KC_DEBUG:-${DEBUG:-false}}"
+DEBUG_PORT="${KC_DEBUG_PORT:-${DEBUG_PORT:-8787}}"
+DEBUG_SUSPEND="${KC_DEBUG_SUSPEND:-${DEBUG_SUSPEND:-n}}"
+DEBUG_ADDRESS="0.0.0.0:$DEBUG_PORT"
 
 esceval() {
     printf '%s\n' "$1" | sed "s/'/'\\\\''/g; 1 s/^/'/; $ s/$/'/"
 }
 
-PRE_BUILD=true
 while [ "$#" -gt 0 ]
 do
     case "$1" in
       --debug)
           DEBUG_MODE=true
-          if [ -n "$2" ] && expr "$2" : '[0-9]\{0,\}$' >/dev/null; then
-              DEBUG_PORT=$2
-              shift
+          if [ -n "$2" ]; then
+              # Plain port
+              if echo "$2" | grep -Eq '^[0-9]+$'; then
+                  DEBUG_ADDRESS="0.0.0.0:$2"
+                  shift
+              # IPv4 or bracketed IPv6 with optional port
+              elif echo "$2" | grep -Eq '^(([0-9.]+)|(\[[0-9A-Fa-f:]+\]))'; then
+                  if echo "$2" | grep -Eq ':[0-9]+$'; then
+                      DEBUG_ADDRESS="$2"
+                  else
+                      DEBUG_ADDRESS="$2:$DEBUG_PORT"
+                  fi
+                  shift
+              fi
           fi
           ;;
       --)
@@ -72,13 +85,8 @@ do
       *)
           OPT=$(esceval "$1")
           case "$1" in
-            start-dev) CONFIG_ARGS="$CONFIG_ARGS --profile=dev $1";;
             -D*) SERVER_OPTS="$SERVER_OPTS ${OPT}";;
-            *) case "$1" in
-                 --optimized | --help | --help-all | -h) PRE_BUILD=false;;
-                 build) if [ -z "$CONFIG_ARGS" ]; then PRE_BUILD=false; fi;;
-               esac
-               CONFIG_ARGS="$CONFIG_ARGS ${OPT}"
+            *) CONFIG_ARGS="$CONFIG_ARGS ${OPT}"
                ;;
           esac
           ;;
@@ -102,7 +110,7 @@ if [ -z "$JAVA_OPTS" ]; then
    # If the memory is not used, it will be freed. See https://developers.redhat.com/blog/2017/04/04/openjdk-and-containers for details.
    # To optimize for large heap sizes or for throughput and better response time due to shorter GC pauses, consider ZGC and Shenandoah GC.
    # As of KC25 and JDK17, G1GC, ZGC and Shenandoah GC seem to be eager to claim the maximum heap size. Tests showed that ZGC might need additional tuning in reclaiming dead objects.
-   JAVA_OPTS="-XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.err.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -XX:+ExitOnOutOfMemoryError -Djava.security.egd=file:/dev/urandom -XX:+UseG1GC -XX:FlightRecorderOptions=stackdepth=512"
+   JAVA_OPTS="-XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.err.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -XX:+ExitOnOutOfMemoryError -Djava.security.egd=file:/dev/urandom -XX:+UseG1GC -XX:FlightRecorderOptions=stackdepth=512 -Djdk.tls.rejectClientInitiatedRenegotiation=true"
 
    if [ -z "$JAVA_OPTS_KC_HEAP" ]; then
       if [ "$KC_RUN_IN_CONTAINER" = "true" ]; then
@@ -147,7 +155,7 @@ fi
 if [ "$DEBUG_MODE" = "true" ]; then
     DEBUG_OPT="$(echo "$JAVA_OPTS" | $GREP "\-agentlib:jdwp")"
     if [ -z "$DEBUG_OPT" ]; then
-        JAVA_OPTS="$JAVA_OPTS -agentlib:jdwp=transport=dt_socket,address=$DEBUG_PORT,server=y,suspend=$DEBUG_SUSPEND"
+        JAVA_OPTS="$JAVA_OPTS -agentlib:jdwp=transport=dt_socket,address=$DEBUG_ADDRESS,server=y,suspend=$DEBUG_SUSPEND"
     else
         echo "Debug already enabled in JAVA_OPTS, ignoring --debug argument"
     fi
@@ -157,7 +165,7 @@ esceval_args() {
   while IFS= read -r entry; do
     result="$result $(esceval "$entry")"
   done
-  echo $result
+  echo "$result"
 }
 
 JAVA_RUN_OPTS=$(echo "$JAVA_OPTS" | xargs printf '%s\n' | esceval_args)
@@ -170,12 +178,16 @@ if [ "$PRINT_ENV" = "true" ]; then
   echo "Using JAVA_RUN_OPTS: $JAVA_RUN_OPTS"
 fi
 
-if [ "$PRE_BUILD" = "true" ]; then
-  eval "'$JAVA'" -Dkc.config.build-and-exit=true $JAVA_RUN_OPTS || exit $?
+eval "'$JAVA'" "$JAVA_RUN_OPTS"
+status=$?
+# only exit code 10 means that implicit reaugmentation occurred and a relaunch is needed
+if [ $status = 10 ]; then
   JAVA_RUN_OPTS="-Dkc.config.built=true $JAVA_RUN_OPTS"
-fi
 
-eval exec "'$JAVA'" $JAVA_RUN_OPTS &
+  eval exec "'$JAVA'" "$JAVA_RUN_OPTS" &
+else
+  exit $status
+fi
 
 # ========================================
 # Above: Copied from https://github.com/keycloak/keycloak/blob/main/quarkus/dist/src/main/content/bin/kc.sh
