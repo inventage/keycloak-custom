@@ -14,6 +14,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
     steps:
       - uses: actions/checkout@v3
 
@@ -44,6 +46,15 @@ jobs:
         uses: actions/delete-package-versions@v4
         with:
           package-name: "keycloak-custom/com.inventage.keycloak.custom.container"
+          package-type: "container"
+          min-versions-to-keep: 5
+          delete-only-pre-release-versions: "true"
+        continue-on-error: true
+
+      - name: Remove outdated helm charts
+        uses: actions/delete-package-versions@v4
+        with:
+          package-name: "keycloak-custom/keycloak-custom-chart "
           package-type: "container"
           min-versions-to-keep: 5
           delete-only-pre-release-versions: "true"
