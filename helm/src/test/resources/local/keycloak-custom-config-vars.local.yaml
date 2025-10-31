@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-custom-config-vars
+  namespace: default
+data:
+  EXAMPLE1_DISPLAY_NAME: "Example One (minikube)"
+

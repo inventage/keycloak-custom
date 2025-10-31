@@ -1,105 +1,73 @@
-keycloakx:
-  # This is an example configuration, for production grade configuration see the Keycloak documentation.
-  # See https://www.keycloak.org/server/configuration
-  # See https://www.keycloak.org/server/all-config
-  command:
-    - "/opt/keycloak/bin/kc-with-setup.sh"
-    - "--verbose"
-    - "start"
-    - "--http-enabled=true"
-    - "--http-port=8080"
-    - "--hostname-strict=false"
-    - "--spi-events-listener-jboss-logging-success-level=info"
-    - "--spi-events-listener-jboss-logging-error-level=warn"
+# This is an example configuration, for production grade configuration see the Keycloak documentation.
+# See https://www.keycloak.org/server/configuration
+# See https://www.keycloak.org/server/all-config
+command:
+  - "/opt/keycloak/bin/kc-with-setup.sh"
+  - "--verbose"
+  - "start"
+  - "--http-enabled=true"
+  - "--http-port=8080"
+  - "--hostname-strict=false"
+  - "--spi-events-listener-jboss-logging-success-level=info"
+  - "--spi-events-listener-jboss-logging-error-level=warn"
 
-  image:
-    # The custom image repository
-    repository: ghcr.io/inventage/keycloak-custom/com.inventage.keycloak.custom.container
-    # Overrides the Keycloak image tag whose default is the chart appVersion
-    tag: 1.0.0-SNAPSHOT
+image:
+  # The custom image repository
+  repository: ghcr.io/inventage/keycloak-custom/com.inventage.keycloak.custom.container
+  # Overrides the Keycloak image tag whose default is the chart appVersion
+  tag: 1.0.0-SNAPSHOT
 
-  http:
-    relativePath: "/"
+http:
+  relativePath: "/"
 
-  extraEnv: |
-    - name: KC_BOOTSTRAP_ADMIN_USERNAME
-      valueFrom:
+dbchecker:
+  enabled: true
+
+database:
+  vendor: postgres
+  hostname: postgresql
+  port: 5432
+  username: keycloak
+  password: keycloak
+  database: keycloak
+
+extraEnv: |
+  - name: JAVA_OPTS_APPEND
+    value: >-
+      -Djava.awt.headless=true
+      -Djgroups.dns.query={{ include "keycloak.fullname" . }}-headless
+  
+  # KC_BOOTSTRAP_ADMIN_USERNAME, temporary admin user
+  - name: KC_BOOTSTRAP_ADMIN_USERNAME
+    value: temp-admin
+  # KC_BOOTSTRAP_ADMIN_CLIENT_ID, temporary client with realm role admin
+  - name: KC_BOOTSTRAP_ADMIN_CLIENT_ID
+    value: temp-client-admin
+  
+  # KEYCLOAK_GRANTTYPE property used by 'keycloak-config-cli' either password or client_credentials 
+  - name: KEYCLOAK_GRANTTYPE
+    value: client_credentials
+  # KEYCLOAK_CLIENTID property used by 'keycloak-config-cli' when grant-type is client_credentials
+  - name: KEYCLOAK_CLIENTID
+    value: temp-client-admin
+  # KEYCLOAK_CLIENTSECRET property used by 'keycloak-config-cli' when grant-type is client_credentials
+  - name: KEYCLOAK_CLIENTSECRET
+    valueFrom:
         secretKeyRef:
-          name: {{ include "keycloak.fullname" . }}-bootstrap-admin-creds
-          key: user
-    - name: KC_BOOTSTRAP_ADMIN_PASSWORD
-      valueFrom:
-        secretKeyRef:
-          name: {{ include "keycloak.fullname" . }}-bootstrap-admin-creds
-          key: password
-    - name: KC_BOOTSTRAP_ADMIN_CLIENT_ID
-      valueFrom:
-        secretKeyRef:
-          name: {{ include "keycloak.fullname" . }}-bootstrap-admin-client-creds
-          key: client-id
-    - name: KC_BOOTSTRAP_ADMIN_CLIENT_SECRET
-      valueFrom:
-        secretKeyRef:
-          name: {{ include "keycloak.fullname" . }}-bootstrap-admin-client-creds
-          key: client-secret
+          name: keycloak-custom-secret-vars
+          key: KC_BOOTSTRAP_ADMIN_CLIENT_SECRET
 
-    - name: KEYCLOAK_CONFIG_CLI_CLIENT_ID
-      valueFrom:
-        secretKeyRef:
-          name: {{ include "keycloak.fullname" . }}-config-cli-client-creds
-          key: client-id
-    - name: KEYCLOAK_CONFIG_CLI_CLIENT_SECRET
-      valueFrom:
-        secretKeyRef:
-          name: {{ include "keycloak.fullname" . }}-config-cli-client-creds
-          key: client-secret
+extraEnvFrom: |
+  - configMapRef:
+      name: keycloak-custom-config-vars
+  - secretRef:
+      name: keycloak-custom-secret-vars
 
-    - name: KEYCLOAK_CLIENT_ID_REF
-      value: ${KC_BOOTSTRAP_ADMIN_CLIENT_ID}
-    - name: KEYCLOAK_CLIENT_SECRET_REF
-      value: ${KC_BOOTSTRAP_ADMIN_CLIENT_SECRET}
-    - name: KEYCLOAK_GRANT_TYPE
-      value: client_credentials
+securityContext:
+  # See https://github.com/keycloak/keycloak/issues/11286
+  # readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
 
-    - name: JAVA_OPTS_APPEND
-      value: >-
-        -Djava.awt.headless=true
-        -Djgroups.dns.query={{ include "keycloak.fullname" . }}-headless
-
-  dbchecker:
-    enabled: true
-
-  database:
-    vendor: postgres
-    hostname: postgres-postgresql
-    port: 5432
-    username: keycloak
-    password: keycloak
-    database: keycloak
-
-  secrets:
-    bootstrap-admin-creds:
-      stringData:
-        user: temp-admin
-        password: admin
-    bootstrap-admin-client-creds:
-      stringData:
-        client-id: temp-client-admin
-        client-secret: admin
-    config-cli-client-creds:
-      stringData:
-        client-id: keycloak-config-cli
-        client-secret: keycloak-config-cli
-
-  securityContext:
-    # See https://github.com/keycloak/keycloak/issues/11286
-    # readOnlyRootFilesystem: true
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-        - ALL
-
-  serviceAccount:
-    automountServiceAccountToken: "false"
-    imagePullSecrets:
-      - name: keycloak-custom
