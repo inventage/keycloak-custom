@@ -44,39 +44,39 @@ Our setup script uses two **configuration tools**: [keycloak-config-cli](https:/
 
 2. On subsequent runs
    - Temporary users and clients should not be used anymore!
-   - Which client is used for applying the configuration is determined by the `KEYCLOAK_CLIENT_ID_REF` and `KEYCLOAK_CLIENT_SECRET_REF` env vars.
+   - Which client is used for applying the configuration is determined by the `KEYCLOAK_CLIENTID` and `KEYCLOAK_CLIENTSECRET` env vars.
    - Initially, these env vars point to the temporary admin client.
    - As we now have an alternative permanent client available, it should be used instead.
    - **[helm]** Replace in [values.yaml](./helm/src/main/resources/values.yaml):
 
       ```yaml
-          - name: KEYCLOAK_CLIENT_ID_REF
+          - name: KEYCLOAK_CLIENTID
             value: ${KC_BOOTSTRAP_ADMIN_CLIENT_SECRET}
-          - name: KEYCLOAK_CLIENT_SECRET_REF
+          - name: KEYCLOAK_CLIENTSECRET
             value: ${KC_BOOTSTRAP_ADMIN_CLIENT_SECRET}
       ```
 
       with:
 
       ```yaml
-          - name: KEYCLOAK_CLIENT_ID_REF
+          - name: KEYCLOAK_CLIENTID
             value: ${KEYCLOAK_CONFIG_CLI_CLIENT_ID}
-          - name: KEYCLOAK_CLIENT_SECRET_REF
+          - name: KEYCLOAK_CLIENTSECRET
             value: ${KEYCLOAK_CONFIG_CLI_CLIENT_SECRET}
       ```
 
    - **[docker]** Replace in [keycloak.common.env](docker-compose/src/main/resources/keycloak.common.env):
 
       ```properties
-      KEYCLOAK_CLIENT_ID_REF=${KC_BOOTSTRAP_ADMIN_CLIENT_ID}
-      KEYCLOAK_CLIENT_SECRET_REF=${KC_BOOTSTRAP_ADMIN_CLIENT_SECRET}
+      KEYCLOAK_CLIENTID=${KC_BOOTSTRAP_ADMIN_CLIENT_ID}
+      KEYCLOAK_CLIENTSECRET=${KC_BOOTSTRAP_ADMIN_CLIENT_SECRET}
       ```
 
       with:
 
       ```properties
-      KEYCLOAK_CLIENT_ID_REF=${KEYCLOAK_CONFIG_CLI_CLIENT_ID}
-      KEYCLOAK_CLIENT_SECRET_REF=${KEYCLOAK_CONFIG_CLI_CLIENT_SECRET}
+      KEYCLOAK_CLIENTID=${KEYCLOAK_CONFIG_CLI_CLIENT_ID}
+      KEYCLOAK_CLIENTSECRET=${KEYCLOAK_CONFIG_CLI_CLIENT_SECRET}
       ```
 
 ![bootstrap process](.docs/bootstrap-process.png)
@@ -94,19 +94,19 @@ The service account can be configured with the properties `KEYCLOAK_CONFIG_CLI_C
 The configuration tools use for authentication as default the bootstrap admin client (`KC_BOOTSTRAP_ADMIN_CLIENT_*`) which is configured in
 `KEYCLOAK_CLIENT_*`.
 It is possible to let the configuration tools use the service account after the first setup run.
-You can achieve this by setting `KEYCLOAK_CLIENT_ID_REF` to `${KEYCLOAK_CONFIG_CLI_CLIENT_ID}` and `KEYCLOAK_CLIENT_SECRET_REF` to `${KEYCLOAK_CONFIG_CLI_CLIENT_SECRET}`.
+You can achieve this by setting `KEYCLOAK_CLIENTID` to `${KEYCLOAK_CONFIG_CLI_CLIENT_ID}` and `KEYCLOAK_CLIENTSECRET` to `${KEYCLOAK_CONFIG_CLI_CLIENT_SECRET}`.
 
-| Environment Variable Name           | Description                                                                           | Default Value                         |
-| ----------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------- |
-| `KC_BOOTSTRAP_ADMIN_USERNAME`       | Bootstrap admin username                                                              | `temp-admin`                          |
-| `KC_BOOTSTRAP_ADMIN_PASSWORD`       | Bootstrap admin password                                                              | `admin` (**Please change!**)          |
-| `KC_BOOTSTRAP_ADMIN_CLIENT_ID`      | Bootstrap Admin Client Id                                                             | `temp-client-admin`                   |
-| `KC_BOOTSTRAP_ADMIN_CLIENT_SECRET`  | Bootstrap Admin Client Secret                                                         | `admin` (**Please change!**)          |
-| `KEYCLOAK_CONFIG_CLI_CLIENT_ID`     | Used for creating the regular client for keycloak-config-cli in `realm-master.json`   | `keycloak-config-cli`                 |
+| Environment Variable Name | Description                                                                           | Default Value                         |
+| ------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------- |
+| `KC_BOOTSTRAP_ADMIN_USERNAME` | Bootstrap admin username                                                              | `temp-admin`                          |
+| `KC_BOOTSTRAP_ADMIN_PASSWORD` | Bootstrap admin password                                                              | `admin` (**Please change!**)          |
+| `KC_BOOTSTRAP_ADMIN_CLIENT_ID` | Bootstrap Admin Client Id                                                             | `temp-client-admin`                   |
+| `KC_BOOTSTRAP_ADMIN_CLIENT_SECRET` | Bootstrap Admin Client Secret                                                         | `admin` (**Please change!**)          |
+| `KEYCLOAK_CONFIG_CLI_CLIENT_ID` | Used for creating the regular client for keycloak-config-cli in `realm-master.json`   | `keycloak-config-cli`                 |
 | `KEYCLOAK_CONFIG_CLI_CLIENT_SECRET` | Used for creating the regular client for keycloak-config-cli in `realm-master.json`   | `keycloak-config-cli`                 |
-| `KEYCLOAK_GRANT_TYPE`               | Property used by keycloak-config-cli, it is either `password` or `client_credentials` | `client_credentials`                  |
-| `KEYCLOAK_CLIENT_ID_REF`            | Property used by keycloak-config-cli and kcadm                                        | `${KC_BOOTSTRAP_ADMIN_CLIENT_ID}`     |
-| `KEYCLOAK_CLIENT_SECRET_REF`        | Property used by keycloak-config-cli and kcadm                                        | `${KC_BOOTSTRAP_ADMIN_CLIENT_SECRET}` |
+| `KEYCLOAK_GRANT_TYPE`     | Property used by keycloak-config-cli, it is either `password` or `client_credentials` | `client_credentials`                  |
+| `KEYCLOAK_CLIENTID`       | Property used by keycloak-config-cli and kcadm                                        | `${KC_BOOTSTRAP_ADMIN_CLIENT_ID}`     |
+| `KEYCLOAK_CLIENTSECRET`   | Property used by keycloak-config-cli and kcadm                                        | `${KC_BOOTSTRAP_ADMIN_CLIENT_SECRET}` |
 
 ### realm-example.json
 

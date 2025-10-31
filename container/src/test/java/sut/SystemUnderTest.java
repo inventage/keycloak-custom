@@ -85,9 +85,9 @@ public class SystemUnderTest {
         envs.put("KC_BOOTSTRAP_ADMIN_CLIENT_SECRET", "admin");
         envs.put("KEYCLOAK_CONFIG_CLI_CLIENT_ID", "keycloak-config-cli");
         envs.put("KEYCLOAK_CONFIG_CLI_CLIENT_SECRET", "keycloak-config-cli");
-        envs.put("KEYCLOAK_GRANT_TYPE", "client_credentials");
-        envs.put("KEYCLOAK_CLIENT_ID_REF", "${KC_BOOTSTRAP_ADMIN_CLIENT_ID}");
-        envs.put("KEYCLOAK_CLIENT_SECRET_REF", "${KC_BOOTSTRAP_ADMIN_CLIENT_SECRET}");
+        envs.put("KEYCLOAK_GRANTTYPE", "client_credentials");
+        envs.put("KEYCLOAK_CLIENTID", "${KC_BOOTSTRAP_ADMIN_CLIENT_ID}");
+        envs.put("KEYCLOAK_CLIENTSECRET", "${KC_BOOTSTRAP_ADMIN_CLIENT_SECRET}");
         envs.put("KC_DB", "postgres");
         envs.put("KC_DB_USERNAME", postgres.getUsername());
         envs.put("KC_DB_PASSWORD", postgres.getPassword());

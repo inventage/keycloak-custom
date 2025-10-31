@@ -1,6 +1,7 @@
 {
   "id": "example1",
   "realm": "example1",
+  "displayName": "$(env:EXAMPLE1_DISPLAY_NAME:-Example One)",
   "enabled": true,
   "registrationAllowed": true,
   "adminEventsEnabled": true,
@@ -233,7 +234,7 @@
       "description": "",
       "rootUrl": "",
       "adminUrl": "",
-      "baseUrl": "",
+      "baseUrl": "https://www.keycloak.org/app?url=http://localhost:8080&realm=example1&client=myclient",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,

@@ -21,17 +21,12 @@ runKeycloakConfigCli() {
   echo "--- Running Keycloak Config CLI"
   echo ""
 
-  eval "ADMIN_CLIENT_ID=${KEYCLOAK_CLIENT_ID_REF}"
-  eval "ADMIN_CLIENT_SECRET=${KEYCLOAK_CLIENT_SECRET_REF}"
-
-  echo "Use keycloak-config-cli with client '${ADMIN_CLIENT_ID}'"
+  echo "Use keycloak-config-cli with client '${KEYCLOAK_CLIENTID}'"
   # run keycloak-config-cli
+  # https://github.com/adorsys/keycloak-config-cli#keycloak-options
   java -jar "${BASEDIR}"/client/keycloak-config-cli-"${keycloak-config-cli.version}".jar \
     --keycloak.url=http://localhost:8080/ \
     --keycloak.ssl-verify=true \
-    --keycloak.grant-type="${KEYCLOAK_GRANT_TYPE}" \
-    --keycloak.client-id="${ADMIN_CLIENT_ID}" \
-    --keycloak.client-secret="${ADMIN_CLIENT_SECRET}" \
     --keycloak.availability-check.enabled=true \
     --keycloak.availability-check.timeout=300s \
     --import.var-substitution.enabled=true \
@@ -51,8 +46,8 @@ runKeycloakCli() {
   fi
   KCADM_CONFIG="--config /tmp/.keycloak/kcadm.config" # required to be writable for the current user
 
-  eval "ADMIN_CLIENT_ID=${KEYCLOAK_CLIENT_ID_REF}"
-  eval "ADMIN_CLIENT_SECRET=${KEYCLOAK_CLIENT_SECRET_REF}"
+  eval "ADMIN_CLIENT_ID=${KEYCLOAK_CLIENTID}"
+  eval "ADMIN_CLIENT_SECRET=${KEYCLOAK_CLIENTSECRET}"
 
   echo "Use kcadm with client '${ADMIN_CLIENT_ID}'"
   ${KCADM} config credentials \
