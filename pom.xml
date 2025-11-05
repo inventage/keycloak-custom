@@ -266,6 +266,12 @@
                     <version>6.13.0</version>
                     <extensions>true</extensions>
                     <configuration>
+                        <helmExtraRepos>
+                            <helmRepo>
+                                <name>Codecentric Helm Charts</name>
+                                <url>https://codecentric.github.io/helm-charts</url>
+                            </helmRepo>
+                        </helmExtraRepos>
                         <chartVersion>${project.version}</chartVersion>
                         <chartDirectory>${project.basedir}/helm/target/chart</chartDirectory>
                         <useLocalHelmBinary>false</useLocalHelmBinary>
