@@ -34,7 +34,7 @@ By running the Maven build with env variables set for docker/minikube the contai
 cd ..
 eval $(minikube -p keycloak-custom docker-env)
 minikube -p keycloak-custom docker-env
-mci -DskipTests
+mvn clean install -DskipTests
 ```
 
 ### Create necessary ConfigMap/Secret
