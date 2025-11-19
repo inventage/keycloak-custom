@@ -1,0 +1,9 @@
+### GET master realm configuration information via https://openid.net/specs/openid-connect-discovery-1_0.html
+GET http://localhost:8080/realms/master/.well-known/openid-configuration
+
+
+### GET example realm configuration information viahttps://openid.net/specs/openid-connect-discovery-1_0.html
+GET http://localhost:8080/realms/example1/.well-known/openid-configuration
+
+
+#
