@@ -64,7 +64,6 @@ public class SystemUnderTest {
 
     private KeycloakCustomContainer startKeycloak(PostgreSQLContainer postgres) {
         keycloak = new KeycloakCustomContainer()
-                .withLogConsumer(new Slf4jLogConsumer(LOGGER))
                 .withNetwork(network)
                 .withEnv(getKeycloakEnvs());
         try {
@@ -78,7 +77,9 @@ public class SystemUnderTest {
 
     private Map<String, String> getKeycloakEnvs() {
         HashMap<String, String> envs = new HashMap<>();
+        envs.put("PRINT_ENV", "true");
         envs.put("KC_HTTP_ENABLED", "true");
+        envs.put("KC_HOSTNAME_STRICT", "false");
         envs.put("KC_HOSTNAME_STRICT_HTTPS", "false");
         envs.put("REALM_MASTER_SSL_REQUIRED", "none");
         envs.put("KC_BOOTSTRAP_ADMIN_CLIENT_ID", "temp-admin");

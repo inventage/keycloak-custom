@@ -49,9 +49,8 @@ SERVER_OPTS="$SERVER_OPTS -Dquarkus-log-max-startup-records=10000"
 CLASSPATH_OPTS="'$(abs_path "../lib/quarkus-run.jar")'"
 
 DEBUG_MODE="${KC_DEBUG:-${DEBUG:-false}}"
-DEBUG_PORT="${KC_DEBUG_PORT:-${DEBUG_PORT:-8787}}"
+DEBUG_ADDRESS="${KC_DEBUG_PORT:-${DEBUG_PORT:-8787}}"
 DEBUG_SUSPEND="${KC_DEBUG_SUSPEND:-${DEBUG_SUSPEND:-n}}"
-DEBUG_ADDRESS="0.0.0.0:$DEBUG_PORT"
 
 esceval() {
     printf '%s\n' "$1" | sed "s/'/'\\\\''/g; 1 s/^/'/; $ s/$/'/"
@@ -62,20 +61,9 @@ do
     case "$1" in
       --debug)
           DEBUG_MODE=true
-          if [ -n "$2" ]; then
-              # Plain port
-              if echo "$2" | grep -Eq '^[0-9]+$'; then
-                  DEBUG_ADDRESS="0.0.0.0:$2"
-                  shift
-              # IPv4 or bracketed IPv6 with optional port
-              elif echo "$2" | grep -Eq '^(([0-9.]+)|(\[[0-9A-Fa-f:]+\]))'; then
-                  if echo "$2" | grep -Eq ':[0-9]+$'; then
-                      DEBUG_ADDRESS="$2"
-                  else
-                      DEBUG_ADDRESS="$2:$DEBUG_PORT"
-                  fi
-                  shift
-              fi
+          if echo "$2" | grep -Eq '^([0-9]|\[)'; then
+              DEBUG_ADDRESS=$2
+              shift
           fi
           ;;
       --)
@@ -178,35 +166,24 @@ if [ "$PRINT_ENV" = "true" ]; then
   echo "Using JAVA_RUN_OPTS: $JAVA_RUN_OPTS"
 fi
 
-eval "'$JAVA'" "$JAVA_RUN_OPTS"
-status=$?
+# trap the signals that should be forwarded to the java process
+trap 'status=143; while [ -z "$PID" ]; do sleep 0.1; done; kill -TERM $PID; wait $PID' TERM INT
+# run the java process in the background using the current stdin
+eval "{ '$JAVA' $JAVA_RUN_OPTS <&3 3<&- & } 3<&0"
+# obtain the pid, and await the exit status
+# --- keycloak-custom -----------------
+PID=$!
+source $DIRNAME/keycloak-setup.sh
+wait $PID; status=$?
+# --- keycloak-custom -----------------
+# remove the trap as signals can be directly handled
+trap - TERM INT
 # only exit code 10 means that implicit reaugmentation occurred and a relaunch is needed
 if [ $status = 10 ]; then
   JAVA_RUN_OPTS="-Dkc.config.built=true $JAVA_RUN_OPTS"
-
-  eval exec "'$JAVA'" "$JAVA_RUN_OPTS" &
+  echo "Keycloak relaunch with options: $JAVA_RUN_OPTS"
+  eval exec "'$JAVA'" "$JAVA_RUN_OPTS"
 else
+  echo "Keycloak exit with status: $status"
   exit $status
 fi
-
-# ========================================
-# Above: Copied from https://github.com/keycloak/keycloak/blob/main/quarkus/dist/src/main/content/bin/kc.sh
-#        (and added the & at the very end)
-# Below: Added by Inventage
-# ========================================
-
-KEYCLOAK_PID=$!
-
-forwardSigterm() {
-    echo "--> SIGTERM received - forwarding to java pid"
-    kill -TERM "$KEYCLOAK_PID" 2>/dev/null
-}
-
-trap forwardSigterm SIGTERM
-
-source $DIRNAME/keycloak-setup.sh
-
-#to keep the container running until keycloak shuts down
-wait $KEYCLOAK_PID
-
-echo "--> Keycloak process has shut down. Exiting."

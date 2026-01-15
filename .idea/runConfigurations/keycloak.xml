@@ -1,15 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="keycloak" type="Application" factoryName="Application">
-    <option name="ALTERNATIVE_JRE_PATH" value="21" />
-    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
-    <classpathModifications>
-      <entry path="$PROJECT_DIR$/server/target/keycloak/lib/quarkus-run.jar" />
-    </classpathModifications>
-    <option name="MAIN_CLASS_NAME" value="io.quarkus.bootstrap.runner.QuarkusEntryPoint" />
-    <module name="server" />
-    <option name="PROGRAM_PARAMETERS" value="start" />
-    <option name="VM_PARAMETERS" value="-Dkc.config.built=true -Dkc.home.dir=$ProjectFileDir$/server/target/keycloak/ -Djboss.server.config.dir=$ProjectFileDir$/server/target/keycloak/conf/ -Dliquibase.duplicateFileMode=WARN" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/server/target/keycloak" />
+  <configuration default="false" name="keycloak" type="JarApplication">
     <extension name="net.ashald.envfile">
       <option name="IS_ENABLED" value="true" />
       <option name="IS_SUBST" value="false" />
@@ -23,6 +13,12 @@
         <ENTRY IS_ENABLED="true" PARSER="env" IS_EXECUTABLE="false" PATH="docker-compose/src/main/resources/secrets.env" />
       </ENTRIES>
     </extension>
+    <option name="JAR_PATH" value="$PROJECT_DIR$/server/target/keycloak/lib/quarkus-run.jar" />
+    <option name="VM_PARAMETERS" value="--add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.base/java.security=ALL-UNNAMED -Dkc.config.built=true -Dkc.home.dir=$ProjectFileDir$/server/target/keycloak/ -Djboss.server.config.dir=$ProjectFileDir$/server/target/keycloak/conf/ -Dliquibase.duplicateFileMode=WARN -Djava.util.logging.manager=org.jboss.logmanager.LogManager -Dpicocli.disable.closures=true -Dquarkus-log-max-startup-records=10000 -Djava.util.concurrent.ForkJoinPool.common.threadFactory=io.quarkus.bootstrap.forkjoin.QuarkusForkJoinWorkerThreadFactory -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.err.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -Djava.security.egd=file:/dev/urandom" />
+    <option name="PROGRAM_PARAMETERS" value="start-dev" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/server/target/keycloak" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <option name="ALTERNATIVE_JRE_PATH" value="21" />
     <method v="2">
       <option name="Make" enabled="true" />
       <option name="RunConfigurationTask" enabled="true" run_configuration_name="kc.sh build" run_configuration_type="ShConfigurationType" />

@@ -21,11 +21,6 @@
             <type>zip</type>
             <scope>provided</scope>
         </dependency>
-        <!-- for debugging within the IDE -->
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-bootstrap-runner</artifactId>
-        </dependency>
     </dependencies>
 
     <build>

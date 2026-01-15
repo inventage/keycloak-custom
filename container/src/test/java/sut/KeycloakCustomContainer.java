@@ -1,12 +1,10 @@
 package sut;
 
 import dasniko.testcontainers.keycloak.ExtendableKeycloakContainer;
-import java.time.Duration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
+
+import java.time.Duration;
 
 public class KeycloakCustomContainer extends ExtendableKeycloakContainer<KeycloakCustomContainer> {
 
@@ -14,7 +12,6 @@ public class KeycloakCustomContainer extends ExtendableKeycloakContainer<Keycloa
 
     private static final String DEFAULT_WAIT_LOG_REGEX = ".*KEYCLOAK SETUP FINISHED.*";
     private static final long DEFAULT_STARTUP_TIMEOUT = 3;
-    private static final Logger LOGGER = LoggerFactory.getLogger(KeycloakCustomContainer.class);
 
     private final WaitStrategy waitStrategy;
     private final long startupTimeout;
@@ -24,13 +21,14 @@ public class KeycloakCustomContainer extends ExtendableKeycloakContainer<Keycloa
     }
 
     public KeycloakCustomContainer(String dockerImageName) {
-        super(dockerImageName);
+        super(dockerImageName); // includes withLogConsumer(new Slf4jLogConsumer(...))
         this.startupTimeout = DEFAULT_STARTUP_TIMEOUT;
         this.waitStrategy = new LogMessageWaitStrategy()
                 .withRegEx(DEFAULT_WAIT_LOG_REGEX)
                 .withTimes(1)
                 .withStartupTimeout(Duration.ofMinutes(this.startupTimeout));
-        this.withLogConsumer(new Slf4jLogConsumer(LOGGER));
+        this.withProductionMode(); // kc.sh start instead of start-dev
+        this.withOptimizedFlag(); // --optimized
     }
 
     @Override

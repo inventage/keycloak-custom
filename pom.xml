@@ -33,7 +33,7 @@
         <docker.imagePropertyConfiguration>override</docker.imagePropertyConfiguration>
         <helm.registry>ghcr.io/inventage/keycloak-custom</helm.registry>
         <!-- versions -->
-        <keycloak.version>26.4.7</keycloak.version> <!-- update also keycloak-config-cli.version -->
+        <keycloak.version>26.5.1</keycloak.version> <!-- update also keycloak-config-cli.version -->
         <keycloak-config-cli.version>26.1.0_v6.4.0</keycloak-config-cli.version> <!-- from https://github.com/adorsys/keycloak-config-cli/releases -->
         <auto-service.version>1.0.1</auto-service.version>
         <!-- https://github.com/dasniko/testcontainers-keycloak/releases -->
@@ -60,11 +60,6 @@
                 <version>${keycloak.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
-            </dependency>
-            <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-bootstrap-runner</artifactId>
-                <version>3.25.2</version>
             </dependency>
             <!-- utils -->
             <dependency>
