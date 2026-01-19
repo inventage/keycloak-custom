@@ -89,7 +89,6 @@ public class SystemUnderTest {
         envs.put("KEYCLOAK_GRANTTYPE", "client_credentials");
         envs.put("KEYCLOAK_CLIENTID", "${KC_BOOTSTRAP_ADMIN_CLIENT_ID}");
         envs.put("KEYCLOAK_CLIENTSECRET", "${KC_BOOTSTRAP_ADMIN_CLIENT_SECRET}");
-        envs.put("KC_DB", "postgres");
         envs.put("KC_DB_USERNAME", postgres.getUsername());
         envs.put("KC_DB_PASSWORD", postgres.getPassword());
         envs.put("KC_DB_URL", String.format("jdbc:postgresql://%s:5432/%s?loggerLevel=OFF", NETWORK_ALIAS_POSTGRES, DATABASE_NAME_POSTGRES));
