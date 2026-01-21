@@ -49,7 +49,7 @@ kubectl apply -f ./src/test/resources/local/keycloak-custom-secret-vars.local.ya
 ### Install Keycloak
 
 ```shell
-helm install keycloak codecentric/keycloakx --values ./src/generated/keycloak-custom-chart/values.yaml
+helm install keycloak ./src/generated/keycloak-custom-chart
 ```
 
 ### Make Keycloak accessible from localhost

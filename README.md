@@ -47,23 +47,7 @@ Our setup script uses two **configuration tools**: [keycloak-config-cli](https:/
    - Which client is used for applying the configuration is determined by the `KEYCLOAK_CLIENTID` and `KEYCLOAK_CLIENTSECRET` env vars.
    - Initially, these env vars point to the temporary admin client.
    - As we now have an alternative permanent client available, it should be used instead.
-   - **[helm]** Replace in [values.yaml](./helm/src/main/resources/values.yaml):
-
-      ```yaml
-          - name: KEYCLOAK_CLIENTID
-            value: ${KC_BOOTSTRAP_ADMIN_CLIENT_SECRET}
-          - name: KEYCLOAK_CLIENTSECRET
-            value: ${KC_BOOTSTRAP_ADMIN_CLIENT_SECRET}
-      ```
-
-      with:
-
-      ```yaml
-          - name: KEYCLOAK_CLIENTID
-            value: ${KEYCLOAK_CONFIG_CLI_CLIENT_ID}
-          - name: KEYCLOAK_CLIENTSECRET
-            value: ${KEYCLOAK_CONFIG_CLI_CLIENT_SECRET}
-      ```
+   - **[helm]** After the first startup, you should switch to the permanent `keycloak-config-cli` client. See the comments in the `helm/src/test/resources/local/keycloak-custom-*.yaml` files for instructions on what to change.
 
    - **[docker]** Replace in [keycloak.common.env](docker-compose/src/main/resources/keycloak.common.env):
 

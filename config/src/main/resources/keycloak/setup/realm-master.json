@@ -120,7 +120,7 @@
   ],
   "users":[
     {
-      "username": "service-account-keycloak-config-cli",
+      "username": "service-account-$(env:KEYCLOAK_CONFIG_CLI_CLIENT_ID:-keycloak-config-cli)",
       "emailVerified": false,
       "createdTimestamp": 1740506716110,
       "enabled": true,

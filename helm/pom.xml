@@ -13,10 +13,6 @@
     <artifactId>helm</artifactId>
     <packaging>helm</packaging>
 
-    <properties>
-        <chart.directory>${project.basedir}/src/generated/keycloak-custom-chart</chart.directory>
-    </properties>
-
     <build>
         <plugins>
             <plugin>
@@ -44,9 +40,6 @@
                 <!-- See https://github.com/kokuwaio/helm-maven-plugin for documentation -->
                 <groupId>io.kokuwa.maven</groupId>
                 <artifactId>helm-maven-plugin</artifactId>
-                <configuration>
-                    <chartDirectory>${chart.directory}</chartDirectory>
-                </configuration>
                 <executions>
                     <execution>
                         <id>default-cli</id>
