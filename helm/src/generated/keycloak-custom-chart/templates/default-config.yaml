@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-keycloak-defaults
+  labels:
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+data: # Note the following config can be overridden using the keycloak-custom-config-vars config map or keycloak-custom-secret-vars secret.
+  # KC_BOOTSTRAP_ADMIN_USERNAME, temporary admin user
+  KC_BOOTSTRAP_ADMIN_USERNAME: "temp-admin"
+  # KC_BOOTSTRAP_ADMIN_CLIENT_ID, temporary client with realm role admin
+  KC_BOOTSTRAP_ADMIN_CLIENT_ID: "temp-client-admin"
+  # KEYCLOAK_GRANTTYPE property used by 'keycloak-config-cli' either password or client_credentials
+  KEYCLOAK_GRANTTYPE: "client_credentials"
+  # KEYCLOAK_CLIENTID property used by 'keycloak-config-cli' when grant-type is client_credentials
+  KEYCLOAK_CLIENTID: "temp-client-admin"
+  KEYCLOAK_CONFIG_CLI_CLIENT_ID: "keycloak-config-cli"

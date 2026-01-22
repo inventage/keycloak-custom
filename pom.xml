@@ -42,6 +42,7 @@
         <testcontainers.version>1.20.6</testcontainers.version>
         <junit-jupiter-engine.version>5.12.1</junit-jupiter-engine.version>
         <failsafe-plugin.version>3.2.5</failsafe-plugin.version>
+        <chart.directory>${project.basedir}/src/generated/keycloak-custom-chart</chart.directory>
     </properties>
 
     <dependencyManagement>
@@ -166,6 +167,7 @@
                     <version>${failsafe-plugin.version}</version>
                     <configuration>
                         <systemPropertyVariables>
+                            <api.version>1.44</api.version> <!-- https://github.com/testcontainers/testcontainers-java/issues/11212 -->
                             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                         </systemPropertyVariables>
                         <includes>
@@ -268,7 +270,7 @@
                             </helmRepo>
                         </helmExtraRepos>
                         <chartVersion>${project.version}</chartVersion>
-                        <chartDirectory>${project.basedir}/helm/target/chart</chartDirectory>
+                        <chartDirectory>${chart.directory}</chartDirectory>
                         <!-- https://github.com/kokuwaio/helm-maven-plugin/issues/427 -->
                         <helmVersion>3.19.2</helmVersion>
                         <useLocalHelmBinary>false</useLocalHelmBinary>
