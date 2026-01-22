@@ -11,6 +11,7 @@ keycloakx:
     - "--hostname-strict=false"
     - "--spi-events-listener-jboss-logging-success-level=info"
     - "--spi-events-listener-jboss-logging-error-level=warn"
+    - "--optimized"
 
   image:
     # The custom image repository
