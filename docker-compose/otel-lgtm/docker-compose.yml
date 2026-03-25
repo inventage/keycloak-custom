@@ -1,0 +1,12 @@
+# https://www.keycloak.org/observability/telemetry#_development_setup
+# docker run -p 3000:3000 -p 4317:4317 -p 4318:4318 --rm -ti grafana/otel-lgtm
+services:
+  lgtm:
+    image: grafana/otel-lgtm
+    ports:
+      # http://localhost:3000
+      - "3000:3000"
+      # gRPC
+      - "4317:4317"
+      # HTTP
+      - "4318:4318"
