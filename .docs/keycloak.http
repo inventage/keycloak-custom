@@ -1,5 +1,6 @@
 ### GET master realm configuration information via https://openid.net/specs/openid-connect-discovery-1_0.html
 GET http://localhost:8080/realms/master/.well-known/openid-configuration
+traceparent: 00-00000000000000000000000000000001-0000000000000001-01
 
 
 ### GET example realm configuration information viahttps://openid.net/specs/openid-connect-discovery-1_0.html
