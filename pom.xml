@@ -33,13 +33,13 @@
         <docker.imagePropertyConfiguration>override</docker.imagePropertyConfiguration>
         <helm.registry>ghcr.io/inventage/keycloak-custom</helm.registry>
         <!-- versions -->
-        <keycloak.version>26.6.2</keycloak.version> <!-- update also keycloak-config-cli.version -->
-        <keycloak-config-cli.version>26.5.4_v6.5.0</keycloak-config-cli.version> <!-- from https://github.com/adorsys/keycloak-config-cli/releases -->
+        <keycloak.version>26.6.3</keycloak.version> <!-- update also keycloak-config-cli.version -->
+        <keycloak-config-cli.version>26.5.5_v6.5.1</keycloak-config-cli.version> <!-- from https://github.com/adorsys/keycloak-config-cli/releases -->
         <auto-service.version>1.1.1</auto-service.version>
         <!-- https://github.com/dasniko/testcontainers-keycloak/releases -->
-        <testcontainers-keycloak.version>4.1.1</testcontainers-keycloak.version>
-        <testcontainers-postgres.version>2.0.1</testcontainers-postgres.version>
-        <testcontainers.version>2.0.3</testcontainers.version>
+        <testcontainers-keycloak.version>4.2.1</testcontainers-keycloak.version>
+        <testcontainers-postgres.version>2.0.5</testcontainers-postgres.version>
+        <testcontainers.version>2.0.5</testcontainers.version>
         <failsafe-plugin.version>3.5.4</failsafe-plugin.version>
         <chart.directory>${project.basedir}/src/generated/keycloak-custom-chart</chart.directory>
     </properties>
@@ -65,7 +65,7 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
-                <version>3.6</version>
+                <version>3.20.0</version>
             </dependency>
             <!-- testcontainers -->
             <dependency>
@@ -101,7 +101,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>3.6.2</version>
+                    <version>3.6.3</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -190,7 +190,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>3.10.0</version>
+                    <version>3.11.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
