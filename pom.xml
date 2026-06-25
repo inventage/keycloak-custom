@@ -42,6 +42,13 @@
         <testcontainers.version>2.0.5</testcontainers.version>
         <failsafe-plugin.version>3.5.4</failsafe-plugin.version>
         <chart.directory>${project.basedir}/src/generated/keycloak-custom-chart</chart.directory>
+        <!-- configuration for using the keycloak test framework by surefire -->
+        <testframework.surefire.args>
+            -XX:+ExitOnOutOfMemoryError
+            -XX:+HeapDumpOnOutOfMemoryError
+            -Djava.util.logging.manager=org.jboss.logmanager.LogManager
+            -Djava.util.concurrent.ForkJoinPool.common.threadFactory=io.quarkus.bootstrap.forkjoin.QuarkusForkJoinWorkerThreadFactory
+        </testframework.surefire.args>
     </properties>
 
     <dependencyManagement>
@@ -57,6 +64,14 @@
             <dependency>
                 <groupId>org.keycloak</groupId>
                 <artifactId>keycloak-parent</artifactId>
+                <version>${keycloak.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <!-- keycloak test framework -->
+            <dependency>
+                <groupId>org.keycloak.testframework</groupId>
+                <artifactId>keycloak-test-framework-bom</artifactId>
                 <version>${keycloak.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
@@ -157,6 +172,7 @@
                             <!--suppress UnresolvedMavenProperty -->
                             <maven.home>${maven.home}</maven.home>
                         </systemPropertyVariables>
+                        <argLine>${testframework.surefire.args}</argLine>
                     </configuration>
                 </plugin>
                 <!-- integration testing: https://maven.apache.org/surefire/maven-failsafe-plugin/ -->

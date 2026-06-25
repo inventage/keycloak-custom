@@ -34,6 +34,17 @@
             <artifactId>keycloak-services</artifactId>
             <scope>provided</scope>
         </dependency>
+        <!-- keycloak integration tests -->
+        <dependency>
+            <groupId>org.keycloak.testframework</groupId>
+            <artifactId>keycloak-test-framework-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.keycloak.testframework</groupId>
+            <artifactId>keycloak-test-framework-remote</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
