@@ -13,7 +13,7 @@ import java.util.List;
 
 public class NoOperationFormAuthenticatorFactory implements AuthenticatorFactory {
 
-    private static final String PROVIDER_ID = "no-operation-form-authenticator";
+    public static final String PROVIDER_ID = "no-operation-form-authenticator";
 
     private static final AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES = {
             AuthenticationExecutionModel.Requirement.REQUIRED,

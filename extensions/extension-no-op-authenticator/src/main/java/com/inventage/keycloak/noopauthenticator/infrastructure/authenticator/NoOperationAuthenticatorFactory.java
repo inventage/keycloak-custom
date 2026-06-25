@@ -15,7 +15,7 @@ import java.util.List;
 @AutoService(org.keycloak.authentication.AuthenticatorFactory.class)
 public class NoOperationAuthenticatorFactory implements AuthenticatorFactory {
 
-    private static final String PROVIDER_ID = "no-operation-authenticator";
+    public static final String PROVIDER_ID = "no-operation-authenticator";
 
     private static final AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES = {
             AuthenticationExecutionModel.Requirement.REQUIRED,
