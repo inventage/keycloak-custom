@@ -29,8 +29,8 @@ public class ExtensionTest {
 
     @Test
     public void noOperationAuthenticator_is_active() {
-        // given
-        // when
+        // given - the standard Keycloak distribution with the installed extension from this module
+        // when - the Keycloak instance is up & running
         // then
         Assertions.assertEquals("default", defaultRealm.getName());
         runOnServer.run(session -> {
@@ -41,8 +41,8 @@ public class ExtensionTest {
 
     @Test
     public void noOperationFormAuthenticator_is_active() {
-        // given
-        // when
+        // given - the standard Keycloak distribution with the installed extension from this module
+        // when - the Keycloak instance is up & running
         // then
         Assertions.assertEquals("default", defaultRealm.getName());
         runOnServer.run(session -> {

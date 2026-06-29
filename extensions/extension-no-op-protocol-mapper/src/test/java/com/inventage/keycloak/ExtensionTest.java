@@ -26,8 +26,8 @@ public class ExtensionTest {
 
     @Test
     public void noOperationProtocolMapper_is_active() {
-        // given
-        // when
+        // given - the standard Keycloak distribution with the installed extension from this module
+        // when - the Keycloak instance is up & running
         // then
         Assertions.assertEquals("default", defaultRealm.getName());
 // Caused by: java.lang.RuntimeException: UNSUPPORTED METHOD
