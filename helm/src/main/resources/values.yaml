@@ -33,6 +33,7 @@ keycloakx:
     password: keycloak
     database: keycloak
 
+  # to override or add one entry here, all
   extraEnv: |
     - name: JAVA_OPTS_APPEND
       value: >-
@@ -40,8 +41,6 @@ keycloakx:
         -Djgroups.dns.query={{ include "keycloak.fullname" . }}-headless
 
   extraEnvFrom: |
-    - configMapRef:
-        name: {{ .Release.Name }}-keycloak-defaults
     - configMapRef:
         name: keycloak-custom-config-vars
     - secretRef:
