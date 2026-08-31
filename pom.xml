@@ -33,7 +33,7 @@
         <docker.imagePropertyConfiguration>override</docker.imagePropertyConfiguration>
         <helm.registry>ghcr.io/inventage/keycloak-custom</helm.registry>
         <!-- versions -->
-        <keycloak.version>26.7.2</keycloak.version> <!-- update also keycloak-config-cli.version -->
+        <keycloak.version>26.7.3</keycloak.version> <!-- update also keycloak-config-cli.version -->
         <keycloak-config-cli.version>26.5.5_v6.5.1</keycloak-config-cli.version> <!-- from https://github.com/adorsys/keycloak-config-cli/releases -->
         <auto-service.version>1.1.1</auto-service.version>
         <!-- https://github.com/dasniko/testcontainers-keycloak/releases -->
