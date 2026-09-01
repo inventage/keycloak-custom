@@ -396,6 +396,12 @@
                                                 -->
                                                 <!--suppress UnresolvedMavenProperty -->
                                                 <configFile>${maven.multiModuleProjectDirectory}/.build-tools/buildkit/buildkitd.toml</configFile>
+                                                <!-- buildx would otherwise attach its default provenance attestation, which shows up
+                                                     as an extra "unknown/unknown" platform entry on the GHCR; provenance is attested
+                                                     separately via cosign in the build pipeline -->
+                                                <attestations>
+                                                    <provenance>false</provenance>
+                                                </attestations>
                                                 <platforms>
                                                     <platform>linux/arm64</platform>
                                                     <platform>linux/amd64</platform>
