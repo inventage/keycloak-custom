@@ -2,6 +2,12 @@ name: keycloak-custom-chart
 version: ${project.version}
 apiVersion: v2
 
+# helm push maps the first entry to the org.opencontainers.image.source OCI annotation,
+# which the GHCR uses to connect the pushed chart package to this repository
+sources:
+  - https://github.com/inventage/keycloak-custom
+home: https://github.com/inventage/keycloak-custom
+
 dependencies:
   - name: keycloakx
     version: 7.1.4

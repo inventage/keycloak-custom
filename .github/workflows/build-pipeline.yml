@@ -1,5 +1,8 @@
 # This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+#
+# In addition to the build, pushes to main generate a CycloneDX SBOM of the pushed Docker image
+# and attest it (together with a SLSA provenance predicate) to the image via cosign.
 
 name: Build Pipeline
 
@@ -16,23 +19,38 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       packages: write
+    outputs:
+      VERSION: ${{ steps.version.outputs.VERSION }}
+      IMAGE: ${{ steps.image.outputs.IMAGE }}
+      IMAGE_VERSION_COUNT: ${{ steps.tag-platforms.outputs.IMAGE_VERSION_COUNT }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
         with:
           java-version: "21"
           distribution: "temurin"
           cache: maven
 
       - name: Replace "SNAPSHOT" within POM version with date, build number and commit hash
+        id: version
         run: |
           snapshot_version=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)
           major_minor_patch=$(echo "${snapshot_version}" | sed 's/SNAPSHOT//g')
           date=$(date -u +%Y%m%d%H%M)
           release_candidate_version=${major_minor_patch}${date}-${{github.run_number}}-${GITHUB_SHA::8}
           ./mvnw versions:set -DnewVersion=${release_candidate_version}
+          echo "VERSION=${release_candidate_version}" >> "$GITHUB_OUTPUT"
+
+      # derived from the POM instead of hardcoded, so clones/forks that adjust
+      # docker.registry keep a consistent SBOM/attestation target automatically
+      - name: Determine image name from POM
+        id: image
+        run: |
+          registry=$(./mvnw help:evaluate -Dexpression=docker.registry -q -DforceStdout)
+          image_name=$(./mvnw help:evaluate -Dexpression=docker.image.name -q -DforceStdout)
+          echo "IMAGE=${registry}${image_name}" >> "$GITHUB_OUTPUT"
 
       - name: Build with Maven
         run: ./mvnw -B -DmultiArchBuild=true -DskipTests deploy --file pom.xml
@@ -41,21 +59,139 @@ jobs:
           GITHUB_ACTOR: ${{ github.repository_owner }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Install crane
+        uses: imjasonh/setup-crane@feee3b6bb0d4c68370f256a4502498c9227e5c6b # v0.7
+
+      # The per-platform manifests of the multi-arch image are pushed untagged, so the GHCR UI
+      # shows them as bare digests. Tag each one as <version>-<os>-<arch> to make the package
+      # versions identifiable. Also counts the versions one image release consists of (index
+      # manifest + one per platform), which the cleanup job needs for its retention limit.
+      - name: Tag platform manifests
+        id: tag-platforms
+        env:
+          IMAGE: ${{ steps.image.outputs.IMAGE }}
+          VERSION: ${{ steps.version.outputs.VERSION }}
+          REGISTRY_USER: ${{ github.actor }}
+          REGISTRY_PW: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          crane auth login ghcr.io -u "$REGISTRY_USER" -p "$REGISTRY_PW"
+          # .manifests is absent when the image is a plain manifest instead of a multi-arch
+          # index (e.g. a build without multiArchBuild) — nothing to tag then, count is 1
+          crane manifest "${IMAGE}:${VERSION}" > index.json
+          jq -r '(.manifests // [])[] | select(.platform.os != "unknown") | .digest + " " + .platform.os + "-" + .platform.architecture' index.json \
+            | while read -r digest platform; do
+                echo "Tagging ${digest} as ${VERSION}-${platform}"
+                crane tag "${IMAGE}@${digest}" "${VERSION}-${platform}"
+              done
+          echo "IMAGE_VERSION_COUNT=$(jq '((.manifests // []) | length) + 1' index.json)" >> "$GITHUB_OUTPUT"
+
+  # Generate a CycloneDX SBOM of the pushed image and attest it (plus SLSA provenance) via
+  # cosign. Attestation degrades gracefully: when the cosign secrets are absent, the step is
+  # skipped with a notice instead of failing the build.
+  #
+  # Only pushes to main attest and feed Dependency-Track (this project does no releases and no
+  # maintenance branches, so main is the only release line). PR builds are excluded — also
+  # Dependabot via pull_request_target, where github.ref_name is the BASE branch and a branch
+  # check alone would pass — so they cannot overwrite the Dependency-Track BOM of main.
+  sbom:
+    name: SBOM & Attestation
+    needs: [build]
+    if: ${{ github.event_name == 'push' && github.ref_name == github.event.repository.default_branch }}
+    runs-on: ubuntu-latest
+    permissions:
+      # cosign pushes the attestation manifests to the GHCR
+      packages: write
+    outputs:
+      # secret presence surfaced as outputs because job-level `if` conditions cannot read
+      # the secrets context; has_dtrack_api_key skips the dtrack job entirely in clones/forks
+      # that have neither the Dependency-Track secret nor the self-hosted runner (the job
+      # would otherwise queue forever waiting for a nonexistent runner label), has_cosign
+      # tells the cleanup job whether an attestation version was pushed to the GHCR
+      has_dtrack_api_key: ${{ secrets.DEPENDENCY_TRACK_API_KEY != '' }}
+      has_cosign: ${{ secrets.COSIGN_PRIVATE_KEY != '' }}
+    steps:
+      # local composite actions require the repository to be checked out
+      - name: Checkout Repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Generate SBOM and Attest
+        uses: ./.github/actions/generate-sbom
+        with:
+          image: ${{ needs.build.outputs.IMAGE }}
+          version: ${{ needs.build.outputs.VERSION }}
+          registry-user: ${{ github.actor }}
+          registry-password: ${{ secrets.GITHUB_TOKEN }}
+          cosign-private-key: ${{ secrets.COSIGN_PRIVATE_KEY }}
+          cosign-password: ${{ secrets.COSIGN_PASSWORD }}
+
+  # Inventage-internal only: uploads the SBOM to the internal Dependency-Track instance. Skipped entirely without the
+  # DEPENDENCY_TRACK_API_KEY secret (e.g. in clones/forks, which lack the runner too) and
+  # in PR context.
+  dtrack:
+    name: Dependency-Track Upload
+    needs: [build, sbom]
+    if: ${{ github.event_name == 'push' && github.ref_name == github.event.repository.default_branch && needs.sbom.outputs.has_dtrack_api_key == 'true' }}
+    runs-on: inventage-ephemeral-linux-amd64
+    steps:
+      # local composite actions require the repository to be checked out
+      - name: Checkout Repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Download SBOM artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: sbom.cyclonedx.json
+
+      - name: Upload SBOM to Dependency-Track
+        uses: ./.github/actions/upload-sbom-dependency-track
+        with:
+          version: ${{ needs.build.outputs.VERSION }}
+          api-key: ${{ secrets.DEPENDENCY_TRACK_API_KEY }}
+          url: ${{ vars.DEPENDENCY_TRACK_URL || 'https://dtrack.inventage.com' }}
+          parent-uuid: ${{ vars.DEPENDENCY_TRACK_PARENT_UUID }}
+          # only the default branch uploads (see job condition), so every upload is the latest
+          is-latest: true
+
+  # Keep only the GHCR package versions of the most recent release. Runs after the sbom job so
+  # the attestation of the current release already exists and the retention limit can match one
+  # release exactly: the manifest count of the pushed image (index + one per platform, counted
+  # in the build job) plus the cosign attestation when the secrets are configured. For container
+  # packages the version "name" is the image digest, so semver-based filters like
+  # delete-only-pre-release-versions never match anything — the action plainly deletes
+  # everything but the newest N versions, oldest first. Never runs in PR context, so PR builds
+  # cannot garbage-collect the release artifacts.
+  cleanup:
+    name: Remove Outdated Packages
+    needs: [build, sbom]
+    if: ${{ github.event_name == 'push' && github.ref_name == github.event.repository.default_branch }}
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      # expressions cannot do arithmetic, hence a step to add up the retention limit
+      - name: Compute retention limit
+        id: keep
+        env:
+          IMAGE_VERSION_COUNT: ${{ needs.build.outputs.IMAGE_VERSION_COUNT }}
+          HAS_ATTESTATION: ${{ needs.sbom.outputs.has_cosign }}
+        run: |
+          extra=0
+          [ "$HAS_ATTESTATION" = "true" ] && extra=1
+          echo "count=$(( IMAGE_VERSION_COUNT + extra ))" >> "$GITHUB_OUTPUT"
+
       # https://github.com/actions/delete-package-versions
       - name: Remove outdated docker images
-        uses: actions/delete-package-versions@v4
+        uses: actions/delete-package-versions@e5bc658cc4c965c472efe991f8beea3981499c55 # v5.0.0
         with:
           package-name: "keycloak-custom/com.inventage.keycloak.custom.container"
           package-type: "container"
-          min-versions-to-keep: 5
-          delete-only-pre-release-versions: "true"
+          min-versions-to-keep: ${{ steps.keep.outputs.count }}
         continue-on-error: true
 
       - name: Remove outdated helm charts
-        uses: actions/delete-package-versions@v4
+        uses: actions/delete-package-versions@e5bc658cc4c965c472efe991f8beea3981499c55 # v5.0.0
         with:
-          package-name: "keycloak-custom/keycloak-custom-chart "
+          package-name: "keycloak-custom/keycloak-custom-chart"
           package-type: "container"
-          min-versions-to-keep: 5
-          delete-only-pre-release-versions: "true"
+          min-versions-to-keep: 1
         continue-on-error: true
