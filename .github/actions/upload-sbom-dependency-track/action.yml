@@ -1,0 +1,93 @@
+name: Upload SBOM to Dependency-Track
+description: >
+  Uploads a CycloneDX SBOM (sbom.cyclonedx.json in the working directory, e.g. downloaded
+  from the run artifact produced by the generate-sbom action) to Dependency-Track.
+
+  Must run on a self-hosted runner: dtrack.inventage.com is only reachable from the
+  Inventage-internal network.
+
+  Degrades gracefully: when no API key is provided, the upload is skipped with a notice
+  instead of failing the build.
+
+inputs:
+  version:
+    description: Full build version (e.g. 1.0.0-202507161230-42-abcdef1); the semver prefix becomes the Dependency-Track project version
+    required: true
+  api-key:
+    description: Dependency-Track API key (empty = skip upload)
+    required: false
+    default: ''
+  url:
+    description: Dependency-Track base URL
+    required: false
+    default: 'https://dtrack.inventage.com'
+  project-name:
+    description: Dependency-Track project name
+    required: false
+    default: ${{ github.event.repository.name }}
+  parent-uuid:
+    description: UUID of the Dependency-Track parent project (empty = no parent)
+    required: false
+    default: ''
+  is-latest:
+    description: Mark the uploaded version as the latest active version in Dependency-Track
+    required: false
+    default: 'false'
+
+runs:
+  using: composite
+  steps:
+    - name: Notice — Dependency-Track upload skipped
+      if: ${{ inputs.api-key == '' }}
+      shell: bash
+      run: echo "::notice::DEPENDENCY_TRACK_API_KEY not provided — skipping Dependency-Track upload."
+
+    - name: Upload SBOM to Dependency-Track
+      if: ${{ inputs.api-key != '' }}
+      shell: bash
+      env:
+        DT_API_KEY: ${{ inputs.api-key }}
+        DT_URL: ${{ inputs.url }}
+        DT_PROJECT_NAME: ${{ inputs.project-name }}
+        DT_PARENT_UUID: ${{ inputs.parent-uuid }}
+        DT_IS_LATEST: ${{ inputs.is-latest }}
+        VERSION: ${{ inputs.version }}
+      run: |
+        # DT project version is the semver prefix of the build version (e.g. 1.0.0). Every
+        # build of the same release line replaces the BOM, so the DT project always reflects
+        # the current release candidate of that line and needs no action at release time.
+        SEMVER="${VERSION%%-*}"
+
+        ARGS=(
+          -F "autoCreate=true"
+          -F "projectName=${DT_PROJECT_NAME}"
+          -F "projectVersion=${SEMVER}"
+          -F "bom=@sbom.cyclonedx.json"
+        )
+        [ -n "$DT_PARENT_UUID" ] && ARGS+=(-F "parentUUID=${DT_PARENT_UUID}")
+        [ "$DT_IS_LATEST" = "true" ] && ARGS+=(-F "isLatest=true")
+
+        curl --fail-with-body -X POST "${DT_URL}/api/v1/bom" \
+          -H "X-Api-Key: ${DT_API_KEY}" \
+          "${ARGS[@]}"
+
+    - name: Summary
+      shell: bash
+      env:
+        VERSION: ${{ inputs.version }}
+        HAS_DT: ${{ inputs.api-key != '' }}
+        DT_PROJECT_NAME: ${{ inputs.project-name }}
+        DT_PARENT_UUID: ${{ inputs.parent-uuid }}
+        DT_IS_LATEST: ${{ inputs.is-latest }}
+      run: |
+        SEMVER="${VERSION%%-*}"
+        {
+          echo "## Dependency-Track"
+          echo "| Item | Value |"
+          echo "|------|-------|"
+          echo "| Uploaded | ${HAS_DT} |"
+          echo "| Project | \`${DT_PROJECT_NAME}\` |"
+          echo "| Project version | \`${SEMVER}\` |"
+          echo "| Parent project | \`${DT_PARENT_UUID:-(none — DEPENDENCY_TRACK_PARENT_UUID not set)}\` |"
+          echo "| Latest | ${DT_IS_LATEST} |"
+        } >> "$GITHUB_STEP_SUMMARY"
