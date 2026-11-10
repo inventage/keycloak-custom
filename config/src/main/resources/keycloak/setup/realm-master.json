@@ -176,7 +176,7 @@
         "backchannel.logout.revoke.offline.tokens": "false"
       },
       "authenticationFlowBindingOverrides": {},
-      "fullScopeAllowed": true,
+      "fullScopeAllowed": false,
       "nodeReRegistrationTimeout": -1,
       "defaultClientScopes": [
         "service_account",
@@ -185,7 +185,8 @@
         "roles",
         "profile",
         "basic",
-        "email"
+        "email",
+        "kc-admin-api"
       ],
       "optionalClientScopes": [
         "address",
@@ -199,6 +200,14 @@
         "configure": true,
         "manage": true
       }
+    }
+  ],
+  "scopeMappings": [
+    {
+      "client": "keycloak-config-cli",
+      "roles": [
+        "admin"
+      ]
     }
   ]
 }
