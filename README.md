@@ -131,3 +131,16 @@ In order to update the realm-example.json, it is recommended to follow these ste
   - Start a new `realm-example.json`, including only the custom config that deviates from the default config (the diff from the previous step)
   - Replace any environment specific configuration i.e. URL, client-ids and client-secrets with env vars
   - Apply the configuration with the `keycloak-config-cli`
+
+## Supply Chain
+
+Pushes to `main` generate a CycloneDX SBOM of the pushed Docker image and attest it (together with a SLSA provenance predicate) to the image via [cosign](https://github.com/sigstore/cosign).
+
+Images published to the GitHub Container Registry carry their attestations. Verify one and extract its SBOM with the corresponding cosign public key:
+
+```sh
+cosign verify-attestation --key cosign.pub --type cyclonedx --insecure-ignore-tlog <image>@<digest> | jq -r '.payload' | base64 -d | jq '.predicate'
+cosign verify-attestation --key cosign.pub --type slsaprovenance --insecure-ignore-tlog <image>@<digest>
+```
+
+The SBOM of every `main` build is also archived as the run artifact `sbom.cyclonedx.json`. Attestation requires the `COSIGN_PRIVATE_KEY` / `COSIGN_PASSWORD` secrets and is skipped with a notice when they are absent (e.g. in clones/forks of this repository); PR builds skip SBOM generation entirely.
