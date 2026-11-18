@@ -204,7 +204,7 @@
   ],
   "scopeMappings": [
     {
-      "client": "keycloak-config-cli",
+      "client": "$(env:KEYCLOAK_CONFIG_CLI_CLIENT_ID:-keycloak-config-cli)",
       "roles": [
         "admin"
       ]
